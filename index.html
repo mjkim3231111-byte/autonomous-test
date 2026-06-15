@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>자율주행 코너링 마스터 포털</title>
+  <title>AI 드라이빙 멘토</title>
   <style>
     /* 기본 배경 및 폰트 설정 */
     body { 
@@ -16,7 +16,7 @@
     
     /* 상단 헤더 영역 */
     .header { 
-      background-color: #002D62; /* 전주공고 상징색에 맞춘 네이비 */
+      background-color: #002D62;
       color: white; 
       text-align: center; 
       padding: 50px 20px; 
@@ -28,7 +28,7 @@
     /* 카드 레이아웃 컨테이너 */
     .container { 
       max-width: 1100px; 
-      margin: -30px auto 50px auto; /* 헤더 위로 살짝 올라타게 배치 */
+      margin: -30px auto 50px auto; 
       padding: 0 20px;
       display: grid; 
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
@@ -43,7 +43,7 @@
       text-align: center; 
       box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
       transition: all 0.3s ease; 
-      text-decoration: none; /* 링크 밑줄 제거 */
+      text-decoration: none; 
       color: inherit;
       display: flex;
       flex-direction: column;
@@ -87,11 +87,12 @@
 <body>
 
   <div class="header">
-    <h1>🏎️ 자율주행 코너링 마스터 포털</h1>
+    <h1>🏎️ AI 드라이빙 멘토</h1>
     <p>1차시 실습으로 끝내는 자율주행 조향 제어 시스템</p>
   </div>
 
   <div class="container">
+    <!-- 1번 문: 교사용 가이드 -->
     <a href="#" class="card card-teacher" onclick="alert('교사용 가이드 페이지 준비 중입니다. (2단계 목표)')">
       <div class="icon">👨‍🏫</div>
       <h2>교사용 가이드</h2>
@@ -99,6 +100,7 @@
       <div class="enter-text">수업 준비하기 ➡️</div>
     </a>
 
+    <!-- 2번 문: 원리 학습실 -->
     <a href="#" class="card card-learn" onclick="alert('주행 원리 학습실 준비 중입니다. (3단계 목표)')">
       <div class="icon">📖</div>
       <h2>주행 원리 학습실</h2>
@@ -106,6 +108,7 @@
       <div class="enter-text">사전 학습 시작 ➡️</div>
     </a>
 
+    <!-- 3번 문: 실습 및 채점 -->
     <a href="#" class="card card-practice" onclick="alert('실시간 채점기 준비 중입니다. (4단계 목표)')">
       <div class="icon">🚀</div>
       <h2>실시간 자동 채점기</h2>
@@ -115,7 +118,7 @@
   </div>
 
   <div class="footer">
-    © 2026 전주공업고등학교 전기과 자율주행 교육 프로젝트
+    © 2026 AI 드라이빙 멘토 프로젝트
   </div>
 
 </body>
