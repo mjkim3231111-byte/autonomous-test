@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자율주행 코너링 마스터 포털</title>
+  <style>
+    /* 기본 배경 및 폰트 설정 */
+    body { 
+      font-family: 'Malgun Gothic', sans-serif; 
+      background-color: #f1f5f9; 
+      margin: 0; 
+      padding: 0; 
+      color: #333;
+    }
+    
+    /* 상단 헤더 영역 */
+    .header { 
+      background-color: #002D62; /* 전주공고 상징색에 맞춘 네이비 */
+      color: white; 
+      text-align: center; 
+      padding: 50px 20px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header h1 { margin: 0; font-size: 36px; letter-spacing: -1px; }
+    .header p { margin-top: 15px; font-size: 18px; color: #94a3b8; }
+    
+    /* 카드 레이아웃 컨테이너 */
+    .container { 
+      max-width: 1100px; 
+      margin: -30px auto 50px auto; /* 헤더 위로 살짝 올라타게 배치 */
+      padding: 0 20px;
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+      gap: 30px; 
+    }
+    
+    /* 개별 카드 디자인 */
+    .card { 
+      background: white; 
+      border-radius: 15px; 
+      padding: 40px 30px; 
+      text-align: center; 
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+      transition: all 0.3s ease; 
+      text-decoration: none; /* 링크 밑줄 제거 */
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      border-top: 5px solid transparent;
+    }
+    
+    /* 마우스 올렸을 때 애니메이션 효과 */
+    .card:hover { 
+      transform: translateY(-10px); 
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+    }
+    
+    /* 카드별 상단 포인트 컬러 */
+    .card-teacher:hover { border-top-color: #64748b; }
+    .card-learn:hover { border-top-color: #38bdf8; }
+    .card-practice:hover { border-top-color: #10b981; }
+    
+    /* 카드 내부 아이콘 및 텍스트 */
+    .icon { font-size: 60px; margin-bottom: 20px; }
+    .card h2 { margin: 0 0 15px 0; font-size: 24px; color: #0f172a; }
+    .card p { font-size: 15px; color: #64748b; line-height: 1.6; flex-grow: 1; word-break: keep-all; }
+    
+    /* 카드 하단 바로가기 텍스트 */
+    .enter-text { 
+      margin-top: 25px; 
+      font-weight: bold; 
+      font-size: 16px; 
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    
+    .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
+    .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
+    .card-practice .enter-text { color: #059669; background: #d1fae5; }
+
+    /* 하단 푸터 */
+    .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🏎️ 자율주행 코너링 마스터 포털</h1>
+    <p>1차시 실습으로 끝내는 자율주행 조향 제어 시스템</p>
+  </div>
+
+  <div class="container">
+    <a href="#" class="card card-teacher" onclick="alert('교사용 가이드 페이지 준비 중입니다. (2단계 목표)')">
+      <div class="icon">👨‍🏫</div>
+      <h2>교사용 가이드</h2>
+      <p>동료 교사를 위한 1차시 수업 운영 매뉴얼, 구글 시트 연동 방법, TV 전광판 세팅 및 평가 기준표를 확인하세요.</p>
+      <div class="enter-text">수업 준비하기 ➡️</div>
+    </a>
+
+    <a href="#" class="card card-learn" onclick="alert('주행 원리 학습실 준비 중입니다. (3단계 목표)')">
+      <div class="icon">📖</div>
+      <h2>주행 원리 학습실</h2>
+      <p>실습 전 필수 시청! 조향 과다와 부족이 발생하는 과학적 원리 영상과 코드를 어떻게 튜닝해야 하는지 학습합니다.</p>
+      <div class="enter-text">사전 학습 시작 ➡️</div>
+    </a>
+
+    <a href="#" class="card card-practice" onclick="alert('실시간 채점기 준비 중입니다. (4단계 목표)')">
+      <div class="icon">🚀</div>
+      <h2>실시간 자동 채점기</h2>
+      <p>나의 코드가 적용된 자동차 번호를 선택하고 주행 사진을 올려 AI 채점 및 1:1 맞춤형 코칭을 받아보세요.</p>
+      <div class="enter-text">실습 제출하기 ➡️</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    © 2026 전주공업고등학교 전기과 자율주행 교육 프로젝트
+  </div>
+
+</body>
+</html>
