@@ -18,6 +18,7 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     
     .header { margin-top: 40px; text-align: center; }
@@ -56,4 +57,246 @@
 
     /* 다음/이전 버튼 */
     .btn-group { display: flex; justify-content: space-between; margin-top: 40px; }
-    .btn { padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; font-size: 16px; text
+    .btn { padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; font-size: 16px; text-decoration: none; text-align: center; }
+    .btn-next { background-color: #3b82f6; color: white; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-left: auto; }
+    .btn-next:hover { background-color: #2563eb; transform: translateY(-2px); }
+    .btn-home { background-color: #e2e8f0; color: #475569; }
+    .btn-home:hover { background-color: #cbd5e1; }
+
+    /* =========================================
+       1단계: 영상 영역
+       ========================================= */
+    .video-container { border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    video { width: 100%; display: block; }
+
+    /* =========================================
+       3단계: 미니 시뮬레이터 영역 (실제 프로그램 구현)
+       ========================================= */
+    .simulator-area { background-color: #1e293b; border-radius: 15px; padding: 20px; text-align: center; }
+    .track-box {
+      width: 100%; height: 350px; background-color: #475569; position: relative; border-radius: 10px; overflow: hidden;
+      border-left: 30px solid #cbd5e1; border-right: 30px solid #cbd5e1; box-sizing: border-box; touch-action: none;
+    }
+    
+    /* 중앙 점선 */
+    .center-line { position: absolute; left: 50%; top: 0; width: 8px; height: 100%; background: repeating-linear-gradient(to bottom, #fbbf24 0, #fbbf24 30px, transparent 30px, transparent 60px); transform: translateX(-50%); }
+
+    /* SVG 선 (파란선) */
+    #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; }
+
+    /* 고정된 빨간 원 (차량 위치) */
+    .red-circle { position: absolute; bottom: 20px; left: 50%; width: 40px; height: 40px; border: 6px solid #ef4444; border-radius: 50%; transform: translate(-50%, 0); z-index: 5; background-color: transparent; }
+    
+    /* 움직이는 초록 원 (목표점) */
+    .green-circle { position: absolute; top: 80px; left: 20%; width: 40px; height: 40px; border: 6px solid #22c55e; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; cursor: grab; background-color: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+    .green-circle:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
+
+    /* 성공 메시지 */
+    .success-msg { position: absolute; top: 15%; left: 50%; transform: translate(-50%, -50%) scale(0.5); background-color: #22c55e; color: white; padding: 10px 25px; border-radius: 30px; font-size: 20px; font-weight: bold; opacity: 0; transition: all 0.4s; pointer-events: none; z-index: 20; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.5); }
+    .success-msg.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    /* =========================================
+       4단계: 가이드 박스
+       ========================================= */
+    .guide-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; }
+    .step-list { list-style: none; padding: 0; margin: 0; }
+    .step-list li { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px; font-size: 16px;}
+    .step-number { background-color: #002D62; color: white; font-weight: bold; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+    .highlight { color: #16a34a; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>학습 데이터 만들기</h1>
+  </div>
+
+  <div class="card-container">
+    
+    <div class="progress-bar">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-dot" id="dot4">4</div>
+    </div>
+
+    <div id="step1" class="step-content active">
+      <h2 class="step-title">🎬 1. 주행 트랙 눈에 익히기</h2>
+      <p class="step-desc">자율주행 자동차의 카메라 뷰입니다. 이 화면을 보고 AI가 스스로 도로의 중앙을 찾아야 합니다. 영상을 재생하여 꺾이는 구간을 확인하세요.</p>
+      <div class="video-container">
+        <video controls preload="metadata">
+          <source src="일반트랙.mp4" type="video/mp4">
+          브라우저가 동영상을 지원하지 않습니다.
+        </video>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-next" onclick="goToStep(2)">2단계: 어노테이션이란? ➡️</button>
+      </div>
+    </div>
+
+    <div id="step2" class="step-content">
+      <h2 class="step-title">🏷️ 2. 조향 제어의 핵심, 어노테이션</h2>
+      <p class="step-desc">
+        AI는 처음에는 핸들을 얼마나 꺾어야 할지 모릅니다. <br><br>
+        <strong>'어노테이션(Annotation)'</strong>은 자동차의 현재 위치에서 <strong>어느 방향으로, 얼마나 조향각을 꺾어야 하는지 정답 선을 그어주는 작업</strong>입니다. 여러분이 그려준 수많은 선(데이터)을 보고 AI가 운전을 배우게 됩니다.
+      </p>
+      <div class="btn-group">
+        <button class="btn btn-next" onclick="goToStep(3)">3단계: 직접 해보기 ➡️</button>
+      </div>
+    </div>
+
+    <div id="step3" class="step-content">
+      <h2 class="step-title">🎮 3. 조향각 맞추기 미니 체험</h2>
+      <p class="step-desc">실제 프로그램과 똑같습니다! 아래 <strong>빨간 원(현재 내 위치)</strong>에서 출발하는 파란 선이 도로의 정중앙에 오도록, 위쪽의 <strong>초록 원(목표 방향)</strong>을 좌우로 움직여보세요.</p>
+      
+      <div class="simulator-area">
+        <div class="track-box" id="trackBox">
+          <div class="center-line"></div>
+          
+          <svg id="svgCanvas">
+            <line id="steerLine" x1="50%" y1="90%" x2="20%" y2="20%" />
+          </svg>
+          
+          <div class="red-circle" id="redCircle"></div>
+          <div class="green-circle" id="greenCircle"></div>
+          
+          <div class="success-msg" id="successMsg">🎉 정답! 완벽한 조향각입니다!</div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-next" onclick="goToStep(4)">4단계: 실전 투입 ➡️</button>
+      </div>
+    </div>
+
+    <div id="step4" class="step-content">
+      <h2 class="step-title">💻 4. 실전 프로그램 가이드</h2>
+      <p class="step-desc">축하합니다! 원리를 완벽히 이해하셨습니다. 이제 실제 프로그램을 열고 진짜 학습 데이터를 만들어 봅시다.</p>
+      
+      <div class="guide-box">
+        <ul class="step-list">
+          <li><span class="step-number">1</span><div>왼쪽 <strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
+          <li><span class="step-number">2</span><div>화면의 <span class="highlight">초록색 동그라미</span>를 조작하여 파란 선이 도로 중앙을 가리키도록 맞춥니다. (우측 x, y 슬라이더로 미세 조정 가능)</div></li>
+          <li><span class="step-number">3</span><div>현재 상황에 맞는 클래스 버튼(left, middle, right)을 누릅니다.</div></li>
+          <li><span class="step-number">4</span><div><strong>[Save]</strong> 버튼을 누르고 다음 사진으로 넘어갑니다.</div></li>
+        </ul>
+      </div>
+
+      <div class="btn-group">
+        <a href="index.html" class="btn btn-home">⬅️ 메인 화면으로</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- 1. 단계별 화면 전환 로직 ---
+    function goToStep(stepNum) {
+      // 모든 내용 숨기기
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      // 선택한 단계만 보이기
+      document.getElementById('step' + stepNum).classList.add('active');
+      
+      // 진행률 점선 업데이트
+      for(let i=1; i<=4; i++) {
+        const dot = document.getElementById('dot' + i);
+        if(i < stepNum) {
+          dot.className = 'step-dot completed';
+        } else if(i === stepNum) {
+          dot.className = 'step-dot active';
+        } else {
+          dot.className = 'step-dot';
+        }
+      }
+
+      // 3단계 진입 시 파란 선 위치 재계산
+      if(stepNum === 3) {
+        updateLine();
+      }
+    }
+
+    // --- 2. 미니 시뮬레이터 (조향각 선 긋기) 로직 ---
+    const trackBox = document.getElementById('trackBox');
+    const greenCircle = document.getElementById('greenCircle');
+    const redCircle = document.getElementById('redCircle');
+    const steerLine = document.getElementById('steerLine');
+    const successMsg = document.getElementById('successMsg');
+    
+    let isDragging = false;
+
+    function startDrag(e) {
+      isDragging = true;
+      successMsg.classList.remove('show');
+    }
+
+    function doDrag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      let clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+      
+      let rect = trackBox.getBoundingClientRect();
+      let x = clientX - rect.left;
+      let y = clientY - rect.top;
+      
+      // 박스 밖으로 안 나가게 제한
+      x = Math.max(20, Math.min(x, rect.width - 20));
+      y = Math.max(20, Math.min(y, rect.height - 20));
+
+      greenCircle.style.left = x + 'px';
+      greenCircle.style.top = y + 'px';
+      
+      updateLine();
+    }
+
+    function stopDrag(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      checkSuccess();
+    }
+
+    // 초록 원과 빨간 원을 잇는 파란 선 그리기
+    function updateLine() {
+      let boxRect = trackBox.getBoundingClientRect();
+      let greenRect = greenCircle.getBoundingClientRect();
+      let redRect = redCircle.getBoundingClientRect();
+
+      // 초록 원 중심 좌표
+      let gx = greenRect.left - boxRect.left + (greenRect.width / 2);
+      let gy = greenRect.top - boxRect.top + (greenRect.height / 2);
+
+      // 빨간 원 중심 좌표
+      let rx = redRect.left - boxRect.left + (redRect.width / 2);
+      let ry = redRect.top - boxRect.top + (redRect.height / 2);
+
+      // SVG 선 업데이트
+      steerLine.setAttribute('x1', rx);
+      steerLine.setAttribute('y1', ry);
+      steerLine.setAttribute('x2', gx);
+      steerLine.setAttribute('y2', gy);
+    }
+
+    // 정답 확인 로직 (초록 원이 가로 중앙에 왔는지)
+    function checkSuccess() {
+      let rect = trackBox.getBoundingClientRect();
+      let greenRect = greenCircle.getBoundingClientRect();
+      
+      let gx = greenRect.left - rect.left + (greenRect.width / 2);
+      let centerX = rect.width / 2;
+      
+      // 오차 범위 20px 이내면 성공
+      if (Math.abs(gx - centerX) < 20) {
+        successMsg.classList.add('show');
+        greenCircle.style.left = '50%'; // 중앙으로 자석처럼 찰칵!
+        updateLine();
+      }
+    }
+
+    // 드래그 이벤트 연결
+    greenCircle.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', doDrag);
+    window.addEventListener('mouseup', stopDrag);
+
+    greenCircle.addEventListener('touchstart', startDrag, {passive: false});
