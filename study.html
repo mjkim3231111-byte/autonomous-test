@@ -37,6 +37,7 @@
     .progress-bar { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
     .progress-bar::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: #e2e8f0; z-index: 1; transform: translateY(-50%); }
     .step-dot { width: 30px; height: 30px; background: #e2e8f0; color: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 2; position: relative; transition: all 0.3s; cursor: pointer; }
+    .step-dot:hover { transform: scale(1.1); }
     .step-dot.active { background: #002D62; color: white; box-shadow: 0 0 10px rgba(0, 45, 98, 0.5); }
     .step-dot.completed { background: #3b82f6; color: white; }
 
@@ -78,9 +79,7 @@
 
     #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     
-    /* 기본 하얀색 실선 */
     .road-line { stroke: #f8fafc; stroke-width: 10; fill: none; opacity: 0.9; stroke-linecap: round; }
-    /* 정답의 기준이 되는 노란색 실선 (바깥선 강조) */
     .reference-line { stroke: #fbbf24; stroke-width: 12; opacity: 1; z-index: 2; }
 
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
@@ -202,7 +201,7 @@
       <div class="guide-box">
         <ul class="step-list">
           <li><span class="step-number">1</span><div><strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
-          <li><span class="step-number">2</span><div>커브가 나오면 무조건 <span class="highlight-target">바깥쪽 실선</span>을 찾고, 그 선과 파란 선이 완벽히 평행이 되도록 초록 점을 맞춥니다.</div></li>
+          <li><span class="step-number">2</span><div>커브가 나오면 무조건 <span class="highlight-target">바깥쪽 실선(노란색)</span>을 찾고, 그 선과 파란 선이 완벽히 평행이 되도록 초록 점을 맞춥니다.</div></li>
           <li><span class="step-number">3</span><div>현재 상황에 맞는 방향 버튼(left, middle, right)을 누르고 Save 합니다.</div></li>
         </ul>
       </div>
@@ -247,7 +246,6 @@
     const trainingModes = ['straight', 'left', 'right'];
     let currentModeIndex = 0;
     let currentMode = 'straight';
-    let currentLevel = 1;
     let targetXOffset = 0; 
     let isDragging = false;
 
@@ -258,7 +256,6 @@
 
     function setMode(mode) {
       currentMode = mode;
-      currentLevel = 1;
       
       ['mapStraight', 'mapLeft', 'mapRight'].forEach(id => {
         document.getElementById(id).className = 'roadmap-item';
@@ -279,18 +276,12 @@
     }
 
     function nextLevel() {
-      let maxLevel = (currentMode === 'straight') ? 1 : 2; 
-      
-      if (currentLevel < maxLevel) {
-        currentLevel++;
-        applyLevelSettings();
+      // 모드당 무조건 1단계씩만 하고 바로 다음 모드로 점프!
+      if (currentModeIndex < trainingModes.length - 1) {
+        currentModeIndex++;
+        setMode(trainingModes[currentModeIndex]);
       } else {
-        if (currentModeIndex < trainingModes.length - 1) {
-          currentModeIndex++;
-          setMode(trainingModes[currentModeIndex]);
-        } else {
-          goToStep(4);
-        }
+        goToStep(4);
       }
     }
 
@@ -312,44 +303,32 @@
       } 
       else if (currentMode === 'left') {
         rightLine.className.baseVal = "road-line reference-line"; 
-        if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (1/2) : 완만한 커브</span><br>좌회전 시 핵심은 <span class='highlight-target'>오른쪽 노란색 실선</span>입니다. 노란색 선과 파란 선이 평행해지도록 맞추세요.";
-          curveOffset = -120; 
-        } else {
-          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (2/2) : 깊은 커브</span><br>커브가 깊어져도 원리는 같습니다. <span class='highlight-target'>오른쪽 노란색 실선</span> 하나만 보고 평행을 유지하세요.";
-          curveOffset = -240;
-        }
+        missionInfo.innerHTML = "<span>2. 좌회전 훈련</span><br>좌회전 시 기준은 <span class='highlight-target'>오른쪽 노란색 실선</span>입니다. 노란색 선과 파란 선이 평행해지도록 맞추세요.";
+        curveOffset = -160; // 아이들이 평행을 한눈에 체감할 수 있는 최적의 고정 곡률
       } 
       else if (currentMode === 'right') {
         leftLine.className.baseVal = "road-line reference-line"; 
-        if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>3. 우회전 훈련 (1/2) : 완만한 커브</span><br>방향이 반대로 바뀌었습니다. 이제는 <span class='highlight-target'>왼쪽 노란색 실선</span>과 완벽하게 평행을 맞추세요.";
-          curveOffset = 120;
-        } else {
-          missionInfo.innerHTML = "<span>3. 우회전 훈련 (2/2) : 깊은 커브</span><br>시야가 오른쪽으로 쏠려도 절대 <span class='highlight-target'>왼쪽 노란색 실선</span>을 놓치지 말고 평행을 맞추세요.";
-          curveOffset = 240;
-        }
+        missionInfo.innerHTML = "<span>3. 우회전 훈련</span><br>우회전 시 기준은 <span class='highlight-target'>왼쪽 노란색 실선</span>입니다. 노란색 선과 파란 선이 평행해지도록 맞추세요.";
+        curveOffset = 160;
       }
 
-      // 수학적 계산: 시각적 평행 상태(선생님 사진 기준)를 정답으로 맞추기 위한 핵심 보정 (비율 0.65 적용)
+      // 선생님이 직접 조작하신 각도 스크린샷과 완벽히 일치하는 채점 공식 보정
       targetXOffset = curveOffset * 0.65;
 
-      // 완전한 11자 평행 도로 그리기 (간격 일정)
+      // 11자 평행 도로 그리기 (간격 완전 고정)
       let botY = 350; 
       let topY = -50; 
       let ctrlY = 150; 
-      let laneW = 130; // 도로 폭 절대 고정 (원근법 삭제)
+      let laneW = innerWidth * 0.35; 
 
       let lStartX = center - laneW;
       let lEndX = center - laneW + curveOffset;
       let lCtrlX = center - laneW + (curveOffset * 0.4); 
-
       leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lCtrlX},${ctrlY} ${lEndX},${topY}`);
 
       let rStartX = center + laneW;
       let rEndX = center + laneW + curveOffset;
       let rCtrlX = center + laneW + (curveOffset * 0.4);
-
       rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
@@ -403,7 +382,7 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
-      // 정답 허용 범위를 대폭 늘려(25) 눈으로 보기에 평행하면 무조건 통과되도록 수정!
+      // 직관적인 성공을 보장하기 위한 오차범위 25 세팅
       if (Math.abs(diff) <= 25) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
@@ -439,28 +418,21 @@
         greenCircle.style.left = idealX + 'px'; 
         updateLine();
         
-        let maxLevel = (currentMode === 'straight') ? 1 : 2;
         btnNextLevel.className = "btn-next-level";
         
-        if(currentLevel < maxLevel) {
-          overlayTitle.innerText = `🎉 완벽한 평행입니다!`;
-          overlayDesc.innerText = "더 깊은 커브 훈련으로 넘어갑니다.";
-          btnNextLevel.innerText = "다음 코스 ➡️";
-        } else {
-          if (currentMode === 'straight') {
-            overlayTitle.innerText = "🏁 직진 마스터!";
-            overlayDesc.innerText = "이제 '좌회전' 코스로 진입하여 바깥선을 찾으세요.";
-            btnNextLevel.innerText = "좌회전 훈련 시작 ➡️";
-          } else if (currentMode === 'left') {
-            overlayTitle.innerText = "🏁 좌회전 마스터!";
-            overlayDesc.innerText = "우회전 코스에서도 '바깥선(노란색) 법칙'은 똑같습니다!";
-            btnNextLevel.innerText = "우회전 훈련 시작 ➡️";
-          } else if (currentMode === 'right') {
-            overlayTitle.innerText = "🏆 모든 훈련 수료!";
-            overlayDesc.innerText = "축하합니다! 조향각 평행 원리를 완벽히 마스터했습니다.";
-            btnNextLevel.innerText = "4단계 실전으로 가기 🚀";
-            btnNextLevel.classList.add("btn-finish");
-          }
+        if (currentMode === 'straight') {
+          overlayTitle.innerText = "🏁 직진 마스터!";
+          overlayDesc.innerText = "이제 '좌회전' 코스로 진입하여 노란색 바깥선을 찾으세요.";
+          btnNextLevel.innerText = "좌회전 훈련 시작 ➡️";
+        } else if (currentMode === 'left') {
+          overlayTitle.innerText = "🏁 좌회전 마스터!";
+          overlayDesc.innerText = "우회전 코스에서도 '바깥선(노란색) 법칙'은 똑같습니다!";
+          btnNextLevel.innerText = "우회전 훈련 시작 ➡️";
+        } else if (currentMode === 'right') {
+          overlayTitle.innerText = "🏆 모든 훈련 수료!";
+          overlayDesc.innerText = "축하합니다! 조향각 평행 원리를 완벽히 마스터했습니다.";
+          btnNextLevel.innerText = "4단계 실전으로 가기 🚀";
+          btnNextLevel.classList.add("btn-finish");
         }
         nextMissionOverlay.classList.add('show');
       }
