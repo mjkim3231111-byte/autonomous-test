@@ -60,4 +60,375 @@
     .btn-group { display: flex; justify-content: space-between; margin-top: 40px; }
     .btn { padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; border: none; font-size: 16px; text-decoration: none; text-align: center; }
     .btn-prev { background-color: #f1f5f9; color: #475569; margin-right: 15px; }
-    .btn-prev:hover { background-color: #e2e8f0
+    .btn-prev:hover { background-color: #e2e8f0; }
+    .btn-next { background-color: #3b82f6; color: white; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-left: auto; }
+    .btn-next:hover { background-color: #2563eb; transform: translateY(-2px); }
+    .btn-home { background-color: #e2e8f0; color: #475569; }
+    .btn-home:hover { background-color: #cbd5e1; }
+
+    /* =========================================
+       1단계: 영상 영역
+       ========================================= */
+    .video-container { border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    video { width: 100%; display: block; }
+
+    /* =========================================
+       3단계: 미니 시뮬레이터 영역 (업그레이드)
+       ========================================= */
+    .simulator-controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+    .mode-btn { padding: 10px 20px; border-radius: 30px; border: 2px solid #cbd5e1; background: white; cursor: pointer; font-weight: bold; color: #64748b; transition: all 0.2s; }
+    .mode-btn.active { background: #002D62; color: white; border-color: #002D62; }
+
+    .simulator-area { background-color: #1e293b; border-radius: 15px; padding: 20px; text-align: center; position: relative; }
+    
+    .mission-info { background: rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 16px; }
+    .mission-info span { font-weight: bold; color: #fbbf24; }
+
+    .track-box {
+      width: 100%; height: 350px; background-color: #475569; position: relative; border-radius: 10px; overflow: hidden;
+      border-left: 30px solid #cbd5e1; border-right: 30px solid #cbd5e1; box-sizing: border-box; touch-action: none;
+    }
+
+    /* 도로의 곡선을 그리는 SVG */
+    #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    #guidePath { stroke: #f8fafc; stroke-width: 6; fill: none; stroke-dasharray: 20 15; opacity: 0.8; }
+
+    /* 파란색 조향선 SVG */
+    #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; transition: stroke 0.3s; }
+
+    /* 빨간 원 / 초록 원 */
+    .red-circle { position: absolute; bottom: 20px; left: 50%; width: 40px; height: 40px; border: 6px solid #ef4444; border-radius: 50%; transform: translate(-50%, 0); z-index: 5; background-color: rgba(239, 68, 68, 0.2); }
+    .green-circle { position: absolute; top: 80px; left: 50%; width: 40px; height: 40px; border: 6px solid #22c55e; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; cursor: grab; background-color: rgba(34, 197, 94, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: border-color 0.3s, background-color 0.3s; }
+    .green-circle:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
+
+    /* 실시간 피드백 텍스트 */
+    #feedbackText { margin-top: 15px; font-size: 18px; font-weight: bold; color: #fbbf24; min-height: 27px; }
+
+    /* 다음 미션 넘어가는 오버레이 버튼 */
+    #nextMissionOverlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; border-radius: 10px;
+    }
+    #nextMissionOverlay.show { opacity: 1; pointer-events: auto; }
+    #nextMissionOverlay h3 { color: #22c55e; font-size: 28px; margin-bottom: 20px; }
+    .btn-next-level { background: #3b82f6; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; }
+    .btn-next-level:hover { background: #2563eb; }
+
+    /* =========================================
+       4단계: 가이드 박스
+       ========================================= */
+    .guide-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; }
+    .step-list { list-style: none; padding: 0; margin: 0; }
+    .step-list li { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px; font-size: 16px;}
+    .step-number { background-color: #002D62; color: white; font-weight: bold; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+    .highlight { color: #16a34a; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>학습 데이터 만들기</h1>
+  </div>
+
+  <div class="card-container">
+    
+    <div class="progress-bar">
+      <div class="step-dot active" id="dot1" onclick="goToStep(1)">1</div>
+      <div class="step-dot" id="dot2" onclick="goToStep(2)">2</div>
+      <div class="step-dot" id="dot3" onclick="goToStep(3)">3</div>
+      <div class="step-dot" id="dot4" onclick="goToStep(4)">4</div>
+    </div>
+
+    <div id="step1" class="step-content active">
+      <h2 class="step-title">🎬 1. 주행 트랙 눈에 익히기</h2>
+      <p class="step-desc">자율주행 자동차의 카메라 뷰입니다. 이 화면을 보고 AI가 스스로 도로의 중앙을 찾아야 합니다. 영상을 재생하여 꺾이는 구간을 확인하세요.</p>
+      <div class="video-container">
+        <video controls preload="metadata">
+          <source src="일반트랙.mp4" type="video/mp4">
+          브라우저가 동영상을 지원하지 않습니다.
+        </video>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-next" onclick="goToStep(2)">2단계: 어노테이션이란? ➡️</button>
+      </div>
+    </div>
+
+    <div id="step2" class="step-content">
+      <h2 class="step-title">🏷️ 2. 조향 제어의 핵심, 어노테이션</h2>
+      <p class="step-desc">
+        AI는 처음에는 핸들을 얼마나 꺾어야 할지 모릅니다. <br><br>
+        <strong>'어노테이션(Annotation)'</strong>은 자동차의 현재 위치에서 <strong>어느 방향으로, 얼마나 조향각을 꺾어야 하는지 정답 선을 그어주는 작업</strong>입니다. 여러분이 그려준 수많은 선(데이터)을 보고 AI가 운전을 배우게 됩니다.
+      </p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-prev" onclick="goToStep(1)">⬅️ 이전</button>
+        <button type="button" class="btn btn-next" onclick="goToStep(3)">3단계: 직접 해보기 ➡️</button>
+      </div>
+    </div>
+
+    <div id="step3" class="step-content">
+      <h2 class="step-title">🎮 3. 조향각 맞추기 미니 체험</h2>
+      <p class="step-desc">흰색 점선(도로 라인)과 <strong>파란 선이 평행</strong>해지도록 초록색 목표점을 움직여보세요!</p>
+      
+      <div class="simulator-controls">
+        <button class="mode-btn active" id="btnStraight" onclick="setMode('straight')">직진</button>
+        <button class="mode-btn" id="btnLeft" onclick="setMode('left')">좌회전 실습</button>
+        <button class="mode-btn" id="btnRight" onclick="setMode('right')">우회전 실습</button>
+      </div>
+
+      <div class="simulator-area">
+        <div class="mission-info" id="missionInfo"><span>직진 코스</span>: 파란 선을 도로의 중앙에 맞추세요.</div>
+        
+        <div class="track-box" id="trackBox">
+          <svg id="roadGuideSvg">
+            <path id="guidePath" d="M 400,350 Q 400,175 400,0"></path>
+          </svg>
+          
+          <svg id="svgCanvas">
+            <line id="steerLine" x1="50%" y1="90%" x2="50%" y2="20%" />
+          </svg>
+          
+          <div class="red-circle" id="redCircle"></div>
+          <div class="green-circle" id="greenCircle"></div>
+
+          <div id="nextMissionOverlay">
+            <h3 id="overlayText">🎉 완벽합니다!</h3>
+            <button class="btn-next-level" id="btnNextLevel" onclick="nextLevel()">다음 단계로 ➡️</button>
+          </div>
+        </div>
+
+        <div id="feedbackText">점을 좌우로 움직여 조향각을 맞춰보세요.</div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-prev" onclick="goToStep(2)">⬅️ 이전</button>
+        <button type="button" class="btn btn-next" onclick="goToStep(4)">4단계: 실전 투입 ➡️</button>
+      </div>
+    </div>
+
+    <div id="step4" class="step-content">
+      <h2 class="step-title">💻 4. 실전 프로그램 가이드</h2>
+      <p class="step-desc">축하합니다! 원리를 완벽히 이해하셨습니다. 이제 실제 프로그램을 열고 진짜 학습 데이터를 만들어 봅시다.</p>
+      
+      <div class="guide-box">
+        <ul class="step-list">
+          <li><span class="step-number">1</span><div>왼쪽 <strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
+          <li><span class="step-number">2</span><div>화면의 <span class="highlight">초록색 동그라미</span>를 조작하여 파란 선이 도로 중앙을 가리키도록 맞춥니다. (우측 x, y 슬라이더로 미세 조정 가능)</div></li>
+          <li><span class="step-number">3</span><div>현재 상황에 맞는 클래스 버튼(left, middle, right)을 누릅니다.</div></li>
+          <li><span class="step-number">4</span><div><strong>[Save]</strong> 버튼을 누르고 다음 사진으로 넘어갑니다.</div></li>
+        </ul>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-prev" onclick="goToStep(3)">⬅️ 이전</button>
+        <a href="index.html" class="btn btn-home">🏠 메인 화면으로 돌아가기</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- 1. 단계 전환 로직 ---
+    function goToStep(stepNum) {
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      const targetStep = document.getElementById('step' + stepNum);
+      if(targetStep) targetStep.classList.add('active');
+      
+      for(let i=1; i<=4; i++) {
+        const dot = document.getElementById('dot' + i);
+        if(i < stepNum) dot.className = 'step-dot completed';
+        else if(i === stepNum) dot.className = 'step-dot active';
+        else dot.className = 'step-dot';
+      }
+
+      if(stepNum === 3) {
+        setTimeout(() => {
+          setMode('left'); // 기본값을 좌회전 실습으로 시작하도록 세팅
+        }, 50);
+      }
+    }
+
+    // --- 2. 시뮬레이터 변수 세팅 ---
+    const trackBox = document.getElementById('trackBox');
+    const greenCircle = document.getElementById('greenCircle');
+    const redCircle = document.getElementById('redCircle');
+    const steerLine = document.getElementById('steerLine');
+    const guidePath = document.getElementById('guidePath');
+    
+    const feedbackText = document.getElementById('feedbackText');
+    const missionInfo = document.getElementById('missionInfo');
+    const nextMissionOverlay = document.getElementById('nextMissionOverlay');
+    const btnNextLevel = document.getElementById('btnNextLevel');
+    const overlayText = document.getElementById('overlayText');
+
+    let currentMode = 'left';
+    let currentLevel = 1; // 1: 완만, 2: 중간, 3: 급커브
+    let targetXOffset = 0; // 중심 기준 정답 X좌표 오차값
+    let isDragging = false;
+
+    // --- 3. 모드 및 레벨 설정 로직 ---
+    function setMode(mode) {
+      currentMode = mode;
+      currentLevel = 1;
+      
+      // 버튼 디자인 활성화
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      if(mode === 'straight') document.getElementById('btnStraight').classList.add('active');
+      if(mode === 'left') document.getElementById('btnLeft').classList.add('active');
+      if(mode === 'right') document.getElementById('btnRight').classList.add('active');
+
+      applyLevelSettings();
+    }
+
+    function nextLevel() {
+      if(currentLevel < 3) {
+        currentLevel++;
+        applyLevelSettings();
+      } else {
+        // 3단계 모두 통과 시
+        nextMissionOverlay.classList.remove('show');
+        feedbackText.innerText = "🏆 코스 마스터! 다음 실습을 선택하거나 4단계로 넘어가세요.";
+        feedbackText.style.color = "#3b82f6";
+      }
+    }
+
+    function applyLevelSettings() {
+      nextMissionOverlay.classList.remove('show');
+      greenCircle.style.left = '50%'; // 초기화
+      let boxWidth = trackBox.getBoundingClientRect().width;
+      let center = boxWidth / 2;
+      let curveStrength = 0;
+
+      // 모드/레벨별 도로 곡률 및 정답 세팅
+      if (currentMode === 'straight') {
+        missionInfo.innerHTML = `<span>직진 코스</span>: 파란 선을 도로 중앙 점선과 일치시키세요.`;
+        curveStrength = 0;
+        targetXOffset = 0;
+      } 
+      else if (currentMode === 'left') {
+        missionInfo.innerHTML = `<span>좌회전 실습 (${currentLevel}/3단계)</span>: 곡선에 맞춰 초록 점을 왼쪽으로 옮기세요.`;
+        curveStrength = -60 * currentLevel; // -60, -120, -180
+        targetXOffset = curveStrength;
+      } 
+      else if (currentMode === 'right') {
+        missionInfo.innerHTML = `<span>우회전 실습 (${currentLevel}/3단계)</span>: 곡선에 맞춰 초록 점을 오른쪽으로 옮기세요.`;
+        curveStrength = 60 * currentLevel; // 60, 120, 180
+        targetXOffset = curveStrength;
+      }
+
+      // 도로 곡선 (SVG Path) 다시 그리기
+      // M: 시작점(가운데 아래), Q: 베지어 곡선(휘어지는 정도, 도착점)
+      let startX = center; let startY = 350;
+      let controlX = center + (curveStrength * 1.5); let controlY = 175;
+      let endX = center + (curveStrength * 1.2); let endY = 0;
+      guidePath.setAttribute('d', `M ${startX},${startY} Q ${controlX},${controlY} ${endX},${endY}`);
+      
+      updateLine();
+      feedbackText.innerText = "조향각을 맞춰보세요!";
+      feedbackText.style.color = "#cbd5e1";
+    }
+
+    // --- 4. 드래그 앤 드롭 조작 로직 ---
+    function startDrag(e) {
+      if(nextMissionOverlay.classList.contains('show')) return;
+      isDragging = true;
+    }
+
+    function doDrag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      let rect = trackBox.getBoundingClientRect();
+      let x = clientX - rect.left;
+      
+      // X축 조작만 허용 (Y축은 상단 고정)
+      x = Math.max(20, Math.min(x, rect.width - 20));
+      greenCircle.style.left = x + 'px';
+      
+      updateLine();
+      provideRealTimeFeedback(x, rect.width / 2);
+    }
+
+    function stopDrag(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      checkSuccess();
+    }
+
+    function updateLine() {
+      let boxRect = trackBox.getBoundingClientRect();
+      let greenRect = greenCircle.getBoundingClientRect();
+      let redRect = redCircle.getBoundingClientRect();
+
+      let gx = greenRect.left - boxRect.left + (greenRect.width / 2);
+      let gy = greenRect.top - boxRect.top + (greenRect.height / 2);
+      let rx = redRect.left - boxRect.left + (redRect.width / 2);
+      let ry = redRect.top - boxRect.top + (redRect.height / 2);
+
+      steerLine.setAttribute('x1', rx);
+      steerLine.setAttribute('y1', ry);
+      steerLine.setAttribute('x2', gx);
+      steerLine.setAttribute('y2', gy);
+    }
+
+    // --- 5. 실시간 피드백 및 정답 확인 로직 ---
+    function provideRealTimeFeedback(currentX, centerX) {
+      let idealX = centerX + targetXOffset;
+      let diff = currentX - idealX;
+
+      if (Math.abs(diff) <= 20) {
+        steerLine.style.stroke = "#22c55e"; // 초록색으로 변함
+        greenCircle.style.borderColor = "#22c55e";
+        feedbackText.innerText = "💡 완벽합니다! 도로와 평행합니다. 손을 놓아 저장하세요.";
+        feedbackText.style.color = "#22c55e";
+      } else if (diff > 20) {
+        steerLine.style.stroke = "#2563eb";
+        greenCircle.style.borderColor = "#22c55e";
+        feedbackText.innerText = "⚠️ 초록 점을 좀 더 왼쪽(⬅️)으로 옮기세요.";
+        feedbackText.style.color = "#fbbf24";
+      } else {
+        steerLine.style.stroke = "#2563eb";
+        greenCircle.style.borderColor = "#22c55e";
+        feedbackText.innerText = "⚠️ 초록 점을 좀 더 오른쪽(➡️)으로 옮기세요.";
+        feedbackText.style.color = "#fbbf24";
+      }
+    }
+
+    function checkSuccess() {
+      let boxWidth = trackBox.getBoundingClientRect().width;
+      let center = boxWidth / 2;
+      let greenX = greenCircle.offsetLeft;
+      let idealX = center + targetXOffset;
+      
+      if (Math.abs(greenX - idealX) <= 20) {
+        // 정답 시
+        greenCircle.style.left = idealX + 'px'; // 자석처럼 붙기
+        updateLine();
+        
+        if(currentLevel < 3) {
+          overlayText.innerText = `🎉 ${currentLevel}단계 통과! 조향각이 완벽합니다.`;
+          btnNextLevel.innerText = "다음 곡선 넘어가기 ➡️";
+        } else {
+          overlayText.innerText = `🏆 코스 완주! 조향 제어를 완벽히 마스터했습니다.`;
+          btnNextLevel.innerText = "닫기";
+        }
+        nextMissionOverlay.classList.add('show');
+      }
+    }
+
+    // 이벤트 리스너 등록
+    if(greenCircle) {
+      greenCircle.addEventListener('mousedown', startDrag);
+      window.addEventListener('mousemove', doDrag);
+      window.addEventListener('mouseup', stopDrag);
+
+      greenCircle.addEventListener('touchstart', startDrag, {passive: false});
+      window.addEventListener('touchmove', doDrag, {passive: false});
+      window.addEventListener('touchend', stopDrag);
+    }
+  </script>
+
+</body>
+</html>
