@@ -71,7 +71,6 @@
     
     .highlight-target { color: #fbbf24; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
 
-    /* 헷갈리던 테두리(border) 완전 삭제 */
     .track-box {
       width: 100%; height: 350px; background-color: #475569; position: relative; border-radius: 10px; overflow: hidden;
       box-sizing: border-box; touch-action: none;
@@ -280,7 +279,6 @@
     }
 
     function nextLevel() {
-      // 심플하게 모드당 2단계로 진행
       let maxLevel = (currentMode === 'straight') ? 1 : 2; 
       
       if (currentLevel < maxLevel) {
@@ -303,7 +301,6 @@
       let innerWidth = trackBox.clientWidth || 400; 
       let center = innerWidth / 2;
       
-      // 초기화
       leftLine.className.baseVal = "road-line";
       rightLine.className.baseVal = "road-line";
       
@@ -312,48 +309,47 @@
       if (currentMode === 'straight') {
         missionInfo.innerHTML = "<span>1. 직진 훈련</span><br>양쪽 차선 한가운데(정중앙)로 수직이 되게 조향각을 맞추세요.";
         curveOffset = 0; 
-        targetXOffset = 0;
       } 
       else if (currentMode === 'left') {
-        // 좌회전은 오른쪽 바깥선이 기준
         rightLine.className.baseVal = "road-line reference-line"; 
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (1/2) : 완만한 커브</span><br>기준은 <span class='highlight-target'>오른쪽 노란색 실선</span>입니다. 노란색 선과 완벽하게 평행을 맞추세요.";
-          curveOffset = -(innerWidth * 0.25); 
+          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (1/2) : 완만한 커브</span><br>좌회전 시 핵심은 <span class='highlight-target'>오른쪽 노란색 실선</span>입니다. 노란색 선과 파란 선이 평행해지도록 맞추세요.";
+          curveOffset = -120; 
         } else {
           missionInfo.innerHTML = "<span>2. 좌회전 훈련 (2/2) : 깊은 커브</span><br>커브가 깊어져도 원리는 같습니다. <span class='highlight-target'>오른쪽 노란색 실선</span> 하나만 보고 평행을 유지하세요.";
-          curveOffset = -(innerWidth * 0.6);
+          curveOffset = -240;
         }
-        targetXOffset = curveOffset * 0.45;
       } 
       else if (currentMode === 'right') {
-        // 우회전은 왼쪽 바깥선이 기준
         leftLine.className.baseVal = "road-line reference-line"; 
         if(currentLevel === 1) {
           missionInfo.innerHTML = "<span>3. 우회전 훈련 (1/2) : 완만한 커브</span><br>방향이 반대로 바뀌었습니다. 이제는 <span class='highlight-target'>왼쪽 노란색 실선</span>과 완벽하게 평행을 맞추세요.";
-          curveOffset = (innerWidth * 0.25);
+          curveOffset = 120;
         } else {
           missionInfo.innerHTML = "<span>3. 우회전 훈련 (2/2) : 깊은 커브</span><br>시야가 오른쪽으로 쏠려도 절대 <span class='highlight-target'>왼쪽 노란색 실선</span>을 놓치지 말고 평행을 맞추세요.";
-          curveOffset = (innerWidth * 0.6);
+          curveOffset = 240;
         }
-        targetXOffset = curveOffset * 0.45;
       }
 
-      // 원근법 완전 제거: 도로 폭이 일정하게 유지되는 평행 곡선 생성
+      // 수학적 계산: 시각적 평행 상태(선생님 사진 기준)를 정답으로 맞추기 위한 핵심 보정 (비율 0.65 적용)
+      targetXOffset = curveOffset * 0.65;
+
+      // 완전한 11자 평행 도로 그리기 (간격 일정)
       let botY = 350; 
       let topY = -50; 
       let ctrlY = 150; 
-      let laneW = innerWidth * 0.35; // 도로 폭: 전체 화면의 70%
+      let laneW = 130; // 도로 폭 절대 고정 (원근법 삭제)
 
       let lStartX = center - laneW;
       let lEndX = center - laneW + curveOffset;
-      // 컨트롤 포인트를 시작점과 같게 하여 처음엔 무조건 직진으로 올라가다가 휘어지게 함
-      let lCtrlX = center - laneW; 
+      let lCtrlX = center - laneW + (curveOffset * 0.4); 
+
       leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lCtrlX},${ctrlY} ${lEndX},${topY}`);
 
       let rStartX = center + laneW;
       let rEndX = center + laneW + curveOffset;
-      let rCtrlX = center + laneW;
+      let rCtrlX = center + laneW + (curveOffset * 0.4);
+
       rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
@@ -373,7 +369,6 @@
       let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
       let rect = trackBox.getBoundingClientRect();
       
-      // 테두리가 없어졌으므로 순수하게 마우스 X값만 가져옴
       let x = clientX - rect.left;
       let innerWidth = trackBox.clientWidth;
       
@@ -408,8 +403,8 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
-      // 오차 허용 범위 
-      if (Math.abs(diff) <= 15) {
+      // 정답 허용 범위를 대폭 늘려(25) 눈으로 보기에 평행하면 무조건 통과되도록 수정!
+      if (Math.abs(diff) <= 25) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
         
@@ -421,7 +416,7 @@
            feedbackText.innerText = "💡 정답! 정중앙 직진 상태입니다.";
         }
         feedbackText.style.color = "#22c55e";
-      } else if (diff > 15) {
+      } else if (diff > 25) {
         steerLine.style.stroke = "#3b82f6";
         greenCircle.style.borderColor = "#22c55e";
         feedbackText.innerText = "⚠️ 초록 점을 조금 더 왼쪽(⬅️)으로 옮기세요.";
@@ -440,7 +435,7 @@
       let greenX = greenCircle.offsetLeft;
       let idealX = center + targetXOffset;
       
-      if (Math.abs(greenX - idealX) <= 15) {
+      if (Math.abs(greenX - idealX) <= 25) {
         greenCircle.style.left = idealX + 'px'; 
         updateLine();
         
