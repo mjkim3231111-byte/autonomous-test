@@ -37,7 +37,6 @@
     .progress-bar { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
     .progress-bar::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 4px; background: #e2e8f0; z-index: 1; transform: translateY(-50%); }
     .step-dot { width: 30px; height: 30px; background: #e2e8f0; color: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 2; position: relative; transition: all 0.3s; cursor: pointer; }
-    .step-dot:hover { transform: scale(1.1); }
     .step-dot.active { background: #002D62; color: white; box-shadow: 0 0 10px rgba(0, 45, 98, 0.5); }
     .step-dot.completed { background: #3b82f6; color: white; }
 
@@ -55,7 +54,6 @@
     .btn-next { background-color: #3b82f6; color: white; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-left: auto; }
     .btn-next:hover { background-color: #2563eb; transform: translateY(-2px); }
     .btn-home { background-color: #e2e8f0; color: #475569; }
-    .btn-home:hover { background-color: #cbd5e1; }
 
     .video-container { border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     video { width: 100%; display: block; }
@@ -70,6 +68,9 @@
     
     .mission-info { background: rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; font-size: 16px; line-height: 1.5; word-break: keep-all; text-align: left; }
     .mission-info span { font-weight: bold; color: #fbbf24; font-size: 18px; display: block; margin-bottom: 5px; }
+    
+    /* 핵심 타겟선 강조 애니메이션 */
+    .highlight-target { color: #22c55e; font-weight: bold; background: rgba(34, 197, 94, 0.2); padding: 2px 6px; border-radius: 4px; }
 
     .track-box {
       width: 100%; height: 350px; background-color: #475569; position: relative; border-radius: 10px; overflow: hidden;
@@ -77,11 +78,12 @@
     }
 
     #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .road-line { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.9; stroke-linecap: round; }
-    .dashed-line { stroke-dasharray: 20 15; }
     
-    /* 리얼한 교차로 점선 스타일 */
-    #crossLine { stroke: #f8fafc; stroke-width: 6; fill: none; opacity: 0.7; stroke-dasharray: 15 15; display: none; stroke-linecap: round; }
+    /* 차선 스타일 */
+    .road-line { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.9; stroke-linecap: round; }
+    .dashed-line { stroke-dasharray: 20 20; }
+    /* 학습을 돕기 위해 정답 기준선(바깥쪽 선)은 살짝 다르게 강조할 수 있습니다 */
+    .reference-line { stroke: #fcd34d; opacity: 1; } 
 
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
     #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; transition: stroke 0.1s; }
@@ -98,8 +100,8 @@
       z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; border-radius: 10px;
     }
     #nextMissionOverlay.show { opacity: 1; pointer-events: auto; }
-    #nextMissionOverlay h3 { color: #22c55e; font-size: 26px; margin-bottom: 10px; text-align: center; padding: 0 20px; }
-    #nextMissionOverlay p { color: #f8fafc; font-size: 16px; margin-bottom: 25px; text-align: center; word-break: keep-all; }
+    #nextMissionOverlay h3 { color: #22c55e; font-size: 26px; margin-bottom: 10px; text-align: center; }
+    #nextMissionOverlay p { color: #f8fafc; font-size: 16px; margin-bottom: 25px; text-align: center; }
     .btn-next-level { background: #3b82f6; color: white; border: none; padding: 15px 35px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(59,130,246,0.4); transition: transform 0.2s; }
     .btn-next-level:hover { background: #2563eb; transform: scale(1.05); }
     .btn-finish { background: #10b981; box-shadow: 0 4px 10px rgba(16,185,129,0.4); }
@@ -109,7 +111,6 @@
     .step-list { list-style: none; padding: 0; margin: 0; }
     .step-list li { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px; font-size: 16px;}
     .step-number { background-color: #002D62; color: white; font-weight: bold; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
-    .highlight { color: #16a34a; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -129,11 +130,11 @@
 
     <div id="step1" class="step-content active">
       <h2 class="step-title">🎬 1. 주행 트랙 눈에 익히기</h2>
-      <p class="step-desc">자율주행 자동차의 카메라 뷰입니다. 이 화면을 보고 AI가 스스로 차선을 찾아야 합니다. 영상을 재생하여 꺾이는 구간을 확인하세요.</p>
+      <p class="step-desc">영상을 재생하여 자동차가 주행하는 트랙과 차선의 모습을 확인하세요.</p>
       <div class="video-container">
         <video controls preload="metadata">
           <source src="일반트랙.mp4" type="video/mp4">
-          브라우저가 동영상을 지원하지 않습니다.
+          동영상을 지원하지 않습니다.
         </video>
       </div>
       <div class="btn-group">
@@ -144,8 +145,7 @@
     <div id="step2" class="step-content">
       <h2 class="step-title">🏷️ 2. 조향 제어의 핵심, 어노테이션</h2>
       <p class="step-desc">
-        AI는 처음에는 핸들을 얼마나 꺾어야 할지 모릅니다. <br><br>
-        <strong>'어노테이션(Annotation)'</strong>은 자동차의 현재 위치에서 <strong>어느 방향으로, 얼마나 조향각을 꺾어야 하는지 정답 선을 그어주는 작업</strong>입니다. 여러분이 그려준 수많은 선(데이터)을 보고 AI가 운전을 배우게 됩니다.
+        <strong>'어노테이션'</strong>은 자동차가 어느 방향으로 갈지 정답 선을 그어주는 작업입니다. 여러분이 그린 선과 도로의 평행 상태를 보고 AI가 운전을 배웁니다.
       </p>
       <div class="btn-group">
         <button type="button" class="btn btn-prev" onclick="goToStep(1)">⬅️ 이전</button>
@@ -154,8 +154,8 @@
     </div>
 
     <div id="step3" class="step-content">
-      <h2 class="step-title">🎮 3. 조향각 맞추기 실전 훈련</h2>
-      <p class="step-desc">실제 도로의 <strong>바깥쪽 기준선</strong>에 맞춰 파란 선을 평행하게 눕히는 3가지 코스 훈련입니다.</p>
+      <h2 class="step-title">🎮 3. 조향각 평행 맞추기 핵심 훈련</h2>
+      <p class="step-desc">어떤 도로든 <strong>"바깥쪽 차선"</strong>을 기준으로 파란 선을 평행하게 맞추는 연습입니다.</p>
       
       <div class="roadmap">
         <div class="roadmap-item" id="mapStraight">1. 직진 코스</div>
@@ -170,7 +170,6 @@
         
         <div class="track-box" id="trackBox">
           <svg id="roadGuideSvg">
-            <path id="crossLine" d=""></path>
             <path id="leftLine" class="road-line" d=""></path>
             <path id="rightLine" class="road-line" d=""></path>
           </svg>
@@ -200,14 +199,13 @@
 
     <div id="step4" class="step-content">
       <h2 class="step-title">💻 4. 실전 프로그램 가이드</h2>
-      <p class="step-desc">축하합니다! 원리를 완벽히 이해하셨습니다. 이제 실제 프로그램을 열고 진짜 학습 데이터를 만들어 봅시다.</p>
+      <p class="step-desc">이제 실제 프로그램에서 진짜 데이터를 만들어 봅시다.</p>
       
       <div class="guide-box">
         <ul class="step-list">
-          <li><span class="step-number">1</span><div>왼쪽 <strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
-          <li><span class="step-number">2</span><div>화면의 <span class="highlight">초록색 동그라미</span>를 조작하여 커브의 <strong>바깥쪽 기준선과 파란 선이 평행</strong>이 되도록 맞춥니다. (선이 교차하면 안 됩니다!)</div></li>
-          <li><span class="step-number">3</span><div>현재 상황에 맞는 클래스 버튼(left, middle, right)을 누릅니다.</div></li>
-          <li><span class="step-number">4</span><div><strong>[Save]</strong> 버튼을 누르고 다음 사진으로 넘어갑니다.</div></li>
+          <li><span class="step-number">1</span><div><strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
+          <li><span class="step-number">2</span><div>좌회전할 땐 <span class="highlight-target">오른쪽 바깥선</span>, 우회전할 땐 <span class="highlight-target">왼쪽 바깥선</span>과 평행이 되도록 초록 점을 맞춥니다.</div></li>
+          <li><span class="step-number">3</span><div>현재 상황에 맞는 버튼(left, middle, right)을 누르고 Save 합니다.</div></li>
         </ul>
       </div>
 
@@ -221,11 +219,8 @@
 
   <script>
     function goToStep(stepNum) {
-      document.querySelectorAll('.step-content').forEach(function(el) {
-        el.classList.remove('active');
-      });
-      const targetStep = document.getElementById('step' + stepNum);
-      if(targetStep) targetStep.classList.add('active');
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + stepNum).classList.add('active');
       
       for(let i=1; i<=4; i++) {
         const dot = document.getElementById('dot' + i);
@@ -234,11 +229,7 @@
         else dot.className = 'step-dot';
       }
 
-      if(stepNum === 3) {
-        setTimeout(function() {
-          startTraining(); 
-        }, 50);
-      }
+      if(stepNum === 3) setTimeout(startTraining, 50);
     }
 
     const trackBox = document.getElementById('trackBox');
@@ -247,7 +238,6 @@
     const steerLine = document.getElementById('steerLine');
     const leftLine = document.getElementById('leftLine');
     const rightLine = document.getElementById('rightLine');
-    const crossLine = document.getElementById('crossLine');
     
     const feedbackText = document.getElementById('feedbackText');
     const missionInfo = document.getElementById('missionInfo');
@@ -291,7 +281,7 @@
     }
 
     function nextLevel() {
-      let maxLevel = (currentMode === 'straight') ? 1 : ((currentMode === 'left') ? 3 : 2);
+      let maxLevel = (currentMode === 'straight') ? 1 : 2; // 각 모드별 단계를 2단계로 심플하게 축소
       
       if (currentLevel < maxLevel) {
         currentLevel++;
@@ -313,63 +303,55 @@
       let innerWidth = trackBox.clientWidth || 400; 
       let center = innerWidth / 2;
       
-      // 원근법 적용을 위한 변수들
-      let botW = 160;   // 화면 아래쪽 차선 폭
-      let topW = 60;    // 화면 위쪽 차선 폭
-      let botY = 350;   // 시작점 Y
-      let ctrlY = 150;  // 곡선 조절점 Y
-      let topY = -50;   // 끝점 Y
+      leftLine.className.baseVal = "road-line";
+      rightLine.className.baseVal = "road-line";
       
-      leftLine.classList.remove('dashed-line');
-      rightLine.classList.remove('dashed-line');
-      crossLine.style.display = 'none';
-      
-      let curveX = 0; // 휘어지는 정도
+      // 변형 없는 깔끔한 직선/곡선 렌더링 공식
+      let curveOffset = 0; 
 
       if (currentMode === 'straight') {
-        missionInfo.innerHTML = "<span>직진 실습</span> 양쪽 실선 사이의 한가운데로 조향각을 맞추세요.";
-        curveX = 0; 
+        missionInfo.innerHTML = "<span>1. 직진 훈련</span> 양쪽 차선 한가운데(정중앙)로 조향각을 유지하세요.";
+        curveOffset = 0; 
         targetXOffset = 0;
       } 
       else if (currentMode === 'left') {
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>좌회전 (1/3): 완만한 커브</span> <strong>오른쪽 실선</strong>과 파란 선이 절대 교차하지 않게 기찻길처럼 평행을 맞추세요.";
-          curveX = -100; targetXOffset = -35; 
-        } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>좌회전 (2/3): 깊은 커브</span> 차선 침범 주의! <strong>오른쪽 실선</strong>의 기울기를 눈으로 복사해서 그대로 평행하게 기울이세요.";
-          curveX = -200; targetXOffset = -70;
+          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (1/2)</span> 좌회전 시 핵심은 <span class='highlight-target'>오른쪽 바깥선</span>입니다. 오른쪽 선과 파란 선이 평행해지도록 맞추세요.";
+          curveOffset = -80; targetXOffset = -50; 
+          rightLine.className.baseVal = "road-line reference-line"; // 기준선 강조
         } else {
-          missionInfo.innerHTML = "<span>좌회전 (3/3): 코너 진입</span> 안쪽 선이 안 보여도 괜찮습니다. <strong>오른쪽 실선</strong> 하나만 보고 완벽한 평행을 유지하세요.";
-          curveX = -320; targetXOffset = -110;
+          missionInfo.innerHTML = "<span>2. 좌회전 훈련 (2/2)</span> 차선이 크게 꺾입니다. 절대 왼쪽을 보지 마시고, <span class='highlight-target'>오른쪽 바깥선</span>만 보고 평행을 유지하세요.";
+          curveOffset = -160; targetXOffset = -100;
+          rightLine.className.baseVal = "road-line reference-line";
         }
       } 
       else if (currentMode === 'right') {
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>교차로 우회전 (1/2): 진입 직전</span> 교차로 점선이 보입니다. 미리 꺾으면 <strong>인코너를 침범</strong>하므로 아직 직진을 유지하세요.";
-          curveX = 0; targetXOffset = 0;
-          
-          crossLine.style.display = 'block';
-          crossLine.setAttribute('d', `M ${center-60},220 Q ${center-150},180 0,150 M ${center+60},220 Q ${center+150},180 ${innerWidth},150`);
-        } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>교차로 우회전 (2/2): 회전 시작</span> <strong>왼쪽 차선(점선~실선)</strong>을 하나의 선으로 보고 선이 겹치지 않게 완벽히 평행을 맞추세요.";
-          leftLine.classList.add('dashed-line'); 
-          curveX = 200; targetXOffset = 70;
+          missionInfo.innerHTML = "<span>3. 우회전 훈련 (1/2)</span> 교차로 진입 직전입니다. 미리 꺾으면 안 됩니다. 정중앙 직진을 유지하세요.";
+          curveOffset = 0; targetXOffset = 0;
+        } else {
+          missionInfo.innerHTML = "<span>3. 우회전 훈련 (2/2)</span> 우회전 시 핵심은 <span class='highlight-target'>왼쪽 바깥 차선</span>입니다. 왼쪽 점선/실선 덩어리와 평행하게 맞추세요.";
+          leftLine.className.baseVal = "road-line dashed-line reference-line"; // 기준선 강조 및 점선화
+          curveOffset = 160; targetXOffset = 100;
         }
       }
 
-      // [핵심 수정 부분] 조절점(Control Point) 수학 공식 수정
-      // 직선일 때는 정확히 중간값을 가지게 하여 볼록해지는 현상(항아리 모양)을 완벽히 제거
-      let lStartX = center - botW;
-      let lEndX = center - topW + curveX;
-      let lControlX = center - (botW + topW)/2 + (curveX * 1.5);
+      // 수학적 왜곡(배불뚝이 현상)을 원천 차단하는 깔끔한 2차 베지어 제어점 로직
+      let botY = 350; 
+      let topY = -50; 
+      let ctrlY = 150; 
+      let laneW = 140;
 
-      leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lControlX},${ctrlY} ${lEndX},${topY}`);
+      let lStartX = center - laneW;
+      let lEndX = center - 60 + curveOffset;
+      // 시작점과 끝점의 변화량을 비율에 맞게 조절점에 반영하여 직선성 유지
+      let lCtrlX = lStartX + (lEndX - lStartX) * 0.4; 
+      leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lCtrlX},${ctrlY} ${lEndX},${topY}`);
 
-      let rStartX = center + botW;
-      let rEndX = center + topW + curveX;
-      let rControlX = center + (botW + topW)/2 + (curveX * 1.5);
-
-      rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rControlX},${ctrlY} ${rEndX},${topY}`);
+      let rStartX = center + laneW;
+      let rEndX = center + 60 + curveOffset;
+      let rCtrlX = rStartX + (rEndX - rStartX) * 0.4;
+      rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
       feedbackText.innerText = "조향각을 맞춰보세요!";
@@ -423,29 +405,28 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
+      // 오차 허용 범위 타이트하게 유지
       if (Math.abs(diff) <= 12) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
         
         if(currentMode === 'left') {
-           feedbackText.innerText = "💡 완벽합니다! 오른쪽 실선과 평행합니다.";
+           feedbackText.innerText = "💡 정답! 오른쪽 바깥선과 완벽하게 평행합니다.";
         } else if (currentMode === 'right' && currentLevel === 2) {
-           feedbackText.innerText = "💡 완벽합니다! 왼쪽 차선과 평행합니다.";
-        } else if (currentMode === 'right' && currentLevel === 1) {
-           feedbackText.innerText = "💡 좋습니다! 인코너 방지를 위해 꺾지 않고 직진합니다.";
+           feedbackText.innerText = "💡 정답! 왼쪽 바깥선과 완벽하게 평행합니다.";
         } else {
-           feedbackText.innerText = "💡 완벽합니다! 정중앙에 위치했습니다.";
+           feedbackText.innerText = "💡 정답! 정중앙 직진 상태입니다.";
         }
         feedbackText.style.color = "#22c55e";
       } else if (diff > 12) {
         steerLine.style.stroke = "#2563eb";
         greenCircle.style.borderColor = "#22c55e";
-        feedbackText.innerText = "⚠️ 조금 더 왼쪽(⬅️)으로 옮겨 평행을 맞추세요.";
+        feedbackText.innerText = "⚠️ 조금 더 왼쪽(⬅️)으로 옮기세요.";
         feedbackText.style.color = "#fbbf24";
       } else {
         steerLine.style.stroke = "#2563eb";
         greenCircle.style.borderColor = "#22c55e";
-        feedbackText.innerText = "⚠️ 조금 더 오른쪽(➡️)으로 옮겨 평행을 맞추세요.";
+        feedbackText.innerText = "⚠️ 조금 더 오른쪽(➡️)으로 옮기세요.";
         feedbackText.style.color = "#fbbf24";
       }
     }
@@ -460,22 +441,21 @@
         greenCircle.style.left = idealX + 'px'; 
         updateLine();
         
-        let maxLevel = (currentMode === 'straight') ? 1 : ((currentMode === 'left') ? 3 : 2);
-        
+        let maxLevel = (currentMode === 'straight') ? 1 : 2;
         btnNextLevel.className = "btn-next-level";
         
         if(currentLevel < maxLevel) {
-          overlayTitle.innerText = `🎉 ${currentLevel}단계 통과!`;
-          overlayDesc.innerText = "다음 단계 실습으로 넘어갑니다.";
+          overlayTitle.innerText = `🎉 통과! 핵심을 잘 잡으셨습니다.`;
+          overlayDesc.innerText = "심화 훈련으로 넘어갑니다.";
           btnNextLevel.innerText = "계속하기 ➡️";
         } else {
           if (currentMode === 'straight') {
-            overlayTitle.innerText = "🏁 직진 마스터!";
-            overlayDesc.innerText = "이제 본격적인 '좌회전' 코스로 진입합니다.";
+            overlayTitle.innerText = "🏁 직진 원리 마스터!";
+            overlayDesc.innerText = "이제 '좌회전' 코스로 진입합니다.";
             btnNextLevel.innerText = "좌회전 훈련 시작 ➡️";
           } else if (currentMode === 'left') {
-            overlayTitle.innerText = "🏁 좌회전 마스터!";
-            overlayDesc.innerText = "다음은 고난이도 '교차로 우회전' 코스입니다.";
+            overlayTitle.innerText = "🏁 좌회전 원리 마스터!";
+            overlayDesc.innerText = "우회전 코스에서도 '바깥선 법칙'은 똑같습니다!";
             btnNextLevel.innerText = "우회전 훈련 시작 ➡️";
           } else if (currentMode === 'right') {
             overlayTitle.innerText = "🏆 모든 훈련 수료!";
