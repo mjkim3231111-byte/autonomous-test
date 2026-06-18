@@ -314,17 +314,17 @@
       let center = innerWidth / 2;
       
       // 원근법 적용을 위한 변수들
-      let botW = 160;   // 화면 아래쪽(내 차 근처) 차선 폭
-      let topW = 60;    // 화면 위쪽(멀리 있는) 차선 폭
-      let botY = 350;   // 시작점 Y (바닥)
+      let botW = 160;   // 화면 아래쪽 차선 폭
+      let topW = 60;    // 화면 위쪽 차선 폭
+      let botY = 350;   // 시작점 Y
       let ctrlY = 150;  // 곡선 조절점 Y
-      let topY = -50;   // 끝점 Y (화면 위로 넘어감)
+      let topY = -50;   // 끝점 Y
       
       leftLine.classList.remove('dashed-line');
       rightLine.classList.remove('dashed-line');
       crossLine.style.display = 'none';
       
-      let curveX = 0; // 최상단 기준 도로가 휘어지는 정도
+      let curveX = 0; // 휘어지는 정도
 
       if (currentMode === 'straight') {
         missionInfo.innerHTML = "<span>직진 실습</span> 양쪽 실선 사이의 한가운데로 조향각을 맞추세요.";
@@ -348,7 +348,6 @@
           missionInfo.innerHTML = "<span>교차로 우회전 (1/2): 진입 직전</span> 교차로 점선이 보입니다. 미리 꺾으면 <strong>인코너를 침범</strong>하므로 아직 직진을 유지하세요.";
           curveX = 0; targetXOffset = 0;
           
-          // 리얼한 교차로 점선 시각화 (양옆으로 벌어지는 호 형태)
           crossLine.style.display = 'block';
           crossLine.setAttribute('d', `M ${center-60},220 Q ${center-150},180 0,150 M ${center+60},220 Q ${center+150},180 ${innerWidth},150`);
         } else if(currentLevel === 2) {
@@ -358,15 +357,18 @@
         }
       }
 
-      // 완벽한 원근법 및 평행 도로를 그리는 공식 (두께 유지)
+      // [핵심 수정 부분] 조절점(Control Point) 수학 공식 수정
+      // 직선일 때는 정확히 중간값을 가지게 하여 볼록해지는 현상(항아리 모양)을 완벽히 제거
       let lStartX = center - botW;
-      let lControlX = center - botW + (curveX * 0.5); 
       let lEndX = center - topW + curveX;
+      let lControlX = center - (botW + topW)/2 + (curveX * 1.5);
+
       leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lControlX},${ctrlY} ${lEndX},${topY}`);
 
       let rStartX = center + botW;
-      let rControlX = center + botW + (curveX * 0.5); 
       let rEndX = center + topW + curveX;
+      let rControlX = center + (botW + topW)/2 + (curveX * 1.5);
+
       rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rControlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
@@ -421,7 +423,6 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
-      // 정답 인정 범위 타이트하게 축소 (선 교차 방지)
       if (Math.abs(diff) <= 12) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
