@@ -77,11 +77,11 @@
     }
 
     #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .road-line { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.9; }
+    .road-line { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.9; stroke-linecap: round; }
     .dashed-line { stroke-dasharray: 20 15; }
     
-    /* 교차로 시각화를 위한 가로선 */
-    #crossLine { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.6; stroke-dasharray: 20 15; display: none; }
+    /* 리얼한 교차로 점선 스타일 */
+    #crossLine { stroke: #f8fafc; stroke-width: 6; fill: none; opacity: 0.7; stroke-dasharray: 15 15; display: none; stroke-linecap: round; }
 
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
     #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; transition: stroke 0.1s; }
@@ -166,8 +166,7 @@
       </div>
 
       <div class="simulator-area">
-        <div class="mission-info" id="missionInfo">
-        </div>
+        <div class="mission-info" id="missionInfo"></div>
         
         <div class="track-box" id="trackBox">
           <svg id="roadGuideSvg">
@@ -206,7 +205,7 @@
       <div class="guide-box">
         <ul class="step-list">
           <li><span class="step-number">1</span><div>왼쪽 <strong>File list</strong>에서 이미지를 불러옵니다.</div></li>
-          <li><span class="step-number">2</span><div>화면의 <span class="highlight">초록색 동그라미</span>를 조작하여 커브의 <strong>바깥쪽 기준선과 파란 선이 평행</strong>이 되도록 맞춥니다.</div></li>
+          <li><span class="step-number">2</span><div>화면의 <span class="highlight">초록색 동그라미</span>를 조작하여 커브의 <strong>바깥쪽 기준선과 파란 선이 평행</strong>이 되도록 맞춥니다. (선이 교차하면 안 됩니다!)</div></li>
           <li><span class="step-number">3</span><div>현재 상황에 맞는 클래스 버튼(left, middle, right)을 누릅니다.</div></li>
           <li><span class="step-number">4</span><div><strong>[Save]</strong> 버튼을 누르고 다음 사진으로 넘어갑니다.</div></li>
         </ul>
@@ -310,63 +309,65 @@
     function applyLevelSettings() {
       nextMissionOverlay.classList.remove('show');
       greenCircle.style.left = '50%';
+      
       let innerWidth = trackBox.clientWidth || 400; 
       let center = innerWidth / 2;
-      let laneWidth = 140; // 평행 유지를 위한 차선 폭
+      
+      // 원근법 적용을 위한 변수들
+      let botW = 160;   // 화면 아래쪽(내 차 근처) 차선 폭
+      let topW = 60;    // 화면 위쪽(멀리 있는) 차선 폭
+      let botY = 350;   // 시작점 Y (바닥)
+      let ctrlY = 150;  // 곡선 조절점 Y
+      let topY = -50;   // 끝점 Y (화면 위로 넘어감)
       
       leftLine.classList.remove('dashed-line');
       rightLine.classList.remove('dashed-line');
       crossLine.style.display = 'none';
       
-      let curve = 0; // 음수면 왼쪽(좌회전), 양수면 오른쪽(우회전)
+      let curveX = 0; // 최상단 기준 도로가 휘어지는 정도
 
       if (currentMode === 'straight') {
         missionInfo.innerHTML = "<span>직진 실습</span> 양쪽 실선 사이의 한가운데로 조향각을 맞추세요.";
-        curve = 0; 
+        curveX = 0; 
         targetXOffset = 0;
       } 
       else if (currentMode === 'left') {
-        // 좌회전은 곡률이 음수(왼쪽) 방향
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>좌회전 (1/3): 완만한 커브</span> 도로가 왼쪽으로 휩니다. <strong>오른쪽 실선</strong>의 기울기에 맞춰 파란 선을 평행하게 기울이세요.";
-          curve = -80; targetXOffset = -40;
+          missionInfo.innerHTML = "<span>좌회전 (1/3): 완만한 커브</span> <strong>오른쪽 실선</strong>과 파란 선이 절대 교차하지 않게 기찻길처럼 평행을 맞추세요.";
+          curveX = -100; targetXOffset = -35; 
         } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>좌회전 (2/3): 깊은 커브</span> 왼쪽 차선이 시야에서 사라졌습니다! <strong>오른쪽 실선</strong>만 보고 완벽한 평행을 유지하세요.";
-          curve = -160; targetXOffset = -80;
+          missionInfo.innerHTML = "<span>좌회전 (2/3): 깊은 커브</span> 차선 침범 주의! <strong>오른쪽 실선</strong>의 기울기를 눈으로 복사해서 그대로 평행하게 기울이세요.";
+          curveX = -200; targetXOffset = -70;
         } else {
-          missionInfo.innerHTML = "<span>좌회전 (3/3): 코너 진입</span> 안쪽 선이 안보여도 당황하지 마세요. <strong>오른쪽 실선의 곡률</strong>을 똑같이 복사해서 기울이세요.";
-          curve = -240; targetXOffset = -120;
+          missionInfo.innerHTML = "<span>좌회전 (3/3): 코너 진입</span> 안쪽 선이 안 보여도 괜찮습니다. <strong>오른쪽 실선</strong> 하나만 보고 완벽한 평행을 유지하세요.";
+          curveX = -320; targetXOffset = -110;
         }
       } 
       else if (currentMode === 'right') {
-        // 우회전은 곡률이 양수(오른쪽) 방향
         if(currentLevel === 1) {
           missionInfo.innerHTML = "<span>교차로 우회전 (1/2): 진입 직전</span> 교차로 점선이 보입니다. 미리 꺾으면 <strong>인코너를 침범</strong>하므로 아직 직진을 유지하세요.";
-          curve = 0; targetXOffset = 0;
-          // 교차로 점선 시각화
+          curveX = 0; targetXOffset = 0;
+          
+          // 리얼한 교차로 점선 시각화 (양옆으로 벌어지는 호 형태)
           crossLine.style.display = 'block';
-          crossLine.setAttribute('d', `M 0,180 L ${innerWidth},180`);
+          crossLine.setAttribute('d', `M ${center-60},220 Q ${center-150},180 0,150 M ${center+60},220 Q ${center+150},180 ${innerWidth},150`);
         } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>교차로 우회전 (2/2): 회전 시작</span> 우회전을 시작합니다. <strong>왼쪽 차선(점선~실선)</strong>을 하나의 덩어리로 보고 완벽하게 평행을 맞추세요.";
+          missionInfo.innerHTML = "<span>교차로 우회전 (2/2): 회전 시작</span> <strong>왼쪽 차선(점선~실선)</strong>을 하나의 선으로 보고 선이 겹치지 않게 완벽히 평행을 맞추세요.";
           leftLine.classList.add('dashed-line'); 
-          curve = 160; targetXOffset = 80;
+          curveX = 200; targetXOffset = 70;
         }
       }
 
-      // 완벽한 평행선을 그리기 위해 중앙선을 기준으로 양옆으로 벌려서 그림
-      let startY = 350;
-      let controlY = 150;
-      let endY = -50;
+      // 완벽한 원근법 및 평행 도로를 그리는 공식 (두께 유지)
+      let lStartX = center - botW;
+      let lControlX = center - botW + (curveX * 0.5); 
+      let lEndX = center - topW + curveX;
+      leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lControlX},${ctrlY} ${lEndX},${topY}`);
 
-      let lStartX = center - laneWidth;
-      let lControlX = center - laneWidth + (curve * 1.5);
-      let lEndX = center - laneWidth + (curve * 2.0);
-      leftLine.setAttribute('d', "M " + lStartX + "," + startY + " Q " + lControlX + "," + controlY + " " + lEndX + "," + endY);
-
-      let rStartX = center + laneWidth;
-      let rControlX = center + laneWidth + (curve * 1.5);
-      let rEndX = center + laneWidth + (curve * 2.0);
-      rightLine.setAttribute('d', "M " + rStartX + "," + startY + " Q " + rControlX + "," + controlY + " " + rEndX + "," + endY);
+      let rStartX = center + botW;
+      let rControlX = center + botW + (curveX * 0.5); 
+      let rEndX = center + topW + curveX;
+      rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rControlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
       feedbackText.innerText = "조향각을 맞춰보세요!";
@@ -420,7 +421,7 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
-      // 정답 인정 범위 타이트하게 축소 (20 -> 12)
+      // 정답 인정 범위 타이트하게 축소 (선 교차 방지)
       if (Math.abs(diff) <= 12) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
@@ -454,7 +455,6 @@
       let greenX = greenCircle.offsetLeft;
       let idealX = center + targetXOffset;
       
-      // 정답 체크 시에도 타이트한 기준(12) 적용
       if (Math.abs(greenX - idealX) <= 12) {
         greenCircle.style.left = idealX + 'px'; 
         updateLine();
