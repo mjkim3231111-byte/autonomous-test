@@ -60,9 +60,11 @@
     .video-container { border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     video { width: 100%; display: block; }
 
-    .simulator-controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
-    .mode-btn { padding: 10px 20px; border-radius: 30px; border: 2px solid #cbd5e1; background: white; cursor: pointer; font-weight: bold; color: #64748b; transition: all 0.2s; }
-    .mode-btn.active { background: #002D62; color: white; border-color: #002D62; }
+    .roadmap { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .roadmap-item { padding: 8px 16px; border-radius: 20px; background: #f1f5f9; color: #94a3b8; font-weight: bold; font-size: 14px; transition: all 0.3s; border: 2px solid transparent; }
+    .roadmap-item.active { background: #002D62; color: white; box-shadow: 0 4px 10px rgba(0,45,98,0.3); }
+    .roadmap-item.completed { background: #d1fae5; color: #059669; border-color: #10b981; }
+    .roadmap-arrow { color: #cbd5e1; font-weight: bold; }
 
     .simulator-area { background-color: #1e293b; border-radius: 15px; padding: 20px; text-align: center; position: relative; }
     
@@ -77,25 +79,31 @@
     #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     .road-line { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.9; }
     .dashed-line { stroke-dasharray: 20 15; }
+    
+    /* 교차로 시각화를 위한 가로선 */
+    #crossLine { stroke: #f8fafc; stroke-width: 8; fill: none; opacity: 0.6; stroke-dasharray: 20 15; display: none; }
 
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-    #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; transition: stroke 0.3s; }
+    #steerLine { stroke: #2563eb; stroke-width: 8; stroke-linecap: round; transition: stroke 0.1s; }
 
     .red-circle { position: absolute; bottom: 20px; left: 50%; width: 40px; height: 40px; border: 6px solid #ef4444; border-radius: 50%; transform: translate(-50%, 0); z-index: 5; background-color: rgba(239, 68, 68, 0.2); }
-    .green-circle { position: absolute; top: 80px; left: 50%; width: 40px; height: 40px; border: 6px solid #22c55e; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; cursor: grab; background-color: rgba(34, 197, 94, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: border-color 0.3s, background-color 0.3s; }
+    .green-circle { position: absolute; top: 80px; left: 50%; width: 40px; height: 40px; border: 6px solid #22c55e; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; cursor: grab; background-color: rgba(34, 197, 94, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: border-color 0.2s, background-color 0.2s; }
     .green-circle:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
 
     #feedbackText { margin-top: 15px; font-size: 18px; font-weight: bold; color: #fbbf24; min-height: 27px; }
 
     #nextMissionOverlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; border-radius: 10px;
     }
     #nextMissionOverlay.show { opacity: 1; pointer-events: auto; }
-    #nextMissionOverlay h3 { color: #22c55e; font-size: 28px; margin-bottom: 20px; text-align: center; padding: 0 20px; }
-    .btn-next-level { background: #3b82f6; color: white; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; }
-    .btn-next-level:hover { background: #2563eb; }
+    #nextMissionOverlay h3 { color: #22c55e; font-size: 26px; margin-bottom: 10px; text-align: center; padding: 0 20px; }
+    #nextMissionOverlay p { color: #f8fafc; font-size: 16px; margin-bottom: 25px; text-align: center; word-break: keep-all; }
+    .btn-next-level { background: #3b82f6; color: white; border: none; padding: 15px 35px; font-size: 18px; font-weight: bold; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 10px rgba(59,130,246,0.4); transition: transform 0.2s; }
+    .btn-next-level:hover { background: #2563eb; transform: scale(1.05); }
+    .btn-finish { background: #10b981; box-shadow: 0 4px 10px rgba(16,185,129,0.4); }
+    .btn-finish:hover { background: #059669; }
 
     .guide-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; }
     .step-list { list-style: none; padding: 0; margin: 0; }
@@ -147,20 +155,23 @@
 
     <div id="step3" class="step-content">
       <h2 class="step-title">🎮 3. 조향각 맞추기 실전 훈련</h2>
-      <p class="step-desc">실제 도로의 <strong>바깥쪽 실선</strong>을 기준으로 내 차의 조향각(파란 선)을 평행하게 맞추는 훈련입니다.</p>
+      <p class="step-desc">실제 도로의 <strong>바깥쪽 기준선</strong>에 맞춰 파란 선을 평행하게 눕히는 3가지 코스 훈련입니다.</p>
       
-      <div class="simulator-controls">
-        <button class="mode-btn active" id="btnStraight" onclick="setMode('straight')">직진 실습</button>
-        <button class="mode-btn" id="btnLeft" onclick="setMode('left')">좌회전 실습</button>
-        <button class="mode-btn" id="btnRight" onclick="setMode('right')">교차로 우회전 실습</button>
+      <div class="roadmap">
+        <div class="roadmap-item" id="mapStraight">1. 직진 코스</div>
+        <div class="roadmap-arrow">➔</div>
+        <div class="roadmap-item" id="mapLeft">2. 좌회전 코스</div>
+        <div class="roadmap-arrow">➔</div>
+        <div class="roadmap-item" id="mapRight">3. 우회전 코스</div>
       </div>
 
       <div class="simulator-area">
         <div class="mission-info" id="missionInfo">
-          </div>
+        </div>
         
         <div class="track-box" id="trackBox">
           <svg id="roadGuideSvg">
+            <path id="crossLine" d=""></path>
             <path id="leftLine" class="road-line" d=""></path>
             <path id="rightLine" class="road-line" d=""></path>
           </svg>
@@ -173,8 +184,9 @@
           <div class="green-circle" id="greenCircle"></div>
 
           <div id="nextMissionOverlay">
-            <h3 id="overlayText">🎉 완벽합니다!</h3>
-            <button class="btn-next-level" id="btnNextLevel" onclick="nextLevel()">다음 단계로 ➡️</button>
+            <h3 id="overlayTitle">🎉 성공!</h3>
+            <p id="overlayDesc">다음 훈련으로 이동합니다.</p>
+            <button class="btn-next-level" id="btnNextLevel" onclick="nextLevel()">다음 단계 진행 ➡️</button>
           </div>
         </div>
 
@@ -183,7 +195,7 @@
 
       <div class="btn-group">
         <button type="button" class="btn btn-prev" onclick="goToStep(2)">⬅️ 이전</button>
-        <button type="button" class="btn btn-next" onclick="goToStep(4)">4단계: 실전 투입 ➡️</button>
+        <button type="button" class="btn btn-next" onclick="goToStep(4)">훈련 스킵하고 4단계 가기 ➡️</button>
       </div>
     </div>
 
@@ -209,7 +221,6 @@
   </div>
 
   <script>
-    // --- 1. 단계 전환 로직 ---
     function goToStep(stepNum) {
       document.querySelectorAll('.step-content').forEach(function(el) {
         el.classList.remove('active');
@@ -226,41 +237,56 @@
 
       if(stepNum === 3) {
         setTimeout(function() {
-          setMode('straight'); // 기본값 직진부터 시작
+          startTraining(); 
         }, 50);
       }
     }
 
-    // --- 2. 시뮬레이터 변수 세팅 ---
     const trackBox = document.getElementById('trackBox');
     const greenCircle = document.getElementById('greenCircle');
     const redCircle = document.getElementById('redCircle');
     const steerLine = document.getElementById('steerLine');
     const leftLine = document.getElementById('leftLine');
     const rightLine = document.getElementById('rightLine');
+    const crossLine = document.getElementById('crossLine');
     
     const feedbackText = document.getElementById('feedbackText');
     const missionInfo = document.getElementById('missionInfo');
     const nextMissionOverlay = document.getElementById('nextMissionOverlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayDesc = document.getElementById('overlayDesc');
     const btnNextLevel = document.getElementById('btnNextLevel');
-    const overlayText = document.getElementById('overlayText');
 
+    const trainingModes = ['straight', 'left', 'right'];
+    let currentModeIndex = 0;
     let currentMode = 'straight';
     let currentLevel = 1;
     let targetXOffset = 0; 
     let isDragging = false;
 
-    // --- 3. 모드 및 레벨 설정 로직 ---
+    function startTraining() {
+      currentModeIndex = 0;
+      setMode('straight');
+    }
+
     function setMode(mode) {
       currentMode = mode;
       currentLevel = 1;
       
-      document.querySelectorAll('.mode-btn').forEach(function(btn) {
-        btn.classList.remove('active');
+      ['mapStraight', 'mapLeft', 'mapRight'].forEach(id => {
+        document.getElementById(id).className = 'roadmap-item';
       });
-      if(mode === 'straight') document.getElementById('btnStraight').classList.add('active');
-      if(mode === 'left') document.getElementById('btnLeft').classList.add('active');
-      if(mode === 'right') document.getElementById('btnRight').classList.add('active');
+      
+      if(mode === 'straight') {
+        document.getElementById('mapStraight').classList.add('active');
+      } else if(mode === 'left') {
+        document.getElementById('mapStraight').classList.add('completed');
+        document.getElementById('mapLeft').classList.add('active');
+      } else if(mode === 'right') {
+        document.getElementById('mapStraight').classList.add('completed');
+        document.getElementById('mapLeft').classList.add('completed');
+        document.getElementById('mapRight').classList.add('active');
+      }
 
       applyLevelSettings();
     }
@@ -268,13 +294,16 @@
     function nextLevel() {
       let maxLevel = (currentMode === 'straight') ? 1 : ((currentMode === 'left') ? 3 : 2);
       
-      if(currentLevel < maxLevel) {
+      if (currentLevel < maxLevel) {
         currentLevel++;
         applyLevelSettings();
       } else {
-        nextMissionOverlay.classList.remove('show');
-        feedbackText.innerText = "🏆 코스 마스터! 위쪽 버튼을 눌러 다른 코스도 실습해 보세요.";
-        feedbackText.style.color = "#3b82f6";
+        if (currentModeIndex < trainingModes.length - 1) {
+          currentModeIndex++;
+          setMode(trainingModes[currentModeIndex]);
+        } else {
+          goToStep(4);
+        }
       }
     }
 
@@ -283,63 +312,67 @@
       greenCircle.style.left = '50%';
       let innerWidth = trackBox.clientWidth || 400; 
       let center = innerWidth / 2;
-      let laneWidth = 120; // 차선 중앙 기준 양옆 간격
+      let laneWidth = 140; // 평행 유지를 위한 차선 폭
       
-      // 초기화: 점선/실선 클래스 정리
       leftLine.classList.remove('dashed-line');
       rightLine.classList.remove('dashed-line');
+      crossLine.style.display = 'none';
       
-      let leftCurve = 0;
-      let rightCurve = 0;
+      let curve = 0; // 음수면 왼쪽(좌회전), 양수면 오른쪽(우회전)
 
-      // 모드/레벨별 로직 설계
       if (currentMode === 'straight') {
         missionInfo.innerHTML = "<span>직진 실습</span> 양쪽 실선 사이의 한가운데로 조향각을 맞추세요.";
-        leftCurve = 0; rightCurve = 0;
+        curve = 0; 
         targetXOffset = 0;
       } 
       else if (currentMode === 'left') {
+        // 좌회전은 곡률이 음수(왼쪽) 방향
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>좌회전 (1/3단계): 완만한 커브</span> <strong>오른쪽 실선</strong>의 기울기를 보고, 그 선과 파란 선이 완벽히 평행해지도록 맞추세요.";
-          leftCurve = -50; rightCurve = -50; targetXOffset = -30;
+          missionInfo.innerHTML = "<span>좌회전 (1/3): 완만한 커브</span> 도로가 왼쪽으로 휩니다. <strong>오른쪽 실선</strong>의 기울기에 맞춰 파란 선을 평행하게 기울이세요.";
+          curve = -80; targetXOffset = -40;
         } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>좌회전 (2/3단계): 깊은 커브</span> 왼쪽 선이 조금씩 시야에서 사라집니다. 절대 기준인 <strong>오른쪽 실선</strong>만 보고 평행을 유지하세요.";
-          leftCurve = -100; rightCurve = -100; targetXOffset = -60;
+          missionInfo.innerHTML = "<span>좌회전 (2/3): 깊은 커브</span> 왼쪽 차선이 시야에서 사라졌습니다! <strong>오른쪽 실선</strong>만 보고 완벽한 평행을 유지하세요.";
+          curve = -160; targetXOffset = -80;
         } else {
-          missionInfo.innerHTML = "<span>좌회전 (3/3단계): 코너 진입</span> 안쪽 차선이 안 보여도 당황하지 마세요! <strong>오른쪽 실선의 곡률</strong>을 그대로 복사해서 기울이세요.";
-          leftCurve = -180; rightCurve = -180; targetXOffset = -100;
+          missionInfo.innerHTML = "<span>좌회전 (3/3): 코너 진입</span> 안쪽 선이 안보여도 당황하지 마세요. <strong>오른쪽 실선의 곡률</strong>을 똑같이 복사해서 기울이세요.";
+          curve = -240; targetXOffset = -120;
         }
       } 
       else if (currentMode === 'right') {
+        // 우회전은 곡률이 양수(오른쪽) 방향
         if(currentLevel === 1) {
-          missionInfo.innerHTML = "<span>교차로 우회전 (1/2단계): 진입 직전</span> 교차로가 보인다고 미리 꺾으면 <strong>인코너를 침범</strong>합니다! 아직 꺾지 말고 직진(중앙)을 유지하세요.";
-          // 교차로 직전 형태: 직선 유지
-          leftCurve = 0; rightCurve = 0; targetXOffset = 0;
+          missionInfo.innerHTML = "<span>교차로 우회전 (1/2): 진입 직전</span> 교차로 점선이 보입니다. 미리 꺾으면 <strong>인코너를 침범</strong>하므로 아직 직진을 유지하세요.";
+          curve = 0; targetXOffset = 0;
+          // 교차로 점선 시각화
+          crossLine.style.display = 'block';
+          crossLine.setAttribute('d', `M 0,180 L ${innerWidth},180`);
         } else if(currentLevel === 2) {
-          missionInfo.innerHTML = "<span>교차로 우회전 (2/2단계): 회전 시작</span> 회전이 시작되었습니다. 이번엔 <strong>왼쪽 차선(점선~실선)</strong>을 하나의 선으로 보고 완벽하게 평행을 맞추세요.";
-          leftLine.classList.add('dashed-line'); // 왼쪽 선을 점선으로 변경
-          leftCurve = 120; rightCurve = 120; targetXOffset = 70;
+          missionInfo.innerHTML = "<span>교차로 우회전 (2/2): 회전 시작</span> 우회전을 시작합니다. <strong>왼쪽 차선(점선~실선)</strong>을 하나의 덩어리로 보고 완벽하게 평행을 맞추세요.";
+          leftLine.classList.add('dashed-line'); 
+          curve = 160; targetXOffset = 80;
         }
       }
 
-      // 왼쪽 차선 그리기
-      let lStartX = center - laneWidth; let lStartY = 350;
-      let lControlX = center - laneWidth + (leftCurve * 1.5); let lControlY = 175;
-      let lEndX = center - laneWidth + (leftCurve * 1.2); let lEndY = 0;
-      leftLine.setAttribute('d', "M " + lStartX + "," + lStartY + " Q " + lControlX + "," + lControlY + " " + lEndX + "," + lEndY);
+      // 완벽한 평행선을 그리기 위해 중앙선을 기준으로 양옆으로 벌려서 그림
+      let startY = 350;
+      let controlY = 150;
+      let endY = -50;
 
-      // 오른쪽 차선 그리기
-      let rStartX = center + laneWidth; let rStartY = 350;
-      let rControlX = center + laneWidth + (rightCurve * 1.5); let rControlY = 175;
-      let rEndX = center + laneWidth + (rightCurve * 1.2); let rEndY = 0;
-      rightLine.setAttribute('d', "M " + rStartX + "," + rStartY + " Q " + rControlX + "," + rControlY + " " + rEndX + "," + rEndY);
+      let lStartX = center - laneWidth;
+      let lControlX = center - laneWidth + (curve * 1.5);
+      let lEndX = center - laneWidth + (curve * 2.0);
+      leftLine.setAttribute('d', "M " + lStartX + "," + startY + " Q " + lControlX + "," + controlY + " " + lEndX + "," + endY);
+
+      let rStartX = center + laneWidth;
+      let rControlX = center + laneWidth + (curve * 1.5);
+      let rEndX = center + laneWidth + (curve * 2.0);
+      rightLine.setAttribute('d', "M " + rStartX + "," + startY + " Q " + rControlX + "," + controlY + " " + rEndX + "," + endY);
       
       updateLine();
       feedbackText.innerText = "조향각을 맞춰보세요!";
       feedbackText.style.color = "#cbd5e1";
     }
 
-    // --- 4. 드래그 앤 드롭 조작 로직 ---
     function startDrag(e) {
       if(nextMissionOverlay.classList.contains('show')) return;
       isDragging = true;
@@ -351,7 +384,7 @@
       
       let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
       let rect = trackBox.getBoundingClientRect();
-      let borderLeft = 30; // 테두리 두께 보정
+      let borderLeft = 30; 
       
       let x = clientX - rect.left - borderLeft;
       let innerWidth = trackBox.clientWidth;
@@ -383,34 +416,34 @@
       steerLine.setAttribute('y2', gy);
     }
 
-    // --- 5. 실시간 피드백 및 정답 확인 로직 ---
     function provideRealTimeFeedback(currentX, centerX) {
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
-
-      if (Math.abs(diff) <= 20) {
+      
+      // 정답 인정 범위 타이트하게 축소 (20 -> 12)
+      if (Math.abs(diff) <= 12) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
         
         if(currentMode === 'left') {
-           feedbackText.innerText = "💡 완벽합니다! 오른쪽 실선과 평행합니다. 손을 놓으세요.";
+           feedbackText.innerText = "💡 완벽합니다! 오른쪽 실선과 평행합니다.";
         } else if (currentMode === 'right' && currentLevel === 2) {
-           feedbackText.innerText = "💡 완벽합니다! 왼쪽 차선과 평행합니다. 손을 놓으세요.";
+           feedbackText.innerText = "💡 완벽합니다! 왼쪽 차선과 평행합니다.";
         } else if (currentMode === 'right' && currentLevel === 1) {
            feedbackText.innerText = "💡 좋습니다! 인코너 방지를 위해 꺾지 않고 직진합니다.";
         } else {
-           feedbackText.innerText = "💡 완벽합니다! 손을 놓아 저장하세요.";
+           feedbackText.innerText = "💡 완벽합니다! 정중앙에 위치했습니다.";
         }
         feedbackText.style.color = "#22c55e";
-      } else if (diff > 20) {
+      } else if (diff > 12) {
         steerLine.style.stroke = "#2563eb";
         greenCircle.style.borderColor = "#22c55e";
-        feedbackText.innerText = "⚠️ 초록 점을 좀 더 왼쪽(⬅️)으로 옮겨 평행을 맞추세요.";
+        feedbackText.innerText = "⚠️ 조금 더 왼쪽(⬅️)으로 옮겨 평행을 맞추세요.";
         feedbackText.style.color = "#fbbf24";
       } else {
         steerLine.style.stroke = "#2563eb";
         greenCircle.style.borderColor = "#22c55e";
-        feedbackText.innerText = "⚠️ 초록 점을 좀 더 오른쪽(➡️)으로 옮겨 평행을 맞추세요.";
+        feedbackText.innerText = "⚠️ 조금 더 오른쪽(➡️)으로 옮겨 평행을 맞추세요.";
         feedbackText.style.color = "#fbbf24";
       }
     }
@@ -421,18 +454,34 @@
       let greenX = greenCircle.offsetLeft;
       let idealX = center + targetXOffset;
       
-      if (Math.abs(greenX - idealX) <= 20) {
+      // 정답 체크 시에도 타이트한 기준(12) 적용
+      if (Math.abs(greenX - idealX) <= 12) {
         greenCircle.style.left = idealX + 'px'; 
         updateLine();
         
         let maxLevel = (currentMode === 'straight') ? 1 : ((currentMode === 'left') ? 3 : 2);
         
+        btnNextLevel.className = "btn-next-level";
+        
         if(currentLevel < maxLevel) {
-          overlayText.innerText = "🎉 핵심 파악 완료! 다음 훈련으로 넘어갑니다.";
-          btnNextLevel.innerText = "다음 단계 실습 ➡️";
+          overlayTitle.innerText = `🎉 ${currentLevel}단계 통과!`;
+          overlayDesc.innerText = "다음 단계 실습으로 넘어갑니다.";
+          btnNextLevel.innerText = "계속하기 ➡️";
         } else {
-          overlayText.innerText = "🏆 코스 완주! 바깥선 평행 원리를 마스터했습니다!";
-          btnNextLevel.innerText = "닫기";
+          if (currentMode === 'straight') {
+            overlayTitle.innerText = "🏁 직진 마스터!";
+            overlayDesc.innerText = "이제 본격적인 '좌회전' 코스로 진입합니다.";
+            btnNextLevel.innerText = "좌회전 훈련 시작 ➡️";
+          } else if (currentMode === 'left') {
+            overlayTitle.innerText = "🏁 좌회전 마스터!";
+            overlayDesc.innerText = "다음은 고난이도 '교차로 우회전' 코스입니다.";
+            btnNextLevel.innerText = "우회전 훈련 시작 ➡️";
+          } else if (currentMode === 'right') {
+            overlayTitle.innerText = "🏆 모든 훈련 수료!";
+            overlayDesc.innerText = "축하합니다! 조향각 평행 원리를 완벽히 마스터했습니다.";
+            btnNextLevel.innerText = "4단계 실전으로 가기 🚀";
+            btnNextLevel.classList.add("btn-finish");
+          }
         }
         nextMissionOverlay.classList.add('show');
       }
