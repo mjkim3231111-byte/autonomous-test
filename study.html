@@ -24,7 +24,7 @@
     
     .dashboard {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1050px;
       background: white;
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -35,24 +35,24 @@
       gap: 30px;
     }
 
-    /* 코스 선택 탭 */
+    /* 코스 진행 표시 (클릭 기능 유지하되 인디케이터 느낌 강조) */
     .course-tabs {
       display: flex;
       justify-content: center;
       gap: 15px;
     }
     .tab-btn {
-      padding: 15px 30px;
-      font-size: 20px;
+      padding: 12px 25px;
+      font-size: 18px;
       font-weight: bold;
       border: 3px solid #e2e8f0;
       background: #f1f5f9;
-      color: #64748b;
+      color: #94a3b8;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .tab-btn:hover { background: #e2e8f0; }
+    .tab-btn:hover { background: #e2e8f0; color: #64748b; }
     .tab-btn.active {
       background: #002D62;
       border-color: #002D62;
@@ -68,12 +68,12 @@
       border-radius: 12px;
     }
     .eval-criteria h2 { margin: 0 0 10px 0; font-size: 24px; color: #b45309; }
-    .eval-criteria p { margin: 0; font-size: 20px; color: #78350f; line-height: 1.5; font-weight: bold; }
+    .eval-criteria p { margin: 0; font-size: 20px; color: #78350f; line-height: 1.5; font-weight: bold; word-break: keep-all; }
     .highlight { color: #dc2626; text-decoration: underline; }
 
     /* 시뮬레이터 화면 */
     .simulator-box {
-      width: 100%; height: 450px; /* 대형 화면을 위해 높이 증가 */
+      width: 100%; height: 450px; 
       background-color: #334155; 
       position: relative; 
       border-radius: 16px; 
@@ -86,26 +86,30 @@
     
     /* 두꺼운 차선 (가시성 극대화) */
     .road-line { stroke: #f8fafc; stroke-width: 16; fill: none; opacity: 0.9; stroke-linecap: round; }
-    .reference-line { stroke: #fbbf24; stroke-width: 22; opacity: 1; z-index: 2; } /* 정답 기준선 매우 두껍게 */
+    .reference-line { stroke: #fbbf24; stroke-width: 22; opacity: 1; z-index: 2; } 
 
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
     .steer-line { stroke: #3b82f6; stroke-width: 14; stroke-linecap: round; transition: stroke 0.2s; }
 
-    /* 조작 점 크기 확대 */
+    /* 조작 점 크기 */
     .red-circle { position: absolute; bottom: 30px; left: 50%; width: 60px; height: 60px; border: 8px solid #ef4444; border-radius: 50%; transform: translate(-50%, 0); z-index: 5; background-color: rgba(239, 68, 68, 0.3); }
     .green-circle { position: absolute; top: 100px; left: 50%; width: 60px; height: 60px; border: 8px solid #22c55e; border-radius: 50%; transform: translate(-50%, -50%); z-index: 10; cursor: grab; background-color: rgba(34, 197, 94, 0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: border-color 0.2s, background-color 0.2s; }
     .green-circle:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.1); }
 
-    /* 시연 컨트롤 버튼 영역 */
+    /* 하단 피드백 텍스트 */
+    #feedbackText { text-align: center; font-size: 26px; font-weight: 900; color: #fbbf24; min-height: 38px; margin-top: 10px; }
+
+    /* 시연 컨트롤 버튼 영역 (3개 버튼 가로 정렬) */
     .demo-controls {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 15px;
       padding: 10px 0;
+      flex-wrap: wrap;
     }
     .demo-btn {
-      padding: 15px 40px;
-      font-size: 22px;
+      padding: 15px 35px;
+      font-size: 20px;
       font-weight: bold;
       border: none;
       border-radius: 50px;
@@ -115,12 +119,16 @@
       gap: 10px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .btn-correct { background: #22c55e; color: white; box-shadow: 0 8px 15px rgba(34, 197, 94, 0.3); }
-    .btn-correct:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(34, 197, 94, 0.4); }
+    
     .btn-wrong { background: #ef4444; color: white; box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3); }
     .btn-wrong:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(239, 68, 68, 0.4); }
     
-    #feedbackText { text-align: center; font-size: 26px; font-weight: 900; color: #fbbf24; min-height: 38px; margin-top: 10px; }
+    .btn-correct { background: #22c55e; color: white; box-shadow: 0 8px 15px rgba(34, 197, 94, 0.3); }
+    .btn-correct:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(34, 197, 94, 0.4); }
+    
+    /* 새롭게 추가된 다음 코스 이동 버튼 (블루 톤으로 구별) */
+    .btn-next-course { background: #3b82f6; color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); margin-left: 20px; border: 2px solid #2563eb; }
+    .btn-next-course:hover { transform: translateY(-3px); background: #2563eb; box-shadow: 0 12px 20px rgba(59, 130, 246, 0.4); }
   </style>
 </head>
 <body>
@@ -132,7 +140,7 @@
 
   <div class="dashboard">
     
-    <!-- 1. 코스 선택 -->
+    <!-- 1. 코스 진행 상황 표시 -->
     <div class="course-tabs">
       <button class="tab-btn active" id="tabStraight" onclick="setMode('straight')">1. 직진 코스</button>
       <button class="tab-btn" id="tabLeft" onclick="setMode('left')">2. 좌회전 코스</button>
@@ -161,10 +169,11 @@
 
     <div id="feedbackText">마우스로 초록색 원을 움직여 실습하거나 아래 시연 버튼을 누르세요.</div>
 
-    <!-- 4. 교사용 시연 버튼 -->
+    <!-- 4. 교사용 시연 및 진행 컨트롤 버튼 -->
     <div class="demo-controls">
       <button class="demo-btn btn-wrong" onclick="demoWrong()">❌ 오답 예시 (감점)</button>
       <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 모범 답안 (만점)</button>
+      <button class="demo-btn btn-next-course" id="btnNextCourse" onclick="nextCourse()">▶️ 다음: 좌회전 코스</button>
     </div>
 
   </div>
@@ -178,6 +187,7 @@
     const rightLine = document.getElementById('rightLine');
     const evalCriteria = document.getElementById('evalCriteria');
     const feedbackText = document.getElementById('feedbackText');
+    const btnNextCourse = document.getElementById('btnNextCourse');
 
     let currentMode = 'straight';
     let targetXOffset = 0; 
@@ -186,6 +196,13 @@
 
     // 초기 실행
     window.onload = () => setMode('straight');
+
+    // 다음 코스로 넘어가는 버튼 로직
+    function nextCourse() {
+      if (currentMode === 'straight') setMode('left');
+      else if (currentMode === 'left') setMode('right');
+      else if (currentMode === 'right') setMode('straight');
+    }
 
     function setMode(mode) {
       currentMode = mode;
@@ -199,11 +216,19 @@
       if(mode === 'left') document.getElementById('tabLeft').classList.add('active');
       if(mode === 'right') document.getElementById('tabRight').classList.add('active');
 
+      // 🌟 현재 모드에 따라 '다음 코스 버튼'의 텍스트 변경
+      if (mode === 'straight') {
+        btnNextCourse.innerHTML = "▶️ 다음: 좌회전 코스";
+      } else if (mode === 'left') {
+        btnNextCourse.innerHTML = "▶️ 다음: 우회전 코스";
+      } else if (mode === 'right') {
+        btnNextCourse.innerHTML = "🔄 다시 처음으로 (직진)";
+      }
+
       applyLevelSettings();
     }
 
     function applyLevelSettings() {
-      // 애니메이션 중지 및 초기화
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
       greenCircle.style.transition = 'none';
       greenCircle.style.left = '50%';
@@ -217,24 +242,22 @@
       let curveOffset = 0; 
 
       if (currentMode === 'straight') {
-        evalCriteria.innerHTML = "<h2>📌 평가 기준: 직진</h2><p>차선이 휘어지지 않은 구간에서는 조향각이 한쪽으로 치우치지 않고 <span class='highlight'>양쪽 차선 정중앙에 수직</span>으로 위치해야 만점 처리됩니다.</p>";
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 직진 코스</h2><p>차선이 휘어지지 않은 구간에서는 조향각이 한쪽으로 치우치지 않고 <span class='highlight'>양쪽 차선 정중앙에 수직</span>으로 위치해야 만점 처리됩니다.</p>";
         curveOffset = 0; 
       } 
       else if (currentMode === 'left') {
         rightLine.className.baseVal = "road-line reference-line"; 
-        evalCriteria.innerHTML = "<h2>📌 평가 기준: 좌회전</h2><p>안쪽(왼쪽) 차선을 쳐다보면 오답입니다. 오직 <span class='highlight'>바깥쪽(오른쪽 노란색) 실선</span>의 곡률만 확인하고, 파란 선이 이와 완벽하게 평행을 이루어야 만점입니다.</p>";
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 좌회전 코스</h2><p>안쪽(왼쪽) 차선을 쳐다보면 오답입니다. 오직 <span class='highlight'>바깥쪽(오른쪽 노란색) 실선</span>의 곡률만 확인하고, 파란 선이 이와 완벽하게 평행을 이루어야 만점입니다.</p>";
         curveOffset = -220; 
       } 
       else if (currentMode === 'right') {
         leftLine.className.baseVal = "road-line reference-line"; 
-        evalCriteria.innerHTML = "<h2>📌 평가 기준: 우회전</h2><p>방향이 바뀌어도 원리는 같습니다. 우회전 시에는 반드시 <span class='highlight'>바깥쪽(왼쪽 노란색) 실선</span>을 기준으로 평행을 맞추어야 만점입니다.</p>";
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 우회전 코스</h2><p>방향이 바뀌어도 원리는 같습니다. 우회전 시에는 반드시 <span class='highlight'>바깥쪽(왼쪽 노란색) 실선</span>을 기준으로 평행을 맞추어야 만점입니다.</p>";
         curveOffset = 220;
       }
 
-      // 채점 공식 (시각적 평행 상태)
       targetXOffset = curveOffset * 0.65;
 
-      // 크고 두꺼운 도로 그리기 (간격 유지, 원근법 X)
       let botY = 480; 
       let topY = -50; 
       let ctrlY = 180; 
@@ -251,7 +274,7 @@
       rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
-      feedbackText.innerText = "마우스로 조작하거나 아래 시연 버튼을 누르세요.";
+      feedbackText.innerText = "설명에 맞게 버튼을 눌러 모범 답안과 오답을 시연해 주세요.";
       feedbackText.style.color = "#cbd5e1";
     }
 
@@ -269,7 +292,7 @@
         if (now - start < duration) {
           animationFrameId = requestAnimationFrame(step);
         } else {
-          greenCircle.style.transition = 'none'; // 애니메이션 종료 후 초기화
+          greenCircle.style.transition = 'none'; 
         }
       }
       animationFrameId = requestAnimationFrame(step);
@@ -285,13 +308,12 @@
       let center = trackBox.clientWidth / 2;
       let wrongX;
       
-      // 오답 상황: 코너 방향과 반대로 가거나 아예 꺾지 않음 (차선 교차 상황 연출)
       if (currentMode === 'straight') {
-        wrongX = center + 150; // 직진인데 확 꺾어버림
+        wrongX = center + 150; 
       } else if (currentMode === 'left') {
-        wrongX = center + 50; // 좌회전인데 꺾지 않고 직진/우향
+        wrongX = center + 60; // 꺾지 않고 바깥 차선 이탈 위기 연출
       } else {
-        wrongX = center - 50; // 우회전인데 꺾지 않고 직진/좌향
+        wrongX = center - 60; // 우회전 이탈 연출
       }
       animateToX(wrongX);
     }
@@ -342,7 +364,6 @@
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
-      // 판정 기준 (매우 넉넉한 30 픽셀 오차 허용)
       if (Math.abs(diff) <= 30) {
         steerLine.style.stroke = "#22c55e"; 
         greenCircle.style.borderColor = "#22c55e";
@@ -356,7 +377,6 @@
       }
     }
 
-    // 이벤트 리스너 등록
     if(greenCircle) {
       greenCircle.addEventListener('mousedown', startDrag);
       window.addEventListener('mousemove', doDrag);
@@ -367,7 +387,6 @@
       window.addEventListener('touchend', stopDrag);
     }
     
-    // 리사이즈 대응
     window.addEventListener('resize', () => {
       applyLevelSettings();
     });
