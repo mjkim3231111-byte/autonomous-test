@@ -33,8 +33,10 @@
       display: flex;
       flex-direction: column;
       gap: 30px;
+      margin-bottom: 50px;
     }
 
+    /* 코스 진행 탭 */
     .course-tabs {
       display: flex;
       justify-content: center;
@@ -59,6 +61,7 @@
       box-shadow: 0 10px 20px rgba(0,45,98,0.2);
     }
 
+    /* 평가 기준 영역 */
     .eval-criteria {
       background: #fffbeb;
       border-left: 8px solid #fbbf24;
@@ -69,6 +72,7 @@
     .eval-criteria p { margin: 0; font-size: 20px; color: #78350f; line-height: 1.5; font-weight: bold; word-break: keep-all; }
     .highlight { color: #dc2626; text-decoration: underline; }
 
+    /* 시뮬레이터 화면 */
     .simulator-box {
       width: 100%; height: 450px; 
       background-color: #334155; 
@@ -93,6 +97,7 @@
 
     #feedbackText { text-align: center; font-size: 26px; font-weight: 900; color: #fbbf24; min-height: 38px; margin-top: 10px; }
 
+    /* 교사용 컨트롤 버튼 */
     .demo-controls {
       display: flex;
       justify-content: center;
@@ -112,15 +117,27 @@
       gap: 10px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    
     .btn-wrong { background: #ef4444; color: white; box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3); }
     .btn-wrong:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(239, 68, 68, 0.4); }
-    
     .btn-correct { background: #22c55e; color: white; box-shadow: 0 8px 15px rgba(34, 197, 94, 0.3); }
     .btn-correct:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(34, 197, 94, 0.4); }
-    
     .btn-next-course { background: #3b82f6; color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); margin-left: 20px; border: 2px solid #2563eb; }
     .btn-next-course:hover { transform: translateY(-3px); background: #2563eb; box-shadow: 0 12px 20px rgba(59, 130, 246, 0.4); }
+
+    /* 되살아난 실전 프로그램 가이드 영역 */
+    .guide-section {
+      margin-top: 20px;
+      border-top: 3px dashed #e2e8f0;
+      padding-top: 30px;
+    }
+    .guide-section h3 {
+      font-size: 24px; color: #0f172a; margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+    }
+    .guide-box { background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 15px; padding: 30px; }
+    .step-list { list-style: none; padding: 0; margin: 0; }
+    .step-list li { margin-bottom: 20px; display: flex; align-items: flex-start; gap: 15px; font-size: 18px; color: #334155; line-height: 1.5; word-break: keep-all; }
+    .step-list li:last-child { margin-bottom: 0; }
+    .step-number { background-color: #002D62; color: white; font-weight: bold; width: 30px; height: 30px; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; margin-top: -2px; }
   </style>
 </head>
 <body>
@@ -145,11 +162,9 @@
         <path id="leftLine" class="road-line" d=""></path>
         <path id="rightLine" class="road-line" d=""></path>
       </svg>
-      
       <svg id="svgCanvas">
         <line id="steerLine" class="steer-line" x1="50%" y1="90%" x2="50%" y2="20%" />
       </svg>
-      
       <div class="red-circle" id="redCircle"></div>
       <div class="green-circle" id="greenCircle"></div>
     </div>
@@ -160,6 +175,26 @@
       <button class="demo-btn btn-wrong" onclick="demoWrong()">❌ 오답 예시 (감점)</button>
       <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 모범 답안 (만점)</button>
       <button class="demo-btn btn-next-course" id="btnNextCourse" onclick="nextCourse()">▶️ 다음: 좌회전 코스</button>
+    </div>
+
+    <div class="guide-section">
+      <h3>💻 실전 어노테이션 프로그램 사용 가이드</h3>
+      <div class="guide-box">
+        <ul class="step-list">
+          <li>
+            <span class="step-number">1</span>
+            <div>프로그램 왼쪽의 <strong>File list</strong>에서 작업할 도로 이미지를 불러옵니다.</div>
+          </li>
+          <li>
+            <span class="step-number">2</span>
+            <div>커브길이 나오면 무조건 <span class="highlight">바깥쪽 실선(노란색)</span>을 찾고, 그 선의 기울기와 파란 선이 완벽히 평행이 되도록 초록색 점을 움직입니다.</div>
+          </li>
+          <li>
+            <span class="step-number">3</span>
+            <div>현재 화면의 도로 상황에 맞는 <strong>방향 버튼 (left, middle, right)</strong>을 누르고 <strong>[Save]</strong> 버튼을 눌러 데이터를 저장합니다.</div>
+          </li>
+        </ul>
+      </div>
     </div>
 
   </div>
