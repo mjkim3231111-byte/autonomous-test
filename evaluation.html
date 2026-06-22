@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>실시간 자동 채점 및 코칭</title>
+  <style>
+    body { font-family: 'Malgun Gothic', sans-serif; background-color: #f1f5f9; padding: 20px; text-align: center; }
+    .card { background: white; max-width: 600px; margin: 20px auto; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .grade-btn { background: #10b981; color: white; font-size: 20px; font-weight: bold; padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; margin-top: 20px; }
+    #resultBox { margin-top: 25px; padding: 20px; border-radius: 10px; font-weight: bold; font-size: 20px; display: none; }
+    canvas { max-width: 100%; margin-top: 20px; border-radius: 8px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🚀 실시간 자동 채점</h2>
+  <p>교사가 스마트 패드로 주행 궤적을 촬영하면 AI가 즉시 분석합니다.</p>
+  
+  <button class="grade-btn" onclick="document.getElementById('fileInput').click()">📸 채점 및 결과 확인 ➡️</button>
+  <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processImage(event)">
+  
+  <canvas id="myCanvas"></canvas>
+  <div id="resultBox"></div>
+</div>
+
+<script>
+  // [어제 주신 채점 엔진 로직을 여기에 그대로 넣습니다]
+  // processImage, colorMatch, distToSegment, analyzePixels 함수 등을 이곳에 배치하세요.
+  
+  function processImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // 분석 로직 시작
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = img.height * (600 / img.width);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // 여기에 analyzePixels() 호출
+        alert("사진이 전송되었습니다. 분석 로직을 실행합니다.");
+      }
+      img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+</script>
+
+</body>
+</html>
