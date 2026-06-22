@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 드라이빙 멘토</title>
+  <style>
+    /* 기본 배경 및 폰트 설정 */
+    body { 
+      font-family: 'Malgun Gothic', sans-serif; 
+      background-color: #f1f5f9; 
+      margin: 0; 
+      padding: 0; 
+      color: #333;
+      overflow-x: hidden;
+    }
+    
+    /* 1. 표지(Cover) 스타일 */
+    #coverPage {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      background: linear-gradient(135deg, #002D62 0%, #00152e 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 100;
+      transition: opacity 0.6s ease-out;
+    }
+    .cover-content h1 { font-size: 50px; margin-bottom: 10px; letter-spacing: -2px; }
+    .cover-content .subtitle { font-size: 22px; color: #93c5fd; margin-bottom: 40px; }
+    .feature-list { text-align: left; background: rgba(255, 255, 255, 0.1); padding: 30px 40px; border-radius: 15px; margin-bottom: 50px; line-height: 2; font-size: 18px; }
+    .start-btn { background-color: #3b82f6; color: white; font-size: 20px; font-weight: bold; padding: 15px 50px; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); transition: all 0.3s; }
+    .start-btn:hover { background-color: #2563eb; transform: translateY(-5px); }
+
+    /* 2. 메인 카드 스타일 */
+    #mainContent { display: none; opacity: 0; transition: opacity 0.8s ease-in; }
+    .header { background-color: #002D62; color: white; text-align: center; padding: 50px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .header h1 { margin: 0; font-size: 36px; letter-spacing: -1px; }
+    .header p { margin-top: 15px; font-size: 18px; color: #94a3b8; }
+    .container { max-width: 1100px; margin: -30px auto 50px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+    .card { background: white; border-radius: 15px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; text-decoration: none; color: inherit; display: flex; flex-direction: column; border-top: 5px solid transparent; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    .card-teacher:hover { border-top-color: #64748b; }
+    .card-learn:hover { border-top-color: #38bdf8; }
+    .card-practice:hover { border-top-color: #10b981; }
+    .icon { font-size: 60px; margin-bottom: 20px; }
+    .card h2 { margin: 0 0 15px 0; font-size: 24px; color: #0f172a; }
+    .card p { font-size: 15px; color: #64748b; line-height: 1.6; flex-grow: 1; word-break: keep-all; }
+    .enter-text { margin-top: 25px; font-weight: bold; font-size: 16px; padding: 10px; border-radius: 8px; transition: background 0.3s; }
+    .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
+    .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
+    .card-practice .enter-text { color: #059669; background: #d1fae5; }
+    .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <div id="coverPage">
+    <div class="cover-content">
+      <h1>🏎️ AI 드라이빙 멘토</h1>
+      <p class="subtitle">자율 주행 자동차의 차선인식 배워보기</p>
+      <div class="feature-list">
+        ✅ <strong>간편한 자동 채점:</strong> 교사가 패드로 찰칵! 찍으면 AI가 궤적을 분석합니다.<br>
+        ✅ <strong>실시간 성장 트래킹:</strong> 조향값을 수정하여 정확도를 높이는 과정이 그래프로 누적됩니다.<br>
+        ✅ <strong>데이터 통합 관리:</strong> 구글 시트 연동으로 수행평가 엑셀 다운로드까지!
+      </div>
+      <button class="start-btn" onclick="startApp()">🚀 시작하기</button>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <div class="header">
+      <h1>🏎️ AI 드라이빙 멘토</h1>
+      <p>자율 주행 자동차의 차선인식 배워보기</p>
+    </div>
+
+    <div class="container">
+      <a href="guide.html" class="card card-teacher">
+        <div class="icon">👨‍🏫</div>
+        <h2>교사용 가이드</h2>
+        <p>수업 운영 매뉴얼, 구글 시트 연동 방식, TV 전광판 세팅, 평가 기준표를 확인하고 학생들의 전체 실습 데이터를 엑셀로 다운로드할 수 있습니다.</p>
+        <div class="enter-text">수업 준비하기 ➡️</div>
+      </a>
+
+      <a href="study_teacher.html" class="card card-learn">
+        <div class="icon">📖</div>
+        <h2>학습 데이터 만들기</h2>
+        <p>어노테이션(Annotation)의 개념과 올바른 작업 방법을 배우고, 실제 주행 동영상을 통해 AI 학습용 데이터를 구축하는 과정을 알아봅니다.</p>
+        <div class="enter-text">데이터 학습 시작 ➡️</div>
+      </a>
+
+      <a href="#" class="card card-practice" onclick="alert('실시간 자동 채점 및 코칭 페이지 준비 중입니다. (4단계 목표)')">
+        <div class="icon">🚀</div>
+        <h2>실시간 자동 채점 및 코칭</h2>
+        <p>좌회전 및 우회전 코스 선택이 가능합니다. 교사가 스마트 패드로 주행 궤적을 촬영하면 AI가 즉시 분석해 차량별 성장 그래프와 1:1 맞춤형 피드백을 제공합니다.</p>
+        <div class="enter-text">채점 및 결과 확인 ➡️</div>
+      </a>
+    </div>
+
+    <div class="footer">
+      © 2026 AI 드라이빙 멘토 프로젝트
+    </div>
+  </div>
+
+  <script>
+    function startApp() {
+      const cover = document.getElementById('coverPage');
+      const main = document.getElementById('mainContent');
+      cover.style.opacity = '0';
+      setTimeout(() => {
+        cover.style.display = 'none';
+        main.style.display = 'block';
+        setTimeout(() => { main.style.opacity = '1'; }, 50);
+      }, 600);
+    }
+  </script>
+</body>
+</html>
