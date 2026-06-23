@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실시간 자율주행 명예의 전당 - AI 드라이빙 멘토</title>
+  <!-- Google Fonts: Outfit & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: #151d30;
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      --neon-gold: #fbbf24;
+      --neon-silver: #cbd5e1;
+      --neon-bronze: #fb923c;
+      --neon-blue: #38bdf8;
+      --border-glow: rgba(56, 189, 248, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 10% 20%, rgba(30, 41, 59, 0.4) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(15, 23, 42, 0.6) 0px, transparent 50%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 상단 헤더 영역 */
+    .tv-header {
+      padding: 30px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(21, 29, 48, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-logo h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    .header-logo span {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    /* 메인 컨테이너 */
+    .tv-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 40px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 순위표 그리드 */
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 개별 순위 카드 */
+    .rank-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px 36px;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .rank-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: transparent;
+    }
+
+    /* 1등 전용 효과 */
+    .rank-card.rank-1 {
+      border-color: rgba(251, 191, 36, 0.3);
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.08);
+      background: linear-gradient(135deg, #151d30 0%, #1e2417 100%);
+    }
+    .rank-card.rank-1::before { background: var(--neon-gold); }
+
+    /* 2등 전용 효과 */
+    .rank-card.rank-2 {
+      border-color: rgba(203, 213, 225, 0.2);
+      box-shadow: 0 0 25px rgba(203, 213, 225, 0.05);
+    }
+    .rank-card.rank-2::before { background: var(--neon-silver); }
+
+    /* 3등 전용 효과 */
+    .rank-card.rank-3 {
+      border-color: rgba(251, 146, 60, 0.2);
+      box-shadow: 0 0 25px rgba(251, 146, 60, 0.05);
+    }
+    .rank-card.rank-3::before { background: var(--neon-bronze); }
+
+    /* 등수 번호 영역 */
+    .rank-num-wrapper {
+      width: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rank-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .rank-1 .rank-num { color: var(--neon-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+    .rank-2 .rank-num { color: var(--neon-silver); }
+    .rank-3 .rank-num { color: var(--neon-bronze); }
+
+    /* 메달 아이콘 */
+    .rank-medal {
+      font-size: 2.2rem;
+    }
+
+    /* 차량 번호 */
+    .car-info {
+      width: 240px;
+      padding-left: 20px;
+    }
+
+    .car-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: -0.5px;
+    }
+
+    .car-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* 게이지 영역 */
+    .gauge-wrapper {
+      flex-grow: 1;
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gauge-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .gauge-bg {
+      height: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .gauge-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      background: var(--neon-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      transition: width 1.5s cubic-bezier(0.1, 0.8, 0.3, 1);
+    }
+
+    .rank-1 .gauge-fill {
+      background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    }
+    .rank-2 .gauge-fill {
+      background: linear-gradient(90deg, #cbd5e1 0%, #94a3b8 100%);
+      box-shadow: 0 0 12px rgba(203, 213, 225, 0.25);
+    }
+    .rank-3 .gauge-fill {
+      background: linear-gradient(90deg, #fb923c 0%, #ea580c 100%);
+      box-shadow: 0 0 12px rgba(251, 146, 60, 0.25);
+    }
+
+    /* 스코어 표시 */
+    .score-wrapper {
+      width: 140px;
+      text-align: right;
+    }
+
+    .score-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--neon-blue);
+    }
+
+    .rank-1 .score-val { color: var(--neon-gold); }
+    .rank-2 .score-val { color: var(--neon-silver); }
+    .rank-3 .score-val { color: var(--neon-bronze); }
+
+    /* 대기 화면 안내 */
+    .empty-state {
+      text-align: center;
+      padding: 100px 40px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .empty-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* 하단 조작 패널 */
+    .tv-footer {
+      padding: 24px 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(21, 29, 48, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .reset-btn {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* 안내 토글 */
+    .back-btn-dashboard {
+      color: var(--neon-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-btn-dashboard:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 헤더 -->
+  <header class="tv-header">
+    <div class="header-logo">
+      <h1>🏎️ AUTONOMOUS SPEEDWAY</h1>
+      <span>실시간 랭킹 보드</span>
+    </div>
+    <div class="header-info">
+      <div class="status-badge">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">구글 시트 실시간 연결 중</span>
+      </div>
+      <a href="index.html" class="back-btn-dashboard">⬅️ 대시보드로 가기</a>
+    </div>
+  </header>
+
+  <!-- 메인 리더보드 영역 -->
+  <main class="tv-container">
+    <div class="leaderboard-list" id="leaderboardList">
+      <!-- 로딩 중 화면 -->
+      <div class="empty-state">
+        <div class="empty-icon">⚙️</div>
+        <div class="empty-title">순위표 데이터를 수신 중입니다...</div>
+        <div class="empty-desc">스프레드시트에 성공 기록이 들어오면 실시간 순위가 렌더링됩니다.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 하단 제어 및 카피라이트 -->
+  <footer class="tv-footer">
+    <div>© 2026 AI 드라이빙 멘토 • 교실 TV 대화면 출력 모드</div>
+    <div>F11을 누르면 전체화면으로 볼 수 있습니다.</div>
+    <button class="reset-btn" onclick="confirmReset()">🔄 전체 데이터 초기화</button>
+  </footer>
+
+  <script>
+    // 구글 앱스 스크립트 API 주소 (동일 주소 적용)
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
+
+    // 5초마다 데이터 갱신
+    const UPDATE_INTERVAL = 5000;
+    let timerId = null;
+
+    function fetchLeaderboard() {
+      if (!GAS_WEBAPP_URL) {
+        showLocalSimulationData();
+        return;
+      }
+
+      const url = `${GAS_WEBAPP_URL}?action=getLeaderboard`;
+
+      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(res => {
+          if (res.status === 'success') {
+            updateLeaderboardUI(res.data);
+            updateStatus(true, "구글 시트 실시간 연동 중 (정상)");
+          } else {
+            throw new Error(res.message || '데이터 형식 오류');
+          }
+        })
+        .catch(err => {
+          console.error("순위 데이터 로딩 실패:", err);
+          updateStatus(false, "구글 시트 연동 실패 (재연결 시도 중...)");
+        });
+    }
+
+    function updateStatus(isSuccess, text) {
+      const dot = document.getElementById('statusDot');
+      const txt = document.getElementById('statusText');
+      if (!dot || !txt) return;
+
+      if (isSuccess) {
+        dot.style.backgroundColor = "#10b981";
+        dot.style.boxShadow = "0 0 8px #10b981";
+        txt.innerText = text;
+      } else {
+        dot.style.backgroundColor = "#ef4444";
+        dot.style.boxShadow = "0 0 8px #ef4444";
+        txt.innerText = text;
+      }
+    }
+
+    // 랭킹 보드 UI 렌더링
+    function updateLeaderboardUI(data) {
+      const container = document.getElementById('leaderboardList');
+      if (!container) return;
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🏎️</div>
+            <div class="empty-title">완주 기록이 아직 없습니다.</div>
+            <div class="empty-desc">학생들이 태블릿으로 주행 궤적을 평가하면 여기에 명예의 전당이 채워집니다!</div>
+          </div>
+        `;
+        return;
+      }
+
+      let listHTML = '';
+      data.forEach((item, index) => {
+        const rank = index + 1;
+        let medal = '';
+        if (rank === 1) medal = '🥇';
+        else if (rank === 2) medal = '🥈';
+        else if (rank === 3) medal = '🥉';
+        else medal = '🚗';
+
+        const accuracy = parseFloat(item.accuracy).toFixed(1);
+
+        listHTML += `
+          <div class="rank-card rank-${rank}">
+            <div class="rank-num-wrapper">
+              <span class="rank-medal">${medal}</span>
+            </div>
+            <div class="car-info">
+              <div class="car-name">${item.carNumber}</div>
+              <div class="car-sub">자율주행 코스 완주 및 차선 검출 성공</div>
+            </div>
+            <div class="gauge-wrapper">
+              <div class="gauge-header">
+                <span>자율주행 궤적 일치율</span>
+                <span>${accuracy}%</span>
+              </div>
+              <div class="gauge-bg">
+                <div class="gauge-fill" id="gauge-${rank}" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="score-wrapper">
+              <span class="score-val">${accuracy}%</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = listHTML;
+
+      // 애니메이션 효과: 차오르는 그래프 연출
+      setTimeout(() => {
+        data.forEach((item, index) => {
+          const rank = index + 1;
+          const bar = document.getElementById(`gauge-${rank}`);
+          if (bar) {
+            bar.style.width = item.accuracy + '%';
+          }
+        });
+      }, 100);
+    }
+
+    // 로컬 개발/시뮬레이션 환경용 가상 데이터 생성기
+    function showLocalSimulationData() {
+      const mockData = [
+        { carNumber: "3번 자동차", accuracy: 96.5 },
+        { carNumber: "8번 자동차", accuracy: 91.2 },
+        { carNumber: "12번 자동차", accuracy: 88.0 },
+        { carNumber: "5번 자동차", accuracy: 82.3 },
+        { carNumber: "1번 자동차", accuracy: 77.4 }
+      ];
+      updateLeaderboardUI(mockData);
+      updateStatus(true, "로컬 테스트 환경 (시뮬레이션 데이터)");
+    }
+
+    // 관리자 전체 초기화 기능
+    function confirmReset() {
+      const agree = confirm("⚠️ 경고!\n\n현재 구글 스프레드시트에 저장된 모든 주행 기록이 깨끗하게 삭제됩니다.\n이 작업은 되돌릴 수 없습니다. 새 게임을 시작하시겠습니까?");
+      if (!agree) return;
+
+      if (!GAS_WEBAPP_URL) {
+        alert("로컬 환경에서는 데이터를 지울 수 없습니다.");
+        return;
+      }
+
+      updateStatus(false, "데이터 전체 초기화 중...");
+      const url = `${GAS_WEBAPP_URL}?action=reset`;
+
+      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data.status === 'success') {
+            alert("✅ 초기화 완료!\n\n구글 스프레드시트의 모든 기록이 삭제되었습니다. 랭킹이 초기 상태로 돌아갑니다.");
+            fetchLeaderboard();
+          } else {
+            throw new Error(data.message || '초기화 처리 실패');
+          }
+        })
+        .catch(err => {
+          console.error("초기화 실패:", err);
+          alert("초기화에 실패했습니다. 인터넷 상태 또는 Apps Script 배포를 점검하세요.");
+          updateStatus(true, "구글 시트 실시간 연동 중");
+        });
+    }
+
+    // 윈도우 로드 시 동작 개시
+    window.onload = () => {
+      fetchLeaderboard();
+      // 주기적 폴링 타이머 가동
+      timerId = setInterval(fetchLeaderboard, UPDATE_INTERVAL);
+    };
+
+    // 화면 이동 시 타이머 해제
+    window.onunload = () => {
+      if (timerId) clearInterval(timerId);
+    };
+  </script>
+</body>
+</html>
