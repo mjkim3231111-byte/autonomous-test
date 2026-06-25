@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>교사용 수업 운영 가이드 - AI 드라이빙 멘토</title>
+  <style>
+    body { font-family: 'Malgun Gothic', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+    
+    /* 상단 헤더 */
+    .header { background-color: #002D62; color: white; text-align: center; padding: 40px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .header h1 { margin: 0; font-size: 32px; letter-spacing: -1px; }
+    .header p { margin-top: 10px; font-size: 16px; color: #94a3b8; }
+    
+    /* 본문 컨테이너 */
+    .container { max-width: 900px; margin: -20px auto 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    
+    /* 각 섹션 제목 */
+    h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 40px; }
+    h2:first-child { margin-top: 0; }
+    
+    /* 리스트 스타일 */
+    ul { padding-left: 20px; color: #475569; }
+    li { margin-bottom: 8px; }
+    
+    /* 강조 박스 */
+    .highlight-box { background-color: #f8fafc; border-left: 4px solid #002D62; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+    
+    /* 표 스타일 */
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #cbd5e1; padding: 15px; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: bold; color: #0f172a; }
+    td { color: #475569; }
+    
+    /* 돌아가기 버튼 */
+    .back-btn { display: inline-block; margin-top: 40px; padding: 12px 25px; background-color: #e2e8f0; color: #475569; text-decoration: none; border-radius: 8px; font-weight: bold; transition: all 0.2s; }
+    .back-btn:hover { background-color: #cbd5e1; color: #0f172a; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>👨‍🏫 교사용 수업 운영 가이드</h1>
+    <p>AI 드라이빙 멘토 1차시 완벽 대비 매뉴얼</p>
+  </div>
+
+  <div class="container">
+    
+    <h2>1. ⏱️ 표준 수업 운영 매뉴얼 (1차시 50분 기준)</h2>
+    <ul>
+      <li><strong>[도입] 10분:</strong> 자율주행 조향 제어(차선 인식)의 원리 설명 및 어노테이션(데이터 라벨링) 개념 안내</li>
+      <li><strong>[전개] 30분:</strong> 학생 개별 알고리즘 튜닝 및 실습 진행
+        <ul>
+          <li>교사는 교실을 순회하며 학생의 자동차 주행 결과를 <strong>스마트 패드로 촬영</strong>합니다.</li>
+          <li>촬영 즉시 AI가 궤적을 분석하여 성공 여부와 정확도를 판별합니다.</li>
+          <li>실패한 학생은 코드를 수정하여 재도전하며, 이 과정은 시스템에 누적 기록됩니다.</li>
+        </ul>
+      </li>
+      <li><strong>[정리] 10분:</strong> TV 전광판을 통한 랭킹 확인, 우수 튜닝 사례 공유 및 엑셀(CSV) 데이터 다운로드</li>
+    </ul>
+
+    <h2>2. 📊 구글 시트 연동 및 데이터 관리 방식</h2>
+    <div class="highlight-box">
+      본 시스템은 학생들의 평가 데이터를 구글 시트에 실시간으로 자동 저장합니다. 별도의 수기 기록이 필요하지 않습니다.
+    </div>
+    <ul>
+      <li><strong>연동 방법:</strong> 교사용 구글 계정으로 로그인한 뒤, 제공된 '평가용 구글 시트 템플릿'을 사본으로 저장하여 사용합니다.</li>
+      <li><strong>엑셀 다운로드:</strong> 수업 종료 후 시트의 <code>[파일] - [다운로드] - [CSV]</code>를 클릭하여 나이스(NEIS) 수행평가 기록용으로 즉시 활용할 수 있습니다.</li>
+    </ul>
+
+    <h2>3. 📺 교실 TV 전광판 세팅 방법</h2>
+    <ul>
+      <li>교실 앞쪽의 스마트 TV나 프로젝터에서 인터넷 브라우저를 엽니다.</li>
+      <li>자율주행 명예의 전당 전광판 페이지(<a href="tv.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">tv.html 바로가기</a>)에 접속한 뒤 키보드의 <b>F11</b>을 눌러 전체 화면 모드로 설정합니다.</li>
+      <li>전광판에는 구글 스프레드시트와 실시간 동기화된 상위 5대 차량의 주행 궤적 정확도가 5초 간격으로 자동 폴링 갱신되며, 시각적인 게이지 애니메이션으로 연출되어 학생들의 흥미를 극대화합니다.</li>
+    </ul>
+
+    <h2>4. 💯 성취도 평가 기준표 (루브릭)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>평가 등급</th>
+          <th>조향 정확도 (AI 분석)</th>
+          <th>기준 설명 및 피드백 내용</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>A (우수)</strong></td>
+          <td><strong>80% 이상</strong></td>
+          <td>차선을 정확히 인식하고 안정적인 코너링을 구현함. 완벽한 알고리즘 튜닝.</td>
+        </tr>
+        <tr>
+          <td><strong>B (보통)</strong></td>
+          <td><strong>60% ~ 79%</strong></td>
+          <td>차선 이탈이 일부 발생하나 코스를 완주함. 조향 과다/부족에 대한 추가 튜닝 권장.</td>
+        </tr>
+        <tr>
+          <td><strong>C (노력 요함)</strong></td>
+          <td><strong>60% 미만</strong></td>
+          <td>차선을 이탈하여 주행에 실패함. 주행 원리 영상 재시청 및 기초 코드 점검 필요.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <a href="index.html" class="back-btn">⬅️ 메인으로 돌아가기</a>
+    
+  </div>
+
+</body>
+</html>
