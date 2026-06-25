@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자율주행 AI 평가 대시보드 - AI 드라이빙 멘토</title>
+  
+  <!-- Google Fonts: Outfit & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- SheetJS & Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* CSS 디자인 시스템 정의 */
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(21, 29, 48, 0.65);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-light: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --neon-blue: #38bdf8;
+      --neon-blue-glow: rgba(56, 189, 248, 0.25);
+      --neon-green: #10b981;
+      --neon-gold: #fbbf24;
+      --neon-gold-glow: rgba(251, 191, 36, 0.3);
+      --neon-red: #ef4444;
+      
+      --font-outfit: 'Outfit', sans-serif;
+      --font-noto: 'Noto Sans KR', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-noto);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.3) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(17, 24, 39, 0.7) 0px, transparent 50%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* 상단 헤더 */
+    .dashboard-header {
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo h1 {
+      font-family: var(--font-outfit);
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-blue) 0%, #0284c7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .header-logo span {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-blue);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 0 0 10px var(--neon-blue-glow);
+    }
+
+    .back-btn {
+      color: var(--neon-blue);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      text-shadow: 0 0 8px var(--neon-blue-glow);
+      transform: translateX(-2px);
+    }
+
+    /* 메인 영역 */
+    .dashboard-container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 24px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* 파일 드롭존 (업로드 페이지) */
+    .upload-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      text-align: center;
+      transition: border 0.3s, box-shadow 0.3s;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .drop-zone {
+      border: 2px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      padding: 60px 40px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--neon-blue);
+      background: rgba(56, 189, 248, 0.05);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      font-size: 4.5rem;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .upload-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .upload-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      word-break: keep-all;
+    }
+
+    .select-file-btn {
+      background: linear-gradient(135deg, var(--neon-blue) 0%, #0284c7 100%);
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+      transition: all 0.25s;
+    }
+
+    .select-file-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(2, 132, 199, 0.5);
+    }
+
+    /* 대시보드 메인 레이아웃 (기본 숨김) */
+    .dashboard-layout {
+      display: none;
+      flex-direction: column;
+      gap: 28px;
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 상단 요약 바 */
+    .dashboard-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .toolbar-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .reset-file-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .reset-file-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--text-muted);
+    }
+
+    /* KPI 카드 그리드 */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .kpi-icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--neon-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .kpi-card:nth-child(2) .kpi-icon-box {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--neon-green);
+    }
+
+    .kpi-card:nth-child(3) .kpi-icon-box {
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--neon-gold);
+    }
+
+    .kpi-card:nth-child(4) .kpi-icon-box {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--neon-red);
+    }
+
+    .kpi-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .kpi-value {
+      font-family: var(--font-outfit);
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .kpi-subtext {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: -2px;
+    }
+
+    /* 2열 레이아웃 그리드 (리더보드 vs 차트) */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 28px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 대시보드 패널 카드 */
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 리더보드 순위표 */
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    /* 스크롤바 디자인 */
+    .leaderboard-list::-webkit-scrollbar, .table-wrapper::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .leaderboard-list::-webkit-scrollbar-track, .table-wrapper::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+    }
+    .leaderboard-list::-webkit-scrollbar-thumb, .table-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+    }
+
+    .rank-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .rank-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .rank-badge {
+      width: 40px;
+      font-family: var(--font-outfit);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .rank-item.rank-1 .rank-badge { color: var(--neon-gold); text-shadow: 0 0 8px var(--neon-gold-glow); }
+    .rank-item.rank-2 .rank-badge { color: #cbd5e1; }
+    .rank-item.rank-3 .rank-badge { color: #f97316; }
+
+    .rank-car-info {
+      width: 120px;
+    }
+
+    .rank-car-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .rank-car-tries {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .rank-gauge-box {
+      flex-grow: 1;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-gauge-bg {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .rank-gauge-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      background: var(--neon-blue);
+      box-shadow: 0 0 8px var(--neon-blue-glow);
+      transition: width 1.5s cubic-bezier(0.1, 0.8, 0.3, 1);
+    }
+
+    .rank-item.rank-1 .rank-gauge-fill {
+      background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 0 10px var(--neon-gold-glow);
+    }
+
+    .rank-score {
+      font-family: var(--font-outfit);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--neon-blue);
+      text-align: right;
+      width: 70px;
+    }
+
+    .rank-item.rank-1 .rank-score { color: var(--neon-gold); }
+
+    /* 차트 영역 */
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chart-select {
+      background: #151d30;
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .chart-select:focus {
+      border-color: var(--neon-blue);
+    }
+
+    .chart-container {
+      position: relative;
+      flex-grow: 1;
+      min-height: 380px;
+      width: 100%;
+    }
+
+    /* 하단 테이블 패널 */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+      color: white;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--neon-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--neon-red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* 반응형 헤더 패딩 조정 */
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .back-btn {
+        align-self: flex-end;
+        margin-top: -30px;
+      }
+      .dashboard-container {
+        padding: 0 16px;
+        margin: 20px auto;
+      }
+      .panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 네비게이션 헤더 -->
+  <header class="dashboard-header">
+    <div class="header-logo">
+      <h1>🏎️ AUTONOMOUS Speedway</h1>
+      <span>엑셀 대시보드</span>
+    </div>
+    <a href="index.html" class="back-btn">⬅️ 메인 포털 가기</a>
+  </header>
+
+  <main class="dashboard-container">
+    
+    <!-- 1. 파일 업로드 존 (데이터가 없을 때 표시) -->
+    <div class="upload-wrapper" id="uploadWrapper">
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📊</div>
+        <h2 class="upload-title">엑셀 데이터를 업로드하세요</h2>
+        <p class="upload-desc">
+          자율주행 평가 시스템의 기록 엑셀 파일인<br>
+          <strong>자율주행평가시스템(데시보드+게이지).xlsx</strong>를 드래그 앤 드롭하거나 선택해 주세요.
+        </p>
+        <button class="select-file-btn">컴퓨터에서 파일 선택</button>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" onchange="handleFile(event)">
+    </div>
+
+    <!-- 2. 대시보드 레이아웃 (데이터가 들어오면 활성화) -->
+    <div class="dashboard-layout" id="dashboardLayout">
+      
+      <!-- 상단 컨트롤 툴바 -->
+      <div class="dashboard-toolbar">
+        <div class="toolbar-title">📈 실시간 평가 데이터 요약 리포트</div>
+        <button class="reset-file-btn" onclick="resetFile()">🔄 다른 엑셀 파일 로드</button>
+      </div>
+
+      <!-- 핵심 KPI 카드 그리드 -->
+      <div class="kpi-grid">
+        <!-- KPI 1: 참가 차량 수 -->
+        <div class="kpi-card">
+          <div class="kpi-icon-box">🏎️</div>
+          <div class="kpi-info">
+            <span class="kpi-label">참가 차량 수</span>
+            <span class="kpi-value" id="kpiCars">-</span>
+          </div>
+        </div>
+        <!-- KPI 2: 총 주행 횟수 -->
+        <div class="kpi-card">
+          <div class="kpi-icon-box">🔄</div>
+          <div class="kpi-info">
+            <span class="kpi-label">총 주행 시도 횟수</span>
+            <span class="kpi-value" id="kpiTries">-</span>
+          </div>
+        </div>
+        <!-- KPI 3: 최고 정확도 -->
+        <div class="kpi-card">
+          <div class="kpi-icon-box">🥇</div>
+          <div class="kpi-info">
+            <span class="kpi-label">최고 완주 정확도</span>
+            <span class="kpi-value" id="kpiMaxScore">-</span>
+            <span class="kpi-subtext" id="kpiMaxCar">-</span>
+          </div>
+        </div>
+        <!-- KPI 4: 전체 평균 정확도 -->
+        <div class="kpi-card">
+          <div class="kpi-icon-box">📈</div>
+          <div class="kpi-info">
+            <span class="kpi-label">전체 평균 정확도</span>
+            <span class="kpi-value" id="kpiAvgScore">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 중간 그리드 영역 (리더보드 및 꺾은선 차트) -->
+      <div class="grid-2col">
+        
+        <!-- 왼쪽 패널: 차량 랭킹 리더보드 -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">🏆 자율주행 랭킹 보드</div>
+          </div>
+          <div class="leaderboard-list" id="leaderboardList">
+            <!-- 랭킹 항목이 동적으로 생성됩니다 -->
+          </div>
+        </div>
+
+        <!-- 오른쪽 패널: 회차별 성장 곡선 차트 -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">📉 주행 성장/정확도 추이</div>
+            <div class="chart-controls">
+              <select class="chart-select" id="carFilterSelect" onchange="updateChartData()">
+                <option value="all">전체 차량 추이</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="growthChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 하단 패널: 원본 데이터 상세 테이블 -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📋 주행 원본 데이터 상세 조회</div>
+          <div class="chart-controls">
+            <select class="chart-select" id="tableFilterSelect" onchange="updateTableData()">
+              <option value="all">전체 기록 보기</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>주행 시간</th>
+                <th>차량 번호</th>
+                <th>코스 트랙</th>
+                <th>정확도 (점수)</th>
+                <th>상태 판정</th>
+              </tr>
+            </thead>
+            <tbody id="rawTableBody">
+              <!-- 데이터 행들이 동적으로 생성됩니다 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="app-footer">
+    © 2026 AI 드라이빙 멘토 • 자율주행 궤적 평가시스템 대시보드
+  </footer>
+
+  <script>
+    // 전역 변수 정의
+    let parsedData = [];     // 엑셀에서 추출한 가공 원본 데이터
+    let carSummaryMap = {};   // 차량별 통계 매핑 데이터
+    let myChart = null;       // Chart.js 인스턴스
+
+    // 드래그 앤 드롭 이벤트 추가
+    const dropZone = document.getElementById('dropZone');
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        document.getElementById('fileInput').files = files;
+        handleFile({ target: { files: files } });
+      }
+    }, false);
+
+    // 엑셀 파일 리딩 및 파싱 함수
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // 첫 번째 시트 획득
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          
+          // JSON으로 데이터 파싱
+          const rawJson = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          
+          processExcelData(rawJson);
+        } catch (error) {
+          console.error("엑셀 파싱 에러:", error);
+          alert("엑셀 파일 파싱에 실패했습니다. 올바른 형식의 자율주행 데이터 파일인지 확인해 주세요.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // 엑셀 날짜 일련번호를 읽기 쉬운 문자열 포맷(YYYY-MM-DD HH:MM:SS)으로 변환
+    function formatExcelDate(serial) {
+      if (!serial || isNaN(serial)) return "기록 없음";
+      
+      try {
+        const utc_days = Math.floor(serial - 25569);
+        const utc_value = utc_days * 86400;
+        const date_info = new Date(utc_value * 1000);
+
+        const fractional_day = serial - Math.floor(serial) + 0.0000001;
+        let total_seconds = Math.floor(86400 * fractional_day);
+
+        const seconds = total_seconds % 60;
+        total_seconds = Math.floor(total_seconds / 60);
+        const minutes = total_seconds % 60;
+        const hours = Math.floor(total_seconds / 60);
+
+        const finalDate = new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
+        
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${finalDate.getFullYear()}-${pad(finalDate.getMonth() + 1)}-${pad(finalDate.getDate())} ` +
+               `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      } catch (err) {
+        return "형식 변환 에러";
+      }
+    }
+
+    // 파싱된 데이터를 어플리케이션 비즈니스 로직에 맞게 구조화 및 가공
+    function processExcelData(json) {
+      parsedData = [];
+      carSummaryMap = {};
+
+      json.forEach(row => {
+        // 컬럼명 매핑 (한글 컬럼 대응)
+        let timeRaw = row["시간"] || row["Time"] || null;
+        let carNum = row["차량번호"] || row["CarNumber"] || row["차량 번호"] || null;
+        let track = row["트랙"] || row["Track"] || "일반";
+        let accuracyRaw = row["정확도"] || row["Accuracy"] || null;
+
+        if (carNum && accuracyRaw !== null) {
+          const accuracy = parseFloat(accuracyRaw);
+          const timeString = formatExcelDate(timeRaw);
+
+          // 데이터 정규화 적재
+          parsedData.push({
+            timeRaw: parseFloat(timeRaw),
+            timeString,
+            carNumber: String(carNum).trim(),
+            track: String(track).trim(),
+            accuracy
+          });
+        }
+      });
+
+      if (parsedData.length === 0) {
+        alert("분석할 수 있는 자율주행 기록 데이터가 엑셀 파일 내에 존재하지 않습니다.");
+        return;
+      }
+
+      // 시간 순서대로 정렬 (시계열 추이 분석 위함)
+      parsedData.sort((a, b) => a.timeRaw - b.timeRaw);
+
+      // 차량별 통계 가공
+      parsedData.forEach(item => {
+        if (!carSummaryMap[item.carNumber]) {
+          carSummaryMap[item.carNumber] = {
+            carNumber: item.carNumber,
+            maxAccuracy: 0,
+            sumAccuracy: 0,
+            tries: 0,
+            history: [] // 회차별 시도 기록 저장
+          };
+        }
+        
+        const summary = carSummaryMap[item.carNumber];
+        summary.tries += 1;
+        summary.sumAccuracy += item.accuracy;
+        if (item.accuracy > summary.maxAccuracy) {
+          summary.maxAccuracy = item.accuracy;
+        }
+        summary.history.push({
+          attempt: summary.tries,
+          accuracy: item.accuracy,
+          timeString: item.timeString
+        });
+      });
+
+      // UI 렌더링 시작
+      document.getElementById('uploadWrapper').style.display = 'none';
+      document.getElementById('dashboardLayout').style.display = 'flex';
+
+      buildFilterDropdowns();
+      calculateKPIs();
+      renderLeaderboard();
+      initChart();
+      updateTableData();
+    }
+
+    // 차량 필터 드롭다운 동적 생성
+    function buildFilterDropdowns() {
+      const carFilterSelect = document.getElementById('carFilterSelect');
+      const tableFilterSelect = document.getElementById('tableFilterSelect');
+
+      // 기존 1번 옵션 남겨두고 초기화
+      carFilterSelect.innerHTML = '<option value="all">전체 차량 추이</option>';
+      tableFilterSelect.innerHTML = '<option value="all">전체 기록 보기</option>';
+
+      const sortedCars = Object.keys(carSummaryMap).sort((a, b) => {
+        // 차량 번호 숫자 추출 정렬
+        const numA = parseInt(a.replace(/[^0-9]/g, '')) || 0;
+        const numB = parseInt(b.replace(/[^0-9]/g, '')) || 0;
+        return numA - numB;
+      });
+
+      sortedCars.forEach(car => {
+        const option1 = document.createElement('option');
+        option1.value = car;
+        option1.innerText = car;
+        carFilterSelect.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = car;
+        option2.innerText = `${car} 기록 필터`;
+        tableFilterSelect.appendChild(option2);
+      });
+    }
+
+    // 핵심 KPI 연산 및 화면 렌더링
+    function calculateKPIs() {
+      const carCount = Object.keys(carSummaryMap).length;
+      const tryCount = parsedData.length;
+
+      // 최고 점수와 차량 찾기
+      let maxScore = 0;
+      let maxCar = "";
+      Object.keys(carSummaryMap).forEach(car => {
+        const summary = carSummaryMap[car];
+        if (summary.maxAccuracy > maxScore) {
+          maxScore = summary.maxAccuracy;
+          maxCar = car;
+        }
+      });
+
+      // 전체 평균 계산
+      const totalSum = parsedData.reduce((acc, curr) => acc + curr.accuracy, 0);
+      const avgScore = totalSum / tryCount;
+
+      // 화면 출력
+      document.getElementById('kpiCars').innerText = `${carCount}대`;
+      document.getElementById('kpiTries').innerText = `${tryCount}회`;
+      document.getElementById('kpiMaxScore').innerText = `${maxScore.toFixed(1)}%`;
+      document.getElementById('kpiMaxCar').innerText = `(${maxCar})`;
+      document.getElementById('kpiAvgScore').innerText = `${avgScore.toFixed(1)}%`;
+    }
+
+    // 리더보드 랭킹표 렌더링
+    function renderLeaderboard() {
+      const container = document.getElementById('leaderboardList');
+      container.innerHTML = "";
+
+      // 최고 정확도 기준으로 차량 정렬
+      const rankList = Object.values(carSummaryMap).sort((a, b) => b.maxAccuracy - a.maxAccuracy);
+
+      rankList.forEach((car, index) => {
+        const rank = index + 1;
+        let badgeSymbol = rank;
+        if (rank === 1) badgeSymbol = '🥇';
+        else if (rank === 2) badgeSymbol = '🥈';
+        else if (rank === 3) badgeSymbol = '🥉';
+
+        const maxAcc = car.maxAccuracy.toFixed(1);
+
+        const itemHTML = `
+          <div class="rank-item rank-${rank <= 3 ? rank : 'other'}">
+            <div class="rank-badge">${badgeSymbol}</div>
+            <div class="rank-car-info">
+              <div class="rank-car-name">${car.carNumber}</div>
+              <div class="rank-car-tries">총 시도: ${car.tries}회</div>
+            </div>
+            <div class="rank-gauge-box">
+              <div class="rank-gauge-bg">
+                <div class="rank-gauge-fill" id="rankGauge-${rank}" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="rank-score">${maxAcc}%</div>
+          </div>
+        `;
+        container.innerHTML += itemHTML;
+      });
+
+      // 게이지 차오르는 미크로 애니메이션 연출
+      setTimeout(() => {
+        rankList.forEach((car, index) => {
+          const rank = index + 1;
+          const bar = document.getElementById(`rankGauge-${rank}`);
+          if (bar) bar.style.width = car.maxAccuracy + '%';
+        });
+      }, 100);
+    }
+
+    // Chart.js 그래프 초기화
+    function initChart() {
+      const ctx = document.getElementById('growthChart').getContext('2d');
+      
+      // 차트 기본 설정 정의
+      const config = {
+        type: 'line',
+        data: getChartDataSetup('all'),
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false // 범례는 비활성화 (커스텀 스타일)
+            },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#f8fafc',
+              bodyColor: '#38bdf8',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: false
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.04)',
+                borderColor: 'rgba(255, 255, 255, 0.08)'
+              },
+              ticks: {
+                color: '#94a3b8'
+              }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.04)',
+                borderColor: 'rgba(255, 255, 255, 0.08)'
+              },
+              ticks: {
+                color: '#94a3b8',
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          }
+        }
+      };
+
+      if (myChart) myChart.destroy();
+      myChart = new Chart(ctx, config);
+    }
+
+    // 필터 선택에 따른 차트 데이터 셋업 생성기
+    function getChartDataSetup(filter) {
+      if (filter === 'all') {
+        // 전체 차량의 모든 시도 기록 흐름
+        const labels = parsedData.map((_, i) => `${i + 1}회차`);
+        const dataValues = parsedData.map(item => item.accuracy);
+        
+        return {
+          labels,
+          datasets: [{
+            label: '전체 정확도 흐름',
+            data: dataValues,
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointBackgroundColor: '#38bdf8',
+            pointBorderColor: '#0b0f19',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        };
+      } else {
+        // 특정 차량의 시도 회차별 성장 궤적
+        const carData = carSummaryMap[filter];
+        const labels = carData.history.map(h => `${h.attempt}차 시도`);
+        const dataValues = carData.history.map(h => h.accuracy);
+
+        return {
+          labels,
+          datasets: [{
+            label: `${filter} 정확도 추이`,
+            data: dataValues,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            fill: true,
+            tension: 0.2,
+            borderWidth: 3,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#0b0f19',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        };
+      }
+    }
+
+    // 드롭다운 변경 시 차트 새로고침
+    function updateChartData() {
+      const select = document.getElementById('carFilterSelect');
+      const value = select.value;
+      
+      if (myChart) {
+        myChart.data = getChartDataSetup(value);
+        myChart.update();
+      }
+    }
+
+    // 상세 데이터 테이블 렌더링 및 필터링
+    function updateTableData() {
+      const select = document.getElementById('tableFilterSelect');
+      const filterValue = select.value;
+      const tbody = document.getElementById('rawTableBody');
+      tbody.innerHTML = "";
+
+      let listData = parsedData;
+      if (filterValue !== 'all') {
+        listData = parsedData.filter(item => item.carNumber === filterValue);
+      }
+
+      listData.forEach((item, index) => {
+        const attempt = index + 1;
+        const isSuccess = item.accuracy >= 70; // 70% 이상 주행 성공 판정
+        const statusBadge = isSuccess 
+          ? `<span class="badge badge-success">성공</span>` 
+          : `<span class="badge badge-danger">실패</span>`;
+
+        const rowHTML = `
+          <tr>
+            <td style="font-family: var(--font-outfit); font-weight: 600;">#${attempt}</td>
+            <td style="font-size: 0.85rem; color: var(--text-muted);">${item.timeString}</td>
+            <td style="font-weight: 700; color: var(--neon-blue);">${item.carNumber}</td>
+            <td>${item.track} 코스</td>
+            <td style="font-family: var(--font-outfit); font-weight: 800; font-size: 1rem;">${item.accuracy.toFixed(1)}%</td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
+        tbody.innerHTML += rowHTML;
+      });
+    }
+
+    // 다른 파일 로드 초기화
+    function resetFile() {
+      document.getElementById('fileInput').value = "";
+      document.getElementById('uploadWrapper').style.display = 'flex';
+      document.getElementById('dashboardLayout').style.display = 'none';
+      parsedData = [];
+      carSummaryMap = {};
+      if (myChart) {
+        myChart.destroy();
+        myChart = null;
+      }
+    }
+  </script>
+</body>
+</html>
