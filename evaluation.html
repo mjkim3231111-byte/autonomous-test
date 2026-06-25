@@ -102,7 +102,7 @@
 
     /* 메인 컨테이너 */
     .main-container {
-      max-width: 700px;
+      max-width: 1200px;
       width: 100%;
       margin: 32px auto;
       padding: 0 20px;
@@ -299,6 +299,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
       margin-bottom: 16px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
       padding-bottom: 14px;
@@ -307,12 +309,16 @@
     .res-label {
       font-size: 1.05rem;
       font-weight: 700;
+      flex: 1;
+      min-width: 160px;
+      word-break: keep-all;
     }
 
     .res-score {
       font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
+      white-space: nowrap;
     }
 
     /* 게이지 바 스타일 */
@@ -579,6 +585,8 @@
       }
       .main-container {
         margin: 16px auto;
+        max-width: 100%;
+        padding: 0 12px;
       }
       .card-body {
         padding: 24px 20px;
@@ -586,7 +594,44 @@
       .demo-buttons {
         grid-template-columns: repeat(3, 1fr);
       }
+      .scoring-layout {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+      }
     }
+
+    /* 2열 배치 레이아웃 정의 */
+    .scoring-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      text-align: left;
+      margin-top: 16px;
+    }
+    
+    .layout-left, .layout-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .canvas-wrapper {
+      margin-top: 0 !important;
+    }
+
+    /* 합격존 / 조향과다 / 조향부족 가독성 대폭 향상 */
+    .gauge-zones {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-top: -12px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    
+    .theme-success .gauge-zones { color: #1e3a1e !important; }
+    .theme-danger .gauge-zones { color: #4c1d1d !important; }
+    .theme-warning .gauge-zones { color: #453008 !important; }
   </style>
 </head>
 <body>
@@ -609,74 +654,88 @@
       
       <div class="card-body">
         
-        <!-- 대회의 WOW 포인트: 심사위원 즉석 데모 섹션 -->
-        <div class="demo-section">
-          <h3>⚡ 학생 제출 데이터 즉석 시연 (1~15번 차량)</h3>
-          <p class="demo-desc">학생들이 각자의 코드로 튜닝하여 주행시킨 모형 자동차들의 실제 궤적 사진입니다. 버튼을 클릭하면 AI 분석이 즉각 시작되어 채점 기록이 시트에 실시간 누적됩니다.</p>
-          <div class="demo-buttons">
-            <button class="demo-btn" onclick="triggerQuickDemo('1번 자동차', 'samples/1.jpg')">1번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('2번 자동차', 'samples/2.jpg')">2번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('3번 자동차', 'samples/3.jpg')">3번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('4번 자동차', 'samples/4.jpg')">4번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('5번 자동차', 'samples/5.jpg')">5번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('6번 자동차', 'samples/6.jpg')">6번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('7번 자동차', 'samples/7.jpg')">7번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('8번 자동차', 'samples/8.jpg')">8번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('9번 자동차', 'samples/9.jpg')">9번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('10번 자동차', 'samples/10.jpg')">10번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('11번 자동차', 'samples/11.jpg')">11번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('12번 자동차', 'samples/12.jpg')">12번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('13번 자동차', 'samples/13.jpg')">13번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('14번 자동차', 'samples/14.jpg')">14번차</button>
-            <button class="demo-btn" onclick="triggerQuickDemo('15번 자동차', 'samples/15.jpg')">15번차</button>
+        <h2 style="font-size: 1.5rem; margin-bottom: 20px; text-align: left;">
+          📸 자율주행 궤적 AI 자동 채점기
+        </h2>
+
+        <!-- 좌우 2열 배치 레이아웃 -->
+        <div class="scoring-layout">
+          
+          <!-- [왼쪽 열] 사진 업로드 및 실시간 이미지 분석 화면 -->
+          <div class="layout-left">
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: -4px;">📷 주행 코스 사진 촬영</h3>
+            <!-- 업로드 존 -->
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+              <div class="upload-icon">📸</div>
+              <div class="upload-title">카메라 사진으로 채점하기</div>
+              <div class="upload-desc">이곳을 터치하여 직접 촬영하거나 이미지를 드래그해 넣으세요.</div>
+            </div>
+            
+            <!-- 숨겨진 파일 인풋 -->
+            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processImage(event)">
+            
+            <div class="loading-spinner" id="loadingSpinner">⚙️ AI 컴퓨터 비전 분석 구동 중...</div>
+
+            <!-- 캔버스 영역 -->
+            <div class="canvas-wrapper" id="canvasWrapper">
+              <canvas id="myCanvas"></canvas>
+            </div>
           </div>
+          
+          <!-- [오른쪽 열] 평가 설정 및 결과 피드백 리포트 -->
+          <div class="layout-right">
+            
+            <!-- 실습 차량 번호 선택 -->
+            <div class="selection-group" style="margin-bottom: 0;">
+              <label for="carNumber">🏎️ 실습 차량 번호 선택</label>
+              <select id="carNumber">
+                <option value="">-- 평가할 차량을 선택하세요 --</option>
+                <option value="1번 자동차">1번 자동차</option>
+                <option value="2번 자동차">2번 자동차</option>
+                <option value="3번 자동차">3번 자동차</option>
+                <option value="4번 자동차">4번 자동차</option>
+                <option value="5번 자동차">5번 자동차</option>
+                <option value="6번 자동차">6번 자동차</option>
+                <option value="7번 자동차">7번 자동차</option>
+                <option value="8번 자동차">8번 자동차</option>
+                <option value="9번 자동차">9번 자동차</option>
+                <option value="10번 자동차">10번 자동차</option>
+                <option value="11번 자동차">11번 자동차</option>
+                <option value="12번 자동차">12번 자동차</option>
+                <option value="13번 자동차">13번 자동차</option>
+                <option value="14번 자동차">14번 자동차</option>
+                <option value="15번 자동차">15번 자동차</option>
+              </select>
+            </div>
+            
+            <!-- 즉석 시연 패널 -->
+            <div class="demo-section" style="margin-bottom: 0;">
+              <h3>⚡ 학생 제출 데이터 즉석 시연 (1~15번 차량)</h3>
+              <p class="demo-desc">학생들이 각자의 코드로 튜닝하여 주행시킨 모형 자동차들의 실제 궤적 사진입니다. 버튼을 클릭하면 즉각 채점이 실행됩니다.</p>
+              <div class="demo-buttons">
+                <button class="demo-btn" onclick="triggerQuickDemo('1번 자동차', 'samples/1.jpg')">1번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('2번 자동차', 'samples/2.jpg')">2번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('3번 자동차', 'samples/3.jpg')">3번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('4번 자동차', 'samples/4.jpg')">4번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('5번 자동차', 'samples/5.jpg')">5번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('6번 자동차', 'samples/6.jpg')">6번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('7번 자동차', 'samples/7.jpg')">7번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('8번 자동차', 'samples/8.jpg')">8번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('9번 자동차', 'samples/9.jpg')">9번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('10번 자동차', 'samples/10.jpg')">10번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('11번 자동차', 'samples/11.jpg')">11번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('12번 자동차', 'samples/12.jpg')">12번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('13번 자동차', 'samples/13.jpg')">13번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('14번 자동차', 'samples/14.jpg')">14번차</button>
+                <button class="demo-btn" onclick="triggerQuickDemo('15번 자동차', 'samples/15.jpg')">15번차</button>
+              </div>
+            </div>
+            
+            <!-- 결과 리포트 박스 -->
+            <div id="resultBox" style="margin-top: 0;"></div>
+          </div>
+          
         </div>
-
-        <!-- 실습 차량 번호 선택 (구글 스프레드시트 연동용) -->
-        <div class="selection-group">
-          <label for="carNumber">🏎️ 실습 차량 번호 선택</label>
-          <select id="carNumber">
-            <option value="">-- 평가할 차량을 선택하세요 --</option>
-            <option value="1번 자동차">1번 자동차</option>
-            <option value="2번 자동차">2번 자동차</option>
-            <option value="3번 자동차">3번 자동차</option>
-            <option value="4번 자동차">4번 자동차</option>
-            <option value="5번 자동차">5번 자동차</option>
-            <option value="6번 자동차">6번 자동차</option>
-            <option value="7번 자동차">7번 자동차</option>
-            <option value="8번 자동차">8번 자동차</option>
-            <option value="9번 자동차">9번 자동차</option>
-            <option value="10번 자동차">10번 자동차</option>
-            <option value="11번 자동차">11번 자동차</option>
-            <option value="12번 자동차">12번 자동차</option>
-            <option value="13번 자동차">13번 자동차</option>
-            <option value="14번 자동차">14번 자동차</option>
-            <option value="15번 자동차">15번 자동차</option>
-          </select>
-        </div>
-
-        <h2>📷 카메라 실물 사진 촬영 및 분석</h2>
-        <p class="desc" style="margin-bottom: 16px;">스마트 패드로 주행 코스를 직접 촬영하려면 아래 영역을 클릭해 주세요.</p>
-        
-        <!-- 업로드 존 -->
-        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-          <div class="upload-icon">📸</div>
-          <div class="upload-title">카메라 사진으로 채점하기</div>
-          <div class="upload-desc">이곳을 터치하여 직접 촬영하거나 이미지를 드래그해 넣으세요.</div>
-        </div>
-        
-        <!-- 숨겨진 파일 인풋 -->
-        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processImage(event)">
-        
-        <div class="loading-spinner" id="loadingSpinner">⚙️ AI 컴퓨터 비전 분석 구동 중...</div>
-
-        <!-- 캔버스 영역 -->
-        <div class="canvas-wrapper" id="canvasWrapper">
-          <canvas id="myCanvas"></canvas>
-        </div>
-        
-        <!-- 결과 리포트 박스 -->
-        <div id="resultBox"></div>
       </div>
     </div>
   </main>
@@ -816,98 +875,107 @@
 
     // 픽셀 정밀 스캔 및 궤적 수학 매칭 연산
     function analyzePixels() {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imgData.data;
-      let rawTargetPoints = [], carPoints = [];
+      try {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        let rawTargetPoints = [], carPoints = [];
 
-      for (let i = 0; i < data.length; i += 4) {
-        let r = data[i], g = data[i+1], b = data[i+2];
-        let x = (i / 4) % canvas.width;
-        let y = Math.floor((i / 4) / canvas.width);
-        
-        if (colorMatch(r, g, b, TARGET_RGB)) rawTargetPoints.push({x, y});
-        if (colorMatch(r, g, b, CAR_RGB)) carPoints.push({x, y});
-      }
+        for (let i = 0; i < data.length; i += 4) {
+          let r = data[i], g = data[i+1], b = data[i+2];
+          let x = (i / 4) % canvas.width;
+          let y = Math.floor((i / 4) / canvas.width);
+          
+          if (colorMatch(r, g, b, TARGET_RGB)) rawTargetPoints.push({x, y});
+          if (colorMatch(r, g, b, CAR_RGB)) carPoints.push({x, y});
+        }
 
-      // 예외 1: 차량 초록색 스티커가 정상 탐지되지 않았을 때
-      if (carPoints.length < 8) {
+        // 예외 1: 차량 초록색 스티커가 정상 탐지되지 않았을 때
+        if (carPoints.length < 8) {
+          loadingSpinner.style.display = 'none';
+          document.getElementById('canvasWrapper').style.display = 'block';
+          canvas.style.display = 'block';
+          showResult("⚠️ 판독 불가", `차량의 초록색 마커가 감지되지 않았습니다. 사진 각도를 조절하거나 반사광을 피해서 다시 찰칵! 촬영해 주세요.`, "#d39e00");
+          return;
+        }
+
+        // K-means 클러스터링 기반 차량 2개 스티커 무게중심 산출 (c1, c2)
+        let c1 = carPoints[0], c2 = carPoints[carPoints.length - 1];
+        for (let iter = 0; iter < 5; iter++) {
+          let group1 = [], group2 = [];
+          carPoints.forEach(p => {
+            if (Math.hypot(p.x - c1.x, p.y - c1.y) < Math.hypot(p.x - c2.x, p.y - c2.y)) group1.push(p);
+            else group2.push(p);
+          });
+          c1 = getCentroid(group1); 
+          c2 = getCentroid(group2);
+        }
+
+        // 차량 주행 라인 선분에서 일정 오차 이상 떨어진 바깥 타겟 점들만 추출
+        let targetPoints = rawTargetPoints.filter(p => distToSegment(p, c1, c2) > 65);
+
+        // 예외 2: 차선 밟음 (라인 이탈 실패)
+        if (targetPoints.length < 5) {
+          loadingSpinner.style.display = 'none';
+          document.getElementById('canvasWrapper').style.display = 'block';
+          canvas.style.display = 'block';
+          
+          // 디버그 차량축 그리기
+          ctx.beginPath();
+          ctx.moveTo(c1.x - (c2.x - c1.x) * 10, c1.y - (c2.y - c1.y) * 10);
+          ctx.lineTo(c2.x + (c2.x - c1.x) * 10, c2.y + (c2.y - c1.y) * 10);
+          ctx.strokeStyle = "rgba(239, 68, 68, 0.4)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.setLineDash([]);
+          drawDebugLine(c1, c2, 'red');
+          
+          showResult("❌ 라인 이탈 (실패)", `코너 안쪽 노란 실선을 침범했습니다! 조향 제어 코드를 수정하여 곡률 반경을 더 넓게 설정해야 코스를 완주할 수 있습니다.`, "#dc3545", "0.0", 0.0);
+          return;
+        }
+
+        // 타겟(빨간 마커)들의 무게중심 및 거리 편차 비율 산출
+        const targetCenter = getCentroid(targetPoints);
+        const carLength = Math.hypot(c2.x - c1.x, c2.y - c1.y);
+        const numerator = Math.abs((c2.y - c1.y) * targetCenter.x - (c2.x - c1.x) * targetCenter.y + c2.x * c1.y - c2.y * c1.x);
+        const ratio = numerator / carLength / carLength;
+
+        // 캔버스 오버레이 디버그 그래픽 그리기 (심사위원 WOW 시인성 포인트)
         loadingSpinner.style.display = 'none';
         document.getElementById('canvasWrapper').style.display = 'block';
         canvas.style.display = 'block';
-        showResult("⚠️ 판독 불가", `차량의 초록색 마커가 감지되지 않았습니다. 사진 각도를 조절하거나 반사광을 피해서 다시 찰칵! 촬영해 주세요.`, "#d39e00");
-        return;
-      }
 
-      // K-means 클러스터링 기반 차량 2개 스티커 무게중심 산출 (c1, c2)
-      let c1 = carPoints[0], c2 = carPoints[carPoints.length - 1];
-      for (let iter = 0; iter < 5; iter++) {
-        let group1 = [], group2 = [];
-        carPoints.forEach(p => {
-          if (Math.hypot(p.x - c1.x, p.y - c1.y) < Math.hypot(p.x - c2.x, p.y - c2.y)) group1.push(p);
-          else group2.push(p);
-        });
-        c1 = getCentroid(group1); 
-        c2 = getCentroid(group2);
-      }
-
-      // 차량 주행 라인 선분에서 일정 오차 이상 떨어진 바깥 타겟 점들만 추출
-      let targetPoints = rawTargetPoints.filter(p => distToSegment(p, c1, c2) > 65);
-
-      // 예외 2: 차선 밟음 (라인 이탈 실패)
-      if (targetPoints.length < 5) {
-        loadingSpinner.style.display = 'none';
-        document.getElementById('canvasWrapper').style.display = 'block';
-        canvas.style.display = 'block';
-        
-        // 디버그 차량축 그리기
+        // 1. 차량 주행 벡터 연장 가상 가이드라인
         ctx.beginPath();
         ctx.moveTo(c1.x - (c2.x - c1.x) * 10, c1.y - (c2.y - c1.y) * 10);
         ctx.lineTo(c2.x + (c2.x - c1.x) * 10, c2.y + (c2.y - c1.y) * 10);
-        ctx.strokeStyle = "rgba(239, 68, 68, 0.4)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.setLineDash([]);
-        drawDebugLine(c1, c2, 'red');
+        ctx.strokeStyle = "rgba(34, 197, 94, 0.4)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.setLineDash([]);
         
-        showResult("❌ 라인 이탈 (실패)", `코너 안쪽 노란 실선을 침범했습니다! 조향 제어 코드를 수정하여 곡률 반경을 더 넓게 설정해야 코스를 완주할 수 있습니다.`, "#dc3545", "0.0", 0.0);
-        return;
-      }
+        // 2. 차량 본체 중심 축선 그리기 (연두색)
+        drawDebugLine(c1, c2, '#10b981'); 
+        
+        // 3. 차선 기준점(타겟)과 주행선 사이의 수직 오차선 그리기 (빨간색)
+        const k = ((targetCenter.x - c1.x) * (c2.x - c1.x) + (targetCenter.y - c1.y) * (c2.y - c1.y)) / (carLength * carLength);
+        const projectionPoint = { x: c1.x + k * (c2.x - c1.x), y: c1.y + k * (c2.y - c1.y) };
+        drawDebugLine(targetCenter, projectionPoint, '#ef4444'); 
 
-      // 타겟(빨간 마커)들의 무게중심 및 거리 편차 비율 산출
-      const targetCenter = getCentroid(targetPoints);
-      const carLength = Math.hypot(c2.x - c1.x, c2.y - c1.y);
-      const numerator = Math.abs((c2.y - c1.y) * targetCenter.x - (c2.x - c1.x) * targetCenter.y + c2.x * c1.y - c2.y * c1.x);
-      const ratio = numerator / carLength / carLength;
+        // 오차비율을 통한 정확도(수행 점수) 계산
+        let error = Math.abs(ratio - 0.63);
+        let penalty = (error / 0.31) * 30; 
+        let accuracy = 100 - penalty;
+        accuracy = Math.max(0, Math.min(100, accuracy));
+        let finalAcc = accuracy.toFixed(1);
 
-      // 캔버스 오버레이 디버그 그래픽 그리기 (심사위원 WOW 시인성 포인트)
-      loadingSpinner.style.display = 'none';
-      document.getElementById('canvasWrapper').style.display = 'block';
-      canvas.style.display = 'block';
-
-      // 1. 차량 주행 벡터 연장 가상 가이드라인
-      ctx.beginPath();
-      ctx.moveTo(c1.x - (c2.x - c1.x) * 10, c1.y - (c2.y - c1.y) * 10);
-      ctx.lineTo(c2.x + (c2.x - c1.x) * 10, c2.y + (c2.y - c1.y) * 10);
-      ctx.strokeStyle = "rgba(34, 197, 94, 0.4)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.setLineDash([]);
-      
-      // 2. 차량 본체 중심 축선 그리기 (연두색)
-      drawDebugLine(c1, c2, '#10b981'); 
-      
-      // 3. 차선 기준점(타겟)과 주행선 사이의 수직 오차선 그리기 (빨간색)
-      const k = ((targetCenter.x - c1.x) * (c2.x - c1.x) + (targetCenter.y - c1.y) * (c2.y - c1.y)) / (carLength * carLength);
-      const projectionPoint = { x: c1.x + k * (c2.x - c1.x), y: c1.y + k * (c2.y - c1.y) };
-      drawDebugLine(targetCenter, projectionPoint, '#ef4444'); 
-
-      // 오차비율을 통한 정확도(수행 점수) 계산
-      let error = Math.abs(ratio - 0.63);
-      let penalty = (error / 0.31) * 30; 
-      let accuracy = 100 - penalty;
-      accuracy = Math.max(0, Math.min(100, accuracy));
-      let finalAcc = accuracy.toFixed(1);
-
-      if (ratio < 0.33) {
-        showResult("❌ 실패 (조향 과다)", `조향 제어 상수가 너무 큽니다. 핸들을 더 완만하게 꺾도록 조향 비례값(P)을 조율해 주세요.`, "#dc3545", finalAcc, ratio);
-      } else if (ratio > 0.94) {
-        showResult("❌ 실패 (조향 부족)", `조향 제어 상수가 너무 작습니다. 핸들을 적극적으로 더 꺾어 회전하도록 코드를 개선해 주세요.`, "#dc3545", finalAcc, ratio);
-      } else {
-        showResult("✅ 주행 성공!", `축하합니다! 코너의 기준 비율을 완벽하게 맞춘 최적의 주행 궤적을 그려냈습니다.`, "#198754", finalAcc, ratio);
+        if (ratio < 0.33) {
+          showResult("❌ 실패 (조향 과다)", `조향 제어 상수가 너무 큽니다. 핸들을 더 완만하게 꺾도록 조향 비례값(P)을 조율해 주세요.`, "#dc3545", finalAcc, ratio);
+        } else if (ratio > 0.94) {
+          showResult("❌ 실패 (조향 부족)", `조향 제어 상수가 너무 작습니다. 핸들을 적극적으로 더 꺾어 회전하도록 코드를 개선해 주세요.`, "#dc3545", finalAcc, ratio);
+        } else {
+          showResult("✅ 주행 성공!", `축하합니다! 코너의 기준 비율을 완벽하게 맞춘 최적의 주행 궤적을 그려냈습니다.`, "#198754", finalAcc, ratio);
+        }
+      } catch (err) {
+        console.error("비전 분석 중 에러 발생:", err);
+        loadingSpinner.style.display = 'none';
+        showErrorModal(
+          "CORS 보안 오류 (로컬 실행 제한) ⚠️",
+          "웹 브라우저의 보안 정책으로 인해 <strong>file://</strong> 주소에서는 로컬 이미지 분석(getImageData)을 직접 실행할 수 없습니다.<br><br><strong>해결 방법:</strong><br>1. VS Code의 <strong>Live Server</strong> 확장 프로그램을 설치하고 마우스 우클릭 -> <strong>Open with Live Server</strong>로 열어서 테스트해 주세요.<br>2. 또는 로컬 웹 서버(localhost) 환경에서 실행해야 정상 작동합니다."
+        );
       }
     }
 
