@@ -1,8 +1,8 @@
-# Task List: 자동 채점 시스템 연동 및 UI 개선
+# Task List: 어노테이션 3차 피드백 보완 개발
 
-- [x] [evaluation.html](file:///c:/Users/user/Desktop/autonomous-test-main%20%281%29/autonomous-test-main/evaluation.html) 파일 리뉴얼 및 구글 웹앱 연동
-    - [x] 네이비 & 블루 톤의 프리미엄 디자인 카드 레이아웃 구성
-    - [x] 구글 웹앱 URL (`https://script.google.com/macros/s/AKfycby7Gze5OhYiMCaBrghCf8FdTbRL1M2efT0pzNxwGRZrjafL0w8uC9YH-ZHfTvZZjHo/exec`)을 호출하는 반응형 `<iframe>` 삽입
-    - [x] 뒤로 가기(메인으로 돌아가기) 버튼 추가
-- [x] 연동 테스트 및 렌더링 확인
-- [x] 최종 결과 보고 및 작업 내용 요약 작성 (`walkthrough.md`)
+- [x] 0도 지칭 오류 삭제 ➡️ 모든 카드/자막에서 '정중앙'으로 명칭 교체
+- [x] 1단계: 말풍선 아바타 오버레이 배경색을 노란색 계열로 수정하여 시인성 보강
+- [x] 1단계: 커브 방향 오타 수정 (오른쪽 ➡️ 왼쪽으로 꺾임)
+- [x] 1단계: S자 코너링 멘트를 "직진/좌회전 혼재 까다로운 구간" 가이드로 수정
+- [x] 2단계: TTS(음성 합성) 낭독기에서 이모티콘/기호 정규식 제거 기능 추가 및 재생 속도(rate: 0.9) 미세 튜닝
+- [x] 로컬 종합 기능 테스트 및 파일 주소 링크 안내

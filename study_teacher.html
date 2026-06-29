@@ -237,7 +237,7 @@
       margin-top: 4px;
     }
 
-    /* 1단계: 비디오 영역 */
+    /* 1단계: 비디오 영역 및 아바타 캐릭터 말풍선 오버레이 */
     .video-wrapper {
       position: relative;
       width: 100%;
@@ -252,6 +252,66 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    /* 비디오용 캐릭터 자막 복합 오버레이 (가독성 향상을 위해 밝은 노란색 테마 적용) */
+    .video-avatar-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(254, 240, 138, 0.98); /* 선명하고 따뜻한 크림 노란색 */
+      backdrop-filter: blur(8px);
+      border: 2.5px solid #eab308; /* 황금빛 노란 실선 */
+      padding: 14px 24px;
+      border-radius: 20px;
+      max-width: 85%;
+      width: auto;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .video-avatar-container.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .mentor-avatar {
+      width: 48px;
+      height: 48px;
+      background: #1e293b; /* 어두운 계열로 로봇(🤖) 대비 강화 */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
+    }
+
+    /* 말할 때 아바타 콩콩 뛰는 애니메이션 */
+    .mentor-avatar.talking {
+      animation: avatar-bounce 0.5s ease;
+    }
+
+    .video-caption-overlay {
+      color: #0f172a; /* 검은색 계열로 가독성을 확실하게 보정 */
+      font-size: 1.05rem;
+      font-weight: 700; /* 볼드체로 눈에 띄게 처리 */
+      text-align: left;
+      word-break: keep-all;
+      line-height: 1.55;
+    }
+
+    @keyframes avatar-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     .goal-box {
@@ -276,7 +336,7 @@
       word-break: keep-all;
     }
 
-    /* 2단계: 개념 카드 UI */
+    /* 2단계: 개념 카드 UI 및 클릭 인터랙션 */
     .concept-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -287,13 +347,16 @@
       background: rgba(15, 23, 42, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 16px;
-      padding: 24px;
+      padding: 24px 24px 38px 24px;
       transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
     }
 
     .concept-card:hover {
-      border-color: rgba(96, 165, 250, 0.3);
+      border-color: rgba(96, 165, 250, 0.4);
       transform: translateY(-3px);
+      background: rgba(15, 23, 42, 0.6);
     }
 
     .concept-card h3 {
@@ -312,25 +375,129 @@
       word-break: keep-all;
     }
 
-    .concept-card ul {
-      margin-top: 10px;
-      padding-left: 20px;
-      color: #94a3b8;
-    }
-
-    .concept-card li {
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
-
     .concept-highlight {
       background: rgba(245, 158, 11, 0.1);
       border: 1px dashed rgba(245, 158, 11, 0.3);
       border-radius: 16px;
-      padding: 20px;
+      padding: 20px 20px 32px 20px;
       color: #fef08a;
       font-size: 0.95rem;
       line-height: 1.6;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .concept-highlight:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    /* 카드 클릭 유도 텍스트 */
+    .concept-card::after, .concept-highlight::after {
+      content: "🔊 클릭해서 크게 읽어보기";
+      position: absolute;
+      bottom: 10px;
+      right: 16px;
+      font-size: 0.78rem;
+      color: #60a5fa;
+      opacity: 0.6;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .concept-highlight::after {
+      color: var(--warning);
+    }
+
+    .concept-card:hover::after, .concept-highlight:hover::after {
+      opacity: 1;
+    }
+
+    /* 개념 카드 확대(Zoom-in) 모달 오버레이 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeInModal 0.25s ease-out forwards;
+    }
+
+    .modal-card {
+      background: #1e293b;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      max-width: 600px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      transform: scale(0.9);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header h3 {
+      font-size: 1.4rem;
+      color: #60a5fa;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      font-size: 1.1rem;
+      color: #f8fafc;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .modal-body strong {
+      color: #fef08a;
+    }
+
+    .modal-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 20px;
+    }
+
+    .modal-controls .action-btn {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.35);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* 3단계: 기존 실습 시뮬레이션 컴포넌트 */
@@ -736,7 +903,7 @@
 
   <!-- 상단 네비게이션 헤더 -->
   <header class="app-header">
-    <a href="index.html" class="back-link">⬅️ 메인 화면</a>
+    <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>🚗 자율주행 어노테이션 학습관</h1>
     <p>주행 트랙을 확인하고 어노테이션 실습과 퀴즈를 거치며 데이터 라벨러로 거듭나 보세요.</p>
   </header>
@@ -776,6 +943,12 @@
       <div class="video-wrapper">
         <!-- 일반트랙.mp4 비디오 렌더링 -->
         <video src="일반트랙.mp4" controls loop autoplay muted></video>
+        
+        <!-- 동영상 자막 설명 및 캐릭터 아바타 오버레이 -->
+        <div class="video-avatar-container" id="videoCaptionOverlay">
+          <div class="mentor-avatar" id="mentorAvatar">🤖</div>
+          <div class="video-caption-overlay" id="captionText">로딩 중...</div>
+        </div>
       </div>
 
       <div class="goal-box">
@@ -794,26 +967,27 @@
     <div class="learn-card" id="step-card-2">
       <div class="card-title-area">
         <h2 class="card-title">💡 Step 2. 데이터 어노테이션(Annotation)의 이해</h2>
-        <p class="card-subtitle">자율주행 AI 학습을 위한 정답 데이터를 만드는 작업에 대해 배웁니다.</p>
+        <p class="card-subtitle">카드를 클릭하면 크게 열어 성우 음성 가이드를 함께 들어볼 수 있습니다.</p>
       </div>
 
       <div class="concept-grid">
-        <div class="concept-card">
+        <div class="concept-card" onclick="openConceptModal(this)">
           <h3>📌 어노테이션(Annotation)이란?</h3>
           <p>
-            인공지능 모델이 데이터(이미지)를 학습할 수 있도록, 원천 데이터에 정답 레이블(Label)을 달아주는 전처리 가공 작업을 뜻합니다. 자율주행에서는 도로 사진에 <strong>"여기서 조향각은 몇 도가 정답이야"</strong>라고 알려주는 매우 중요한 기초 공정입니다.
+            인공지능 자율주행 차량은 아기처럼 처음에는 스스로 운전할 줄 모릅니다. 우리가 도로 사진마다 <strong>"이때는 핸들을 이만큼 돌리는 게 정답이야!"</strong> 하고 정답 가이드라인(정답지)을 그려서 AI에게 미리 길을 알려주는 아주 기초적이고 중요한 학습 데이터 훈련 과정입니다.
           </p>
         </div>
-        <div class="concept-card">
-          <h3>🛠️ 데이터의 퀄리티가 성능을 결정합니다</h3>
+        <div class="concept-card" onclick="openConceptModal(this)">
+          <h3>🛠️ 정답지의 정밀도가 성능을 결정해요</h3>
           <p>
-            사람이 정답(조향각)을 잘못된 위치에 마킹하게 되면(예: 직진 도로에서 핸들을 좌측으로 과하게 꺾는 마킹), AI 모델 역시 주행 시 잘못 학습하여 트랙 밖으로 이탈하게 됩니다. 따라서 <strong>엄격한 평가 기준</strong>에 맞춰 올바르게 레이블링해야 합니다.
+            사람이 조향 핸들 정답을 삐뚤빼뚤 엉망으로 작성해서 주면(예: 반듯한 직진 구간인데 핸들을 억지로 꺾어서 정답을 주는 경우), AI 차량은 그것이 정답인 줄 알고 잘못 학습해서 트랙 밖으로 이탈하게 됩니다. 그렇기 때문에 엄격한 만점 기준에 맞추어 섬세하게 오답노트를 만들 듯 작성해야 합니다.
           </p>
         </div>
       </div>
 
-      <div class="concept-highlight">
-        💡 <strong>핵심 요약:</strong> 직진 구간에서는 좌우 차선 정중앙에 조향 가이드가 수직으로 놓여야 하며, 곡선 코너 구간에서는 안쪽 차선이 아닌 <strong>"바깥쪽 차선(바깥 노란선)"</strong>을 기준으로 평행을 맞추어 조향각을 맞춰야 차선 이탈을 방지할 수 있습니다.
+      <div class="concept-highlight" onclick="openConceptModal(this)">
+        💡 <strong>📐 회전할 때 왜 바깥쪽 실선을 맞춰야 할까요? (중요!)</strong><br>
+        자율주행차가 커브 길을 돌 때 안쪽 차선에 너무 가깝게 붙어서 회전하면, 원심력 때문에 차선 바깥으로 이탈하거나 코너 안쪽의 장애물·연석과 충돌하기 십상입니다! 안전거리를 넉넉히 확보하기 위해 코너 구간에서는 반드시 <strong>바깥쪽 노란색 실선</strong>을 기준선 삼아 평행하게 조향각 데이터를 만들어 주어야 사고 없이 달릴 수 있습니다.
       </div>
 
       <div class="btn-row">
@@ -890,7 +1064,7 @@
 
         <!-- 퀴즈 2 -->
         <div class="quiz-card" id="q2-box">
-          <h3>Q2. 좌회전 또는 우회전 같은 코너링(곡선) 구간에서 조향각 데이터 어노테이션을 수행할 때, 가장 엄격한 감점 판정 기준이 되는 차선은 어디인가요?</h3>
+          <h3>Q2. 좌회전 또는 우회전 같은 코너링(곡선) 구간에서 조향각 데이터 어노테이션을 수행할 때, 안전거리 확보 및 충돌 방지를 위해 반드시 맞추어야 할 만점 기준 차선은 어디인가요?</h3>
           <div class="quiz-options">
             <button class="quiz-option" onclick="selectAnswer(2, 1)">① 코너 안쪽의 실선</button>
             <button class="quiz-option" onclick="selectAnswer(2, 2)">② 화면 맨 위 끝선</button>
@@ -919,12 +1093,29 @@
           수료 일시: <span id="current-date">2026. 06. 29.</span>
         </p>
         <div class="btn-row" style="border-top: none; padding-top: 10px;">
-          <a href="index.html" class="action-btn btn-primary" style="text-decoration: none;">메인 화면으로 이동 ➡️</a>
+          <a href="index.html?start=true" class="action-btn btn-primary" style="text-decoration: none;">메인 화면으로 이동 ➡️</a>
         </div>
       </div>
     </div>
 
   </main>
+
+  <!-- 개념 카드 줌인 및 음성 듣기 모달 오버레이 -->
+  <div class="modal-overlay" id="conceptModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">개념 타이틀</h3>
+      </div>
+      <div class="modal-body" id="modalBody">
+        개념 본문 설명
+      </div>
+      <div class="modal-controls">
+        <button class="action-btn btn-primary" onclick="speakText()"><span class="btn-icon">🔊</span> 다시 듣기</button>
+        <button class="action-btn btn-secondary" onclick="stopSpeaking()"><span class="btn-icon">🔇</span> 음성 끄기</button>
+        <button class="action-btn btn-danger" onclick="closeModal()"><span class="btn-icon">❌</span> 닫기</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const trackBox = document.getElementById('trackBox');
@@ -943,11 +1134,140 @@
     let animationFrameId = null;
     let currentStep = 1;
 
+    // ----------------------------------------------------
+    // 1단계: 동영상 시간별 캐릭터 설명 자막 오버레이 (피드백 반영 튜닝)
+    // ----------------------------------------------------
+    const videoCaptions = [
+      { start: 0, end: 4, text: "안녕! 난 AI 드라이빙 멘토 '로보'야. 오늘 자율주행 트랙을 같이 정복해 보자!" },
+      { start: 5, end: 11, text: "🛣️ [직진 구간] 핸들을 똑바로 정중앙으로 맞춰야 차선 이탈 없이 안전하게 직진할 수 있어." },
+      { start: 12, end: 18, text: "🔄 [좌회전 코너 진입] 차선이 왼쪽으로 휘어지니까, 꼭 코너 바깥쪽(오른쪽) 실선에 맞춰 조향각을 제어해야 해." },
+      { start: 19, end: 24, text: "💡 좌회전할 때 안쪽(왼쪽) 선에 바짝 붙으면 연석에 충돌해. 그래서 바깥쪽(오른쪽) 노란 실선에 정렬을 맞추는 거란다!" },
+      { start: 25, end: 31, text: "🛣️ 코너를 통과해서 다시 완만한 직선 구간이야. 이때는 핸들을 신속히 제자리 정중앙으로 가져와야 차량이 비틀대지 않아." },
+      { start: 32, end: 38, text: "🚦 [복잡한 구간] 여기는 좌회전과 직진 차선이 겹친 아주 까다로운 코스야. 어노테이션이 복잡하니까 이런 차선 형태가 있다는 것만 알고 가자!" },
+      { start: 39, end: 47, text: "🛠️ 차량이 트랙 한 바퀴를 완벽히 도는 데는 도로 사진마다 운전 핸들 정답을 달아주는 어노테이션 공정이 꼭 필요하단다." },
+      { start: 48, end: 57, text: "✨ 훌륭한 자율주행 인공지능은 바로 꼼꼼하게 정답지를 만들어 주는 여러분 같은 데이터 라벨러의 노력 끝에 탄생하는 거지!" },
+      { start: 58, end: 66, text: "🏁 드디어 1바퀴를 모두 완주했어! 이제 다음 스텝으로 이동해서 어노테이션의 기본 개념을 완전히 마스터해 볼까?" }
+    ];
+
+    const video = document.querySelector('.video-wrapper video');
+    const videoCaptionOverlay = document.getElementById('videoCaptionOverlay');
+    const captionText = document.getElementById('captionText');
+    const mentorAvatar = document.getElementById('mentorAvatar');
+    let lastCaptionText = "";
+
+    if (video && videoCaptionOverlay && captionText) {
+      video.addEventListener('timeupdate', () => {
+        const currentTime = video.currentTime;
+        const matched = videoCaptions.find(c => currentTime >= c.start && currentTime <= c.end);
+        
+        if (matched) {
+          captionText.innerText = matched.text;
+          videoCaptionOverlay.classList.add('show');
+          
+          if (lastCaptionText !== matched.text) {
+            mentorAvatar.classList.remove('talking');
+            void mentorAvatar.offsetWidth; 
+            mentorAvatar.classList.add('talking');
+            lastCaptionText = matched.text;
+          }
+        } else {
+          videoCaptionOverlay.classList.remove('show');
+        }
+      });
+    }
+
+    // ----------------------------------------------------
+    // 2단계: 개념 카드 줌인 & TTS (음성 합성 필터 튜닝)
+    // ----------------------------------------------------
+    const conceptModal = document.getElementById('conceptModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    let currentSpeakingText = "";
+
+    // TTS 가독성 향상 및 특수문자 읽기 방지 필터
+    function filterTextForTTS(rawText) {
+      // 1. 이모지 유니코드 범위 전체 제거
+      let clean = rawText.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, ""); 
+      
+      // 2. 자주 사용되는 명시적 이모티콘 소거
+      clean = clean.replace(/🤖|📐|💡|📌|🛠|🏁|🚦|🔄|🛣|🚗|➡️|❌|🔊|🔇/g, ""); 
+      
+      // 3. 괄호 내용 삭제 (발음 방해 요인 제거)
+      clean = clean.replace(/\([^)]*\)/g, ""); 
+      clean = clean.replace(/\[[^\]]*\]/g, ""); 
+      
+      // 4. 문장 부호를 자연스러운 마침표로 정규화
+      clean = clean.replace(/!|\?/g, ".");
+      
+      return clean.trim();
+    }
+
+    function openConceptModal(cardElement) {
+      if (!conceptModal || !modalTitle || !modalBody) return;
+
+      let title = "";
+      let bodyHtml = "";
+      
+      if (cardElement.classList.contains('concept-card')) {
+        title = cardElement.querySelector('h3').innerText;
+        bodyHtml = cardElement.querySelector('p').innerHTML;
+      } else {
+        title = "핵심 요약 가이드";
+        bodyHtml = cardElement.innerHTML;
+      }
+
+      modalTitle.innerText = title;
+      modalBody.innerHTML = bodyHtml;
+      
+      conceptModal.classList.add('active');
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = bodyHtml;
+      
+      // 필터를 통과시켜 자연스러운 대본 텍스트로 보정
+      currentSpeakingText = filterTextForTTS(title + ". " + tempDiv.innerText);
+
+      speakText();
+    }
+
+    function closeModal() {
+      if (conceptModal) {
+        conceptModal.classList.remove('active');
+      }
+      stopSpeaking();
+    }
+
+    function speakText() {
+      if (!currentSpeakingText) return;
+      
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(currentSpeakingText);
+      utterance.lang = 'ko-KR';
+      
+      // 낭독 속도를 0.9로 약간 늦추어 기계음 느낌을 줄이고 친근함과 명확성을 강화
+      utterance.rate = 0.9; 
+      utterance.pitch = 1.0; 
+
+      const voices = window.speechSynthesis.getVoices();
+      const koVoice = voices.find(voice => voice.lang.includes('ko') || voice.lang.includes('KO'));
+      if (koVoice) {
+        utterance.voice = koVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      window.speechSynthesis.cancel();
+    }
+
+    // ----------------------------------------------------
     // 단계 이동 함수 (Step 1 ~ 4)
+    // ----------------------------------------------------
     function goToStep(stepNum) {
       if (stepNum < 1 || stepNum > 4) return;
       
-      // 기존 스텝 액티브 클래스 제거
       document.querySelectorAll('.learn-card').forEach(card => card.classList.remove('active'));
       document.querySelectorAll('.step').forEach(st => {
         st.classList.remove('active');
@@ -955,10 +1275,8 @@
       });
       document.querySelectorAll('.step-line').forEach(line => line.classList.remove('active'));
 
-      // 대상 단계 카드 띄우기
       document.getElementById(`step-card-${stepNum}`).classList.add('active');
       
-      // 진행 인디케이터 조정
       for (let i = 1; i <= 4; i++) {
         const ind = document.getElementById(`step-indicator-${i}`);
         const line = document.getElementById(`step-line-${i}`);
@@ -973,27 +1291,21 @@
 
       currentStep = stepNum;
 
-      // 3단계 진입 시 기존 도로 세팅 리렌더링
       if (stepNum === 3) {
-        // 비디오 자동 재생 멈추게 할 수 있음
-        const video = document.querySelector('video');
         if (video) video.pause();
         
-        // 렌더링 동기화
         setTimeout(() => {
           applyLevelSettings();
         }, 100);
       }
     }
 
-    // 3단계: 코스 전환 논리
     function nextCourse() {
       if (currentMode === 'straight') {
         setMode('left');
       } else if (currentMode === 'left') {
         setMode('right');
       } else if (currentMode === 'right') {
-        // 3단계 실습이 완전히 완료되었으므로, 4단계(퀴즈)로 안내
         goToStep(4);
       }
     }
@@ -1090,7 +1402,6 @@
       animateToX(idealX);
     }
 
-    // 오답 예시 시뮬레이션
     function demoWrong() {
       let center = trackBox.clientWidth / 2;
       let wrongX;
@@ -1098,14 +1409,13 @@
       if (currentMode === 'straight') {
         wrongX = center + 150; 
       } else if (currentMode === 'left') {
-        wrongX = center + 60; // 바깥쪽 실선을 안 맞추고 안쪽 실선을 봤을 때의 예시
+        wrongX = center + 60; 
       } else {
         wrongX = center - 60; 
       }
       animateToX(wrongX);
     }
 
-    // 마우스 드래그 이벤트 제어
     function startDrag(e) {
       isDragging = true;
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -1147,7 +1457,6 @@
       steerLine.setAttribute('y2', gy);
     }
 
-    // 조향각 드래그 실시간 매칭 채점
     function provideRealTimeFeedback(currentX, centerX) {
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
@@ -1181,12 +1490,11 @@
       }
     });
 
-
     // ----------------------------------------------------
     // 4단계: 퀴즈 로직 구현
     // ----------------------------------------------------
     let quizAnswers = { 1: null, 2: null };
-    const correctAnswers = { 1: 2, 2: 3 }; // Q1은 ②번, Q2는 ③번이 정답
+    const correctAnswers = { 1: 2, 2: 3 }; 
 
     function selectAnswer(questionNum, optionNum) {
       const qBox = document.getElementById(`q${questionNum}-box`);
@@ -1243,18 +1551,15 @@
         q2Options[correctAnswers[2]-1].classList.add('correct-choice');
       }
 
-      // 퀴즈 옵션 버튼들 클릭 불가 조치
       document.querySelectorAll('.quiz-option').forEach(btn => btn.style.pointerEvents = 'none');
-
-      // 제출 버튼 숨기고 완료 안내
       document.getElementById('quiz-btn-row').style.display = 'none';
 
-      // 오늘 날짜 세팅
+      // 오늘 날짜 설정
       const today = new Date();
       const formattedDate = `${today.getFullYear()}. ${String(today.getMonth() + 1).padStart(2, '0')}. ${String(today.getDate()).padStart(2, '0')}.`;
       document.getElementById('current-date').innerText = formattedDate;
 
-      // 수료증 카드 연출 노출
+      // 수료증 연출
       setTimeout(() => {
         document.getElementById('quizContainer').style.display = 'none';
         
@@ -1262,6 +1567,13 @@
         cert.style.display = 'flex';
         cert.scrollIntoView({ behavior: 'smooth' });
       }, 1800);
+    }
+
+    // TTS 보이스 로드를 위한 이벤트 리스너
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = () => {
+        // 음성 캐시 로딩 대응
+      };
     }
   </script>
 

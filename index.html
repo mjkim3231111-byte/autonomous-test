@@ -124,6 +124,18 @@
   </div>
 
   <script>
+    // 페이지 로드 시 파라미터 감지하여 시작 표지 즉시 생략
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('start') === 'true') {
+        const cover = document.getElementById('coverPage');
+        const main = document.getElementById('mainContent');
+        cover.style.display = 'none';
+        main.style.display = 'block';
+        main.style.opacity = '1';
+      }
+    });
+
     function startApp() {
       const cover = document.getElementById('coverPage');
       const main = document.getElementById('mainContent');
