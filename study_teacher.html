@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>자율주행 어노테이션 평가 가이드 - AI 드라이빙 멘토</title>
+  <title>자율주행 어노테이션 학습관 - AI 드라이빙 멘토</title>
   <!-- Google Fonts: Outfit & Noto Sans KR -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
       --danger-bg: #fef2f2;
       --danger-border: #fca5a5;
       --danger-text: #991b1b;
-      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
@@ -45,7 +45,7 @@
       background: var(--bg-gradient); 
       margin: 0; 
       padding: 0; 
-      color: var(--text-main); 
+      color: #f8fafc; 
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -54,16 +54,18 @@
     
     /* 상단 네비게이션 헤더 */
     .app-header {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       color: white;
-      padding: 24px 20px;
+      padding: 20px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       position: relative;
+      z-index: 100;
     }
 
     .app-header h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
       letter-spacing: -0.5px;
       margin-bottom: 6px;
@@ -74,7 +76,7 @@
     }
 
     .app-header p {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #94a3b8;
     }
 
@@ -102,27 +104,236 @@
       background: rgba(255, 255, 255, 0.1);
     }
     
-    /* 메인 대시보드 랩 */
+    /* 메인 컨테이너 */
     .main-container {
-      max-width: 900px;
+      max-width: 960px;
       width: 100%;
-      margin: 32px auto;
+      margin: 24px auto;
       padding: 0 20px;
       flex-grow: 1;
     }
 
-    .dashboard {
-      background: var(--card-bg);
-      border-radius: 24px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--border);
-      padding: 36px 32px;
+    /* 스텝바 (Stepper) */
+    .stepper {
       display: flex;
-      flex-direction: column;
-      gap: 28px;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 16px 24px;
+      border-radius: 20px;
+      margin-bottom: 24px;
     }
 
-    /* 코스 진행 표시 */
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      opacity: 0.4;
+      transition: all 0.3s;
+    }
+
+    .step.active {
+      opacity: 1;
+    }
+
+    .step.completed {
+      opacity: 0.85;
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: #334155;
+      color: #94a3b8;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .step.active .step-num {
+      background: var(--primary);
+      color: white;
+      border-color: #60a5fa;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
+    }
+
+    .step.completed .step-num {
+      background: var(--success);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    .step.active .step-label {
+      color: #60a5fa;
+      font-weight: 700;
+    }
+
+    .step-line {
+      height: 2px;
+      background: #334155;
+      flex-grow: 1;
+      margin: 0 12px;
+      margin-bottom: 20px; /* 라벨 높이 맞춤 */
+    }
+
+    .step-line.active {
+      background: var(--primary);
+    }
+
+    /* 학습 단계별 카드 레이아웃 */
+    .learn-card {
+      background: #1e293b;
+      border-radius: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 32px;
+      display: none; /* 기본 숨김 */
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .learn-card.active {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 공통 카드 타이틀 */
+    .card-title-area {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* 1단계: 비디오 영역 */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #0f172a;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .goal-box {
+      background: rgba(37, 99, 235, 0.1);
+      border-left: 5px solid var(--primary);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+    .goal-box h3 {
+      color: #60a5fa;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .goal-box p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    /* 2단계: 개념 카드 UI */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .concept-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+
+    .concept-card:hover {
+      border-color: rgba(96, 165, 250, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .concept-card h3 {
+      font-size: 1.15rem;
+      color: #60a5fa;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .concept-card p {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    .concept-card ul {
+      margin-top: 10px;
+      padding-left: 20px;
+      color: #94a3b8;
+    }
+
+    .concept-card li {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .concept-highlight {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px dashed rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      color: #fef08a;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* 3단계: 기존 실습 시뮬레이션 컴포넌트 */
     .course-tabs {
       display: flex;
       justify-content: center;
@@ -133,75 +344,72 @@
     .tab-btn {
       flex: 1;
       padding: 14px 20px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      border: 2px solid var(--border);
-      background: #f8fafc;
-      color: var(--text-muted);
-      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #1e293b;
+      color: #94a3b8;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s;
       text-align: center;
     }
 
     .tab-btn:hover { 
-      background: var(--primary-light); 
-      color: var(--primary); 
+      background: rgba(37, 99, 235, 0.1); 
+      color: #60a5fa; 
       border-color: var(--primary);
     }
 
     .tab-btn.active {
-      background: #0f172a;
-      border-color: #0f172a;
+      background: var(--primary);
+      border-color: var(--primary);
       color: white;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
-    /* 평가 기준 영역 */
     .eval-criteria {
-      background: var(--warning-bg);
-      border-left: 6px solid var(--warning);
-      border-right: 1px solid var(--warning-border);
-      border-top: 1px solid var(--warning-border);
-      border-bottom: 1px solid var(--warning-border);
-      padding: 20px 24px;
-      border-radius: 16px;
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 5px solid var(--warning);
+      border-right: 1px solid rgba(245, 158, 11, 0.2);
+      border-top: 1px solid rgba(245, 158, 11, 0.2);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 16px 20px;
+      border-radius: 14px;
     }
 
     .eval-criteria h2 { 
-      margin: 0 0 8px 0; 
-      font-size: 1.15rem; 
-      color: var(--warning-text); 
+      margin: 0 0 6px 0; 
+      font-size: 1.1rem; 
+      color: var(--warning); 
       font-weight: 700;
     }
 
     .eval-criteria p { 
       margin: 0; 
-      font-size: 1rem; 
-      color: #7c2d12; 
-      line-height: 1.6; 
-      font-weight: 500; 
+      font-size: 0.95rem; 
+      color: #fed7aa; 
+      line-height: 1.5; 
       word-break: keep-all; 
     }
 
     .highlight { 
-      color: var(--danger); 
+      color: #f87171; 
       font-weight: 700;
-      border-bottom: 2px dashed var(--danger);
+      border-bottom: 2px dashed #f87171;
       padding-bottom: 1px;
     }
 
-    /* 시뮬레이터 화면 */
     .simulator-box {
       width: 100%; 
-      height: 420px; 
+      height: 380px; 
       background-color: #0f172a; 
       position: relative; 
       border-radius: 20px; 
       overflow: hidden;
       touch-action: none;
-      box-shadow: inset 0 10px 30px rgba(0,0,0,0.3);
-      border: 1px solid #1e293b;
+      box-shadow: inset 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     #roadGuideSvg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
@@ -212,14 +420,13 @@
     #svgCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
     .steer-line { stroke: var(--primary); stroke-width: 12; stroke-linecap: round; transition: stroke 0.2s; }
 
-    /* 조작 점 크기 - 태블릿/모바일 터치 편의성 극대화 */
     .red-circle { 
       position: absolute; 
       bottom: 40px; 
       left: 50%; 
-      width: 50px; 
-      height: 50px; 
-      border: 6px solid var(--danger); 
+      width: 44px; 
+      height: 44px; 
+      border: 5px solid var(--danger); 
       border-radius: 50%; 
       transform: translate(-50%, 0); 
       z-index: 5; 
@@ -230,93 +437,252 @@
       position: absolute; 
       top: 100px; 
       left: 50%; 
-      width: 70px; /* 더 커서 터치하기 쉬움 */
-      height: 70px; 
-      border: 8px solid var(--success); 
+      width: 64px; 
+      height: 64px; 
+      border: 6px solid var(--success); 
       border-radius: 50%; 
       transform: translate(-50%, -50%); 
       z-index: 10; 
       cursor: grab; 
       background-color: rgba(34, 197, 94, 0.3); 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(34, 197, 94, 0.2); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5), 0 0 12px rgba(34, 197, 94, 0.25); 
       transition: border-color 0.2s, background-color 0.2s, transform 0.15s; 
     }
 
     .green-circle:active { 
       cursor: grabbing; 
-      transform: translate(-50%, -50%) scale(1.15); 
+      transform: translate(-50%, -50%) scale(1.1); 
       background-color: rgba(34, 197, 94, 0.5);
       border-color: #22c55e;
     }
 
     #feedbackText { 
       text-align: center; 
-      font-size: 1.3rem; 
+      font-size: 1.15rem; 
       font-weight: 700; 
-      color: var(--warning); 
-      min-height: 38px; 
-      margin-top: 5px; 
+      color: #94a3b8; 
+      min-height: 32px; 
     }
 
-    /* 시연 컨트롤 버튼 영역 */
     .demo-controls {
       display: flex;
       justify-content: center;
       gap: 12px;
-      padding: 10px 0;
+      padding: 5px 0;
       flex-wrap: wrap;
     }
-    
-    .demo-btn {
-      padding: 16px 28px;
-      font-size: 1.05rem;
+
+    /* 4단계: 퀴즈 영역 UI */
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .quiz-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .quiz-card h3 {
+      font-size: 1.1rem;
+      color: white;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-option {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      background: rgba(37, 99, 235, 0.1);
+      color: #60a5fa;
+      border-color: var(--primary);
+    }
+
+    .quiz-option.selected {
+      background: var(--primary);
+      color: white;
+      border-color: #60a5fa;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    }
+
+    .quiz-option.correct-choice {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--success);
+      color: #a7f3d0;
+    }
+
+    .quiz-option.wrong-choice {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--danger);
+      color: #fca5a5;
+    }
+
+    .quiz-feedback {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.success-msg {
+      background: rgba(16, 185, 129, 0.1);
+      color: #a7f3d0;
+      border-left: 4px solid var(--success);
+    }
+
+    .quiz-feedback.danger-msg {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border-left: 4px solid var(--danger);
+    }
+
+    /* 수료증 화면 */
+    .certificate-card {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      border-image: linear-gradient(to right, #ffd700, #ffa500) 1;
+    }
+
+    .certificate-card h2 {
+      font-size: 1.8rem;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+
+    .certificate-card p {
+      color: #cbd5e1;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .badge-icon {
+      font-size: 5rem;
+      margin-bottom: 10px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* 하단 제어 및 화면 전환 버튼 */
+    .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 20px;
+    }
+
+    .action-btn {
+      padding: 14px 28px;
+      font-size: 1rem;
       font-weight: 700;
       border: none;
-      border-radius: 16px;
+      border-radius: 12px;
       cursor: pointer;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+      transform: translateY(-2px);
+    }
+
+    /* 시연 버튼 */
+    .demo-btn {
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s;
     }
     
     .btn-wrong { 
-      background: var(--danger-bg); 
-      color: var(--danger-text); 
-      border: 1px solid var(--danger-border);
+      background: rgba(239, 68, 68, 0.1); 
+      color: #fca5a5; 
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
     .btn-wrong:hover { 
-      background: #fecaca; 
-      transform: translateY(-2px); 
+      background: rgba(239, 68, 68, 0.25); 
+      transform: translateY(-1px); 
     }
     
     .btn-correct { 
-      background: var(--success-bg); 
-      color: var(--success-text); 
-      border: 1px solid var(--success-border);
+      background: rgba(16, 185, 129, 0.1); 
+      color: #a7f3d0; 
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
     .btn-correct:hover { 
-      background: #bbf7d0; 
-      transform: translateY(-2px); 
-    }
-    
-    /* 다음 코스 이동 버튼 */
-    .btn-next-course { 
-      background: #0f172a; 
-      color: white; 
-      border: 1px solid #1e293b;
-      margin-left: auto;
-    }
-    .btn-next-course:hover { 
-      background: #1e293b;
-      transform: translateY(-2px); 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: rgba(16, 185, 129, 0.25); 
+      transform: translateY(-1px); 
     }
 
     /* 반응형 스타일 조정 */
     @media (max-width: 768px) {
       .app-header h1 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
       }
       .back-link {
         position: static;
@@ -327,34 +693,41 @@
       .app-header {
         padding: 16px 20px;
       }
-      .main-container {
-        margin: 16px auto;
+      .stepper {
+        padding: 12px;
       }
-      .dashboard {
-        padding: 24px 20px;
-        gap: 20px;
+      .step-label {
+        font-size: 0.75rem;
+      }
+      .concept-grid {
+        grid-template-columns: 1fr;
+      }
+      .simulator-box {
+        height: 320px;
       }
       .course-tabs {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
       }
       .tab-btn {
         width: 100%;
-        padding: 12px;
+        padding: 10px;
       }
       .demo-controls {
         flex-direction: column;
         width: 100%;
+        gap: 8px;
       }
       .demo-btn {
         width: 100%;
         justify-content: center;
       }
-      .btn-next-course {
-        margin-left: 0;
+      .btn-row {
+        flex-direction: column-reverse;
       }
-      .simulator-box {
-        height: 340px;
+      .action-btn {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -364,44 +737,193 @@
   <!-- 상단 네비게이션 헤더 -->
   <header class="app-header">
     <a href="index.html" class="back-link">⬅️ 메인 화면</a>
-    <h1>🚗 자율주행 어노테이션 평가 가이드</h1>
-    <p>어노테이션(데이터 라벨링) 평가지 기준을 실시간 조향각 제어 시뮬레이터로 시연합니다.</p>
+    <h1>🚗 자율주행 어노테이션 학습관</h1>
+    <p>주행 트랙을 확인하고 어노테이션 실습과 퀴즈를 거치며 데이터 라벨러로 거듭나 보세요.</p>
   </header>
 
   <main class="main-container">
-    <div class="dashboard">
     
-    <div class="course-tabs">
-      <button class="tab-btn active" id="tabStraight" onclick="setMode('straight')">1. 직진 코스</button>
-      <button class="tab-btn" id="tabLeft" onclick="setMode('left')">2. 좌회전 코스</button>
-      <button class="tab-btn" id="tabRight" onclick="setMode('right')">3. 우회전 코스</button>
+    <!-- 스텝 진행 바 (Stepper UI) -->
+    <div class="stepper">
+      <div class="step active" id="step-indicator-1">
+        <span class="step-num">1</span>
+        <span class="step-label">트랙 확인</span>
+      </div>
+      <div class="step-line" id="step-line-1"></div>
+      <div class="step" id="step-indicator-2">
+        <span class="step-num">2</span>
+        <span class="step-label">개념 학습</span>
+      </div>
+      <div class="step-line" id="step-line-2"></div>
+      <div class="step" id="step-indicator-3">
+        <span class="step-num">3</span>
+        <span class="step-label">조향 실습</span>
+      </div>
+      <div class="step-line" id="step-line-3"></div>
+      <div class="step" id="step-indicator-4">
+        <span class="step-num">4</span>
+        <span class="step-label">이해도 퀴즈</span>
+      </div>
     </div>
 
-    <div class="eval-criteria" id="evalCriteria"></div>
+    <!-- 1단계: 트랙 및 학습 목표 알아보기 -->
+    <div class="learn-card active" id="step-card-1">
+      <div class="card-title-area">
+        <h2 class="card-title">🚗 Step 1. 우리가 주행할 트랙 둘러보기</h2>
+        <p class="card-subtitle">아래 동영상을 감상하고 주행 트랙과 학습 목표를 이해해 봅시다.</p>
+      </div>
 
-    <div class="simulator-box" id="trackBox">
-      <svg id="roadGuideSvg">
-        <path id="leftLine" class="road-line" d=""></path>
-        <path id="rightLine" class="road-line" d=""></path>
-      </svg>
-      
-      <svg id="svgCanvas">
-        <line id="steerLine" class="steer-line" x1="50%" y1="90%" x2="50%" y2="20%" />
-      </svg>
-      
-      <div class="red-circle" id="redCircle"></div>
-      <div class="green-circle" id="greenCircle"></div>
+      <div class="video-wrapper">
+        <!-- 일반트랙.mp4 비디오 렌더링 -->
+        <video src="일반트랙.mp4" controls loop autoplay muted></video>
+      </div>
+
+      <div class="goal-box">
+        <h3>💡 이번 학습의 목표</h3>
+        <p>
+          자율주행 차량이 주어진 트랙에서 탈선하지 않고 스스로 판단하여 안전하게 달리기 위해서는, 차량에 달린 카메라로 촬영된 트랙 이미지마다 <strong>차량이 나아가야 할 정답 조향각(조향휠 제어 값)</strong>을 지도학습시켜야 합니다. 이 비디오 속에 등장하는 트랙의 곡선과 직선 형태를 눈으로 확인하며, 앞으로 우리가 만들 데이터의 목표를 파악해 보세요.
+        </p>
+      </div>
+
+      <div class="btn-row">
+        <button class="action-btn btn-primary" onclick="goToStep(2)">동영상 학습 완료 ➡️</button>
+      </div>
     </div>
 
-    <div id="feedbackText">마우스로 초록색 원을 움직여 실습하거나 아래 시연 버튼을 누르세요.</div>
+    <!-- 2단계: 어노테이션 개념 이해하기 -->
+    <div class="learn-card" id="step-card-2">
+      <div class="card-title-area">
+        <h2 class="card-title">💡 Step 2. 데이터 어노테이션(Annotation)의 이해</h2>
+        <p class="card-subtitle">자율주행 AI 학습을 위한 정답 데이터를 만드는 작업에 대해 배웁니다.</p>
+      </div>
 
-    <div class="demo-controls">
-      <button class="demo-btn btn-wrong" onclick="demoWrong()">❌ 오답 예시 (감점)</button>
-      <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 모범 답안 (만점)</button>
-      <button class="demo-btn btn-next-course" id="btnNextCourse" onclick="nextCourse()">▶️ 다음: 좌회전 코스</button>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h3>📌 어노테이션(Annotation)이란?</h3>
+          <p>
+            인공지능 모델이 데이터(이미지)를 학습할 수 있도록, 원천 데이터에 정답 레이블(Label)을 달아주는 전처리 가공 작업을 뜻합니다. 자율주행에서는 도로 사진에 <strong>"여기서 조향각은 몇 도가 정답이야"</strong>라고 알려주는 매우 중요한 기초 공정입니다.
+          </p>
+        </div>
+        <div class="concept-card">
+          <h3>🛠️ 데이터의 퀄리티가 성능을 결정합니다</h3>
+          <p>
+            사람이 정답(조향각)을 잘못된 위치에 마킹하게 되면(예: 직진 도로에서 핸들을 좌측으로 과하게 꺾는 마킹), AI 모델 역시 주행 시 잘못 학습하여 트랙 밖으로 이탈하게 됩니다. 따라서 <strong>엄격한 평가 기준</strong>에 맞춰 올바르게 레이블링해야 합니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="concept-highlight">
+        💡 <strong>핵심 요약:</strong> 직진 구간에서는 좌우 차선 정중앙에 조향 가이드가 수직으로 놓여야 하며, 곡선 코너 구간에서는 안쪽 차선이 아닌 <strong>"바깥쪽 차선(바깥 노란선)"</strong>을 기준으로 평행을 맞추어 조향각을 맞춰야 차선 이탈을 방지할 수 있습니다.
+      </div>
+
+      <div class="btn-row">
+        <button class="action-btn btn-secondary" onclick="goToStep(1)">⬅️ 이전 단계</button>
+        <button class="action-btn btn-primary" onclick="goToStep(3)">이해 완료 및 실습하기 ➡️</button>
+      </div>
     </div>
 
-  </div>
+    <!-- 3단계: 조향 제어 어노테이션 실습 -->
+    <div class="learn-card" id="step-card-3">
+      <div class="card-title-area">
+        <h2 class="card-title">🔧 Step 3. 조향 제어 어노테이션 직접 해보기</h2>
+        <p class="card-subtitle">각 코스별 기준선 설명을 읽고, 마우스를 드래그하여 조향 기준선을 맞춰보세요.</p>
+      </div>
+
+      <!-- 기존 실습 탭 -->
+      <div class="course-tabs">
+        <button class="tab-btn active" id="tabStraight" onclick="setMode('straight')">1. 직진 코스</button>
+        <button class="tab-btn" id="tabLeft" onclick="setMode('left')">2. 좌회전 코스</button>
+        <button class="tab-btn" id="tabRight" onclick="setMode('right')">3. 우회전 코스</button>
+      </div>
+
+      <div class="eval-criteria" id="evalCriteria"></div>
+
+      <!-- 기존 도로 & 조향 라인 SVG 시뮬레이터 -->
+      <div class="simulator-box" id="trackBox">
+        <svg id="roadGuideSvg">
+          <path id="leftLine" class="road-line" d=""></path>
+          <path id="rightLine" class="road-line" d=""></path>
+        </svg>
+        
+        <svg id="svgCanvas">
+          <line id="steerLine" class="steer-line" x1="50%" y1="90%" x2="50%" y2="20%" />
+        </svg>
+        
+        <div class="red-circle" id="redCircle"></div>
+        <div class="green-circle" id="greenCircle"></div>
+      </div>
+
+      <div id="feedbackText">마우스나 터치로 초록색 원을 움직여 실습하거나 시연 버튼을 눌러보세요.</div>
+
+      <div class="demo-controls">
+        <button class="demo-btn btn-wrong" onclick="demoWrong()">❌ 오답 예시 (감점)</button>
+        <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 모범 답안 (만점)</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="action-btn btn-secondary" onclick="goToStep(2)">⬅️ 이전 단계</button>
+        <!-- 실습 진행용 다음 버튼 -->
+        <button class="action-btn btn-primary" id="btnNextCourse" onclick="nextCourse()">다음: 좌회전 코스 ➡️</button>
+      </div>
+    </div>
+
+    <!-- 4단계: 학습 이해도 확인 퀴즈 및 수료 -->
+    <div class="learn-card" id="step-card-4">
+      <div class="card-title-area">
+        <h2 class="card-title">📝 Step 4. 어노테이션 학습 이해도 평가</h2>
+        <p class="card-subtitle">학습과 실습 내용을 모두 마쳤습니다! 아래 간단한 퀴즈를 통해 본인의 이해도를 확인해 보세요.</p>
+      </div>
+
+      <!-- 퀴즈 컨텐츠 영역 -->
+      <div class="quiz-container" id="quizContainer">
+        <!-- 퀴즈 1 -->
+        <div class="quiz-card" id="q1-box">
+          <h3>Q1. 자율주행 인공지능이 카메라 이미지를 보고 올바른 핸들 제어(방향)를 수행할 수 있도록, 원천 이미지 데이터에 정답 조향각 정보를 매핑해 주는 작업을 무엇이라 하나요?</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="selectAnswer(1, 1)">① 이미지 노이즈 제거</button>
+            <button class="quiz-option" onclick="selectAnswer(1, 2)">② 데이터 어노테이션 (레이블링)</button>
+            <button class="quiz-option" onclick="selectAnswer(1, 3)">③ 데이터 압축 및 보관</button>
+            <button class="quiz-option" onclick="selectAnswer(1, 4)">④ 차량 주행 시동 걸기</button>
+          </div>
+          <div class="quiz-feedback" id="q1-feedback"></div>
+        </div>
+
+        <!-- 퀴즈 2 -->
+        <div class="quiz-card" id="q2-box">
+          <h3>Q2. 좌회전 또는 우회전 같은 코너링(곡선) 구간에서 조향각 데이터 어노테이션을 수행할 때, 가장 엄격한 감점 판정 기준이 되는 차선은 어디인가요?</h3>
+          <div class="quiz-options">
+            <button class="quiz-option" onclick="selectAnswer(2, 1)">① 코너 안쪽의 실선</button>
+            <button class="quiz-option" onclick="selectAnswer(2, 2)">② 화면 맨 위 끝선</button>
+            <button class="quiz-option" onclick="selectAnswer(2, 3)">③ 코너 바깥쪽의 실선</button>
+            <button class="quiz-option" onclick="selectAnswer(2, 4)">④ 중앙 분리 점선</button>
+          </div>
+          <div class="quiz-feedback" id="q2-feedback"></div>
+        </div>
+
+        <div class="btn-row" id="quiz-btn-row">
+          <button class="action-btn btn-secondary" onclick="goToStep(3)">⬅️ 이전 단계 (실습)</button>
+          <button class="action-btn btn-primary" onclick="submitQuiz()">퀴즈 정답 제출하기 ➡️</button>
+        </div>
+      </div>
+
+      <!-- 퀴즈 수료 증명서 카드 -->
+      <div class="certificate-card" id="certificateCard">
+        <div class="badge-icon">🏆</div>
+        <h2>어노테이션 교육 수료증</h2>
+        <p>
+          위 학생은 AI 드라이빙 멘토가 주관하는<br>
+          <strong>[자율주행 데이터 어노테이션 교육 과정]</strong>을<br>
+          우수한 성적(100점 만점)으로 수료하였음을 증명합니다.
+        </p>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 10px;">
+          수료 일시: <span id="current-date">2026. 06. 29.</span>
+        </p>
+        <div class="btn-row" style="border-top: none; padding-top: 10px;">
+          <a href="index.html" class="action-btn btn-primary" style="text-decoration: none;">메인 화면으로 이동 ➡️</a>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script>
@@ -419,32 +941,75 @@
     let targetXOffset = 0; 
     let isDragging = false;
     let animationFrameId = null;
+    let currentStep = 1;
 
-    window.onload = () => setMode('straight');
+    // 단계 이동 함수 (Step 1 ~ 4)
+    function goToStep(stepNum) {
+      if (stepNum < 1 || stepNum > 4) return;
+      
+      // 기존 스텝 액티브 클래스 제거
+      document.querySelectorAll('.learn-card').forEach(card => card.classList.remove('active'));
+      document.querySelectorAll('.step').forEach(st => {
+        st.classList.remove('active');
+        st.classList.remove('completed');
+      });
+      document.querySelectorAll('.step-line').forEach(line => line.classList.remove('active'));
 
+      // 대상 단계 카드 띄우기
+      document.getElementById(`step-card-${stepNum}`).classList.add('active');
+      
+      // 진행 인디케이터 조정
+      for (let i = 1; i <= 4; i++) {
+        const ind = document.getElementById(`step-indicator-${i}`);
+        const line = document.getElementById(`step-line-${i}`);
+        
+        if (i < stepNum) {
+          ind.classList.add('completed');
+          if (line) line.classList.add('active');
+        } else if (i === stepNum) {
+          ind.classList.add('active');
+        }
+      }
+
+      currentStep = stepNum;
+
+      // 3단계 진입 시 기존 도로 세팅 리렌더링
+      if (stepNum === 3) {
+        // 비디오 자동 재생 멈추게 할 수 있음
+        const video = document.querySelector('video');
+        if (video) video.pause();
+        
+        // 렌더링 동기화
+        setTimeout(() => {
+          applyLevelSettings();
+        }, 100);
+      }
+    }
+
+    // 3단계: 코스 전환 논리
     function nextCourse() {
-      if (currentMode === 'straight') setMode('left');
-      else if (currentMode === 'left') setMode('right');
-      else if (currentMode === 'right') setMode('straight');
+      if (currentMode === 'straight') {
+        setMode('left');
+      } else if (currentMode === 'left') {
+        setMode('right');
+      } else if (currentMode === 'right') {
+        // 3단계 실습이 완전히 완료되었으므로, 4단계(퀴즈)로 안내
+        goToStep(4);
+      }
     }
 
     function setMode(mode) {
       currentMode = mode;
       
-      document.getElementById('tabStraight').classList.remove('active');
-      document.getElementById('tabLeft').classList.remove('active');
-      document.getElementById('tabRight').classList.remove('active');
-      
-      if(mode === 'straight') document.getElementById('tabStraight').classList.add('active');
-      if(mode === 'left') document.getElementById('tabLeft').classList.add('active');
-      if(mode === 'right') document.getElementById('tabRight').classList.add('active');
-
       if (mode === 'straight') {
-        btnNextCourse.innerHTML = "▶️ 다음: 좌회전 코스";
+        btnNextCourse.innerHTML = "다음: 좌회전 코스 ➡️";
+        btnNextCourse.className = "action-btn btn-primary";
       } else if (mode === 'left') {
-        btnNextCourse.innerHTML = "▶️ 다음: 우회전 코스";
+        btnNextCourse.innerHTML = "다음: 우회전 코스 ➡️";
+        btnNextCourse.className = "action-btn btn-primary";
       } else if (mode === 'right') {
-        btnNextCourse.innerHTML = "🔄 다시 처음으로 (직진)";
+        btnNextCourse.innerHTML = "실습 완료: 퀴즈 풀기 ➡️";
+        btnNextCourse.className = "action-btn btn-primary";
       }
 
       applyLevelSettings();
@@ -496,8 +1061,8 @@
       rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
       
       updateLine();
-      feedbackText.innerText = "설명에 맞게 버튼을 눌러 모범 답안과 오답을 시연해 주세요.";
-      feedbackText.style.color = "#cbd5e1";
+      feedbackText.innerText = "설명에 맞게 초록색 원을 드래그하여 맞추거나 시연 버튼을 누르세요.";
+      feedbackText.style.color = "#94a3b8";
     }
 
     function animateToX(targetX, duration = 600) {
@@ -525,6 +1090,7 @@
       animateToX(idealX);
     }
 
+    // 오답 예시 시뮬레이션
     function demoWrong() {
       let center = trackBox.clientWidth / 2;
       let wrongX;
@@ -532,13 +1098,14 @@
       if (currentMode === 'straight') {
         wrongX = center + 150; 
       } else if (currentMode === 'left') {
-        wrongX = center + 60; 
+        wrongX = center + 60; // 바깥쪽 실선을 안 맞추고 안쪽 실선을 봤을 때의 예시
       } else {
         wrongX = center - 60; 
       }
       animateToX(wrongX);
     }
 
+    // 마우스 드래그 이벤트 제어
     function startDrag(e) {
       isDragging = true;
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -580,15 +1147,16 @@
       steerLine.setAttribute('y2', gy);
     }
 
+    // 조향각 드래그 실시간 매칭 채점
     function provideRealTimeFeedback(currentX, centerX) {
       let idealX = centerX + targetXOffset;
       let diff = currentX - idealX;
       
       if (Math.abs(diff) <= 30) {
-        steerLine.style.stroke = "#22c55e"; 
-        greenCircle.style.borderColor = "#22c55e";
+        steerLine.style.stroke = "#10b981"; 
+        greenCircle.style.borderColor = "#10b981";
         feedbackText.innerText = "✅ [만점] 평가 기준을 완벽하게 충족했습니다!";
-        feedbackText.style.color = "#22c55e";
+        feedbackText.style.color = "#10b981";
       } else {
         steerLine.style.stroke = "#ef4444";
         greenCircle.style.borderColor = "#ef4444";
@@ -608,8 +1176,93 @@
     }
     
     window.addEventListener('resize', () => {
-      applyLevelSettings();
+      if (currentStep === 3) {
+        applyLevelSettings();
+      }
     });
+
+
+    // ----------------------------------------------------
+    // 4단계: 퀴즈 로직 구현
+    // ----------------------------------------------------
+    let quizAnswers = { 1: null, 2: null };
+    const correctAnswers = { 1: 2, 2: 3 }; // Q1은 ②번, Q2는 ③번이 정답
+
+    function selectAnswer(questionNum, optionNum) {
+      const qBox = document.getElementById(`q${questionNum}-box`);
+      const options = qBox.querySelectorAll('.quiz-option');
+      
+      options.forEach((opt, idx) => {
+        if (idx === (optionNum - 1)) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+
+      quizAnswers[questionNum] = optionNum;
+    }
+
+    function submitQuiz() {
+      if (quizAnswers[1] === null || quizAnswers[2] === null) {
+        alert("모든 퀴즈의 답안을 선택해 주세요!");
+        return;
+      }
+
+      // Q1 채점
+      const q1Feedback = document.getElementById('q1-feedback');
+      const q1Box = document.getElementById('q1-box');
+      const q1Options = q1Box.querySelectorAll('.quiz-option');
+      
+      q1Feedback.className = "quiz-feedback show";
+      if (quizAnswers[1] === correctAnswers[1]) {
+        q1Feedback.classList.add('success-msg');
+        q1Feedback.innerText = "🎉 정답입니다! 데이터 어노테이션은 자율주행 모델이 사진에 알맞은 조향각 정답을 매핑하여 학습하게 하는 핵심 작업입니다.";
+        q1Options[correctAnswers[1]-1].classList.add('correct-choice');
+      } else {
+        q1Feedback.classList.add('danger-msg');
+        q1Feedback.innerText = "❌ 오답입니다. 정답은 '② 데이터 어노테이션 (레이블링)'입니다. AI가 이미지를 분석하여 방향 정답을 배울 수 있도록 수동 매핑 작업을 담당합니다.";
+        q1Options[quizAnswers[1]-1].classList.add('wrong-choice');
+        q1Options[correctAnswers[1]-1].classList.add('correct-choice');
+      }
+
+      // Q2 채점
+      const q2Feedback = document.getElementById('q2-feedback');
+      const q2Box = document.getElementById('q2-box');
+      const q2Options = q2Box.querySelectorAll('.quiz-option');
+      
+      q2Feedback.className = "quiz-feedback show";
+      if (quizAnswers[2] === correctAnswers[2]) {
+        q2Feedback.classList.add('success-msg');
+        q2Feedback.innerText = "🎉 정답입니다! 회전 코너에서는 인공지능이 안쪽으로 쏠리지 않도록 코너 바깥쪽 노란 실선에 수평(평행)을 맞추어 조향각을 맞춰야 만점입니다.";
+        q2Options[correctAnswers[2]-1].classList.add('correct-choice');
+      } else {
+        q2Feedback.classList.add('danger-msg');
+        q2Feedback.innerText = "❌ 오답입니다. 정답은 '③ 코너 바깥쪽의 실선'입니다. 차선이 휘어질 때는 차가 안쪽으로 쏠려 연석에 부딪히지 않게 바깥쪽 실선을 참고해야 안전한 가이드라인이 생성됩니다.";
+        q2Options[quizAnswers[2]-1].classList.add('wrong-choice');
+        q2Options[correctAnswers[2]-1].classList.add('correct-choice');
+      }
+
+      // 퀴즈 옵션 버튼들 클릭 불가 조치
+      document.querySelectorAll('.quiz-option').forEach(btn => btn.style.pointerEvents = 'none');
+
+      // 제출 버튼 숨기고 완료 안내
+      document.getElementById('quiz-btn-row').style.display = 'none';
+
+      // 오늘 날짜 세팅
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}. ${String(today.getMonth() + 1).padStart(2, '0')}. ${String(today.getDate()).padStart(2, '0')}.`;
+      document.getElementById('current-date').innerText = formattedDate;
+
+      // 수료증 카드 연출 노출
+      setTimeout(() => {
+        document.getElementById('quizContainer').style.display = 'none';
+        
+        const cert = document.getElementById('certificateCard');
+        cert.style.display = 'flex';
+        cert.scrollIntoView({ behavior: 'smooth' });
+      }, 1800);
+    }
   </script>
 
 </body>
