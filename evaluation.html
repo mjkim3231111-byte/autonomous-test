@@ -100,6 +100,32 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    /* 실시간 전광판 바로가기 버튼 */
+    .tv-link {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #f59e0b;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      background: rgba(245, 158, 11, 0.15);
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .tv-link:hover {
+      color: white;
+      background: var(--warning);
+      border-color: var(--warning);
+    }
+
     /* 메인 컨테이너 */
     .main-container {
       max-width: 1200px;
@@ -262,15 +288,18 @@
       line-height: 1.4;
     }
 
-    /* 캔버스 래퍼 */
+    /* 캔버스 래퍼 - 380px 최대 너비 지정으로 이미지 콤팩트 축소 */
     .canvas-wrapper {
-      margin-top: 24px;
+      margin-top: 0 !important;
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--border);
       background: #000;
       display: none;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 380px;
+      width: 100%;
+      margin: 0 auto;
     }
 
     canvas {
@@ -342,11 +371,10 @@
     .gauge-zones {
       display: flex;
       justify-content: space-between;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       margin-top: -12px;
       margin-bottom: 20px;
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .res-details {
@@ -418,6 +446,7 @@
     }
     .theme-success .res-score { color: var(--success); }
     .theme-success .gauge-bar { background: var(--success); }
+    .theme-success .gauge-zones { color: #1e3a1e !important; }
 
     .theme-warning {
       background-color: var(--warning-bg);
@@ -426,6 +455,7 @@
     }
     .theme-warning .res-score { color: var(--warning); }
     .theme-warning .gauge-bar { background: var(--warning); }
+    .theme-warning .gauge-zones { color: #453008 !important; }
 
     .theme-danger {
       background-color: var(--danger-bg);
@@ -434,6 +464,7 @@
     }
     .theme-danger .res-score { color: var(--danger); }
     .theme-danger .gauge-bar { background: var(--danger); }
+    .theme-danger .gauge-zones { color: #4c1d1d !important; }
 
     /* 모달 팝업 구조 */
     .modal-overlay {
@@ -580,6 +611,12 @@
         display: inline-flex;
         margin-top: 12px;
       }
+      .tv-link {
+        position: static;
+        transform: none;
+        display: inline-flex;
+        margin-top: 10px;
+      }
       .app-header {
         padding: 16px 20px;
       }
@@ -614,24 +651,6 @@
       flex-direction: column;
       gap: 20px;
     }
-
-    .canvas-wrapper {
-      margin-top: 0 !important;
-    }
-
-    /* 합격존 / 조향과다 / 조향부족 가독성 대폭 향상 */
-    .gauge-zones {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      margin-top: -12px;
-      margin-bottom: 20px;
-      font-weight: 700;
-    }
-    
-    .theme-success .gauge-zones { color: #1e3a1e !important; }
-    .theme-danger .gauge-zones { color: #4c1d1d !important; }
-    .theme-warning .gauge-zones { color: #453008 !important; }
   </style>
 </head>
 <body>
@@ -641,6 +660,8 @@
     <a href="index.html" class="back-link">⬅️ 메인 화면</a>
     <h1>🚀 실시간 자동 채점 및 코칭</h1>
     <p>주행 궤적 사진을 촬영하면 컴퓨터 비전 엔진이 차량과 코너 기준선 좌표를 실시간 매칭합니다.</p>
+    <!-- 실시간 전광판 바로가기 추가 -->
+    <a href="tv.html" class="tv-link">📺 실시간 전광판 ➡️</a>
   </header>
 
   <main class="main-container">
@@ -676,7 +697,7 @@
             
             <div class="loading-spinner" id="loadingSpinner">⚙️ AI 컴퓨터 비전 분석 구동 중...</div>
 
-            <!-- 캔버스 영역 -->
+            <!-- 캔버스 영역 (max-width: 380px로 가로폭 콤팩트 축소) -->
             <div class="canvas-wrapper" id="canvasWrapper">
               <canvas id="myCanvas"></canvas>
             </div>
@@ -685,6 +706,11 @@
           <!-- [오른쪽 열] 평가 설정 및 결과 피드백 리포트 -->
           <div class="layout-right">
             
+            <!-- 실습 차량 번호 선택 및 가이드 유도 블록 추가 -->
+            <div style="background: var(--primary-light); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; color: #1e40af; font-weight: 500; line-height: 1.5; margin-bottom: 12px; word-break: keep-all; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);">
+              📢 <strong>필독!</strong> 아래 시연용 자동차 버튼을 클릭하거나 주행 사진을 업로드하기 전에, <strong>현재 실습 중인 차량 번호를 먼저 선택</strong>해 주세요. 차량 번호와 채점하려는 버튼의 번호가 서로 일치해야 구글 스프레드시트에 점수가 정상적으로 동기화됩니다.
+            </div>
+
             <!-- 실습 차량 번호 선택 -->
             <div class="selection-group" style="margin-bottom: 0;">
               <label for="carNumber">🏎️ 실습 차량 번호 선택</label>
@@ -753,7 +779,7 @@
   </div>
 
   <footer class="app-footer">
-    © 2026 AI 드라이빙 멘토 • 전국 디지털교육연구대회 출품 모델
+    © 2026 AI 드라이빙 멘토 • 디지털교육연구대회 모델
   </footer>
 
   <script>
@@ -894,7 +920,7 @@
           loadingSpinner.style.display = 'none';
           document.getElementById('canvasWrapper').style.display = 'block';
           canvas.style.display = 'block';
-          showResult("⚠️ 판독 불가", `차량의 초록색 마커가 감지되지 않았습니다. 사진 각도를 조절하거나 반사광을 피해서 다시 찰칵! 촬영해 주세요.`, "#d39e00");
+          showResult("⚠️ 판독 불가", `차량의 초록색 마커가 감지되지 않았습니다. 사진 각도를 조절하거나 반사광을 피해서 다시 촬영해 주세요.`, "#d39e00");
           return;
         }
 
@@ -936,7 +962,7 @@
         const numerator = Math.abs((c2.y - c1.y) * targetCenter.x - (c2.x - c1.x) * targetCenter.y + c2.x * c1.y - c2.y * c1.x);
         const ratio = numerator / carLength / carLength;
 
-        // 캔버스 오버레이 디버그 그래픽 그리기 (심사위원 WOW 시인성 포인트)
+        // 캔버스 오버레이 디버그 그래픽 그리기
         loadingSpinner.style.display = 'none';
         document.getElementById('canvasWrapper').style.display = 'block';
         canvas.style.display = 'block';
@@ -963,7 +989,7 @@
         let finalAcc = accuracy.toFixed(1);
 
         if (ratio < 0.33) {
-          showResult("❌ 실패 (조향 과다)", `조향 제어 상수가 너무 큽니다. 핸들을 더 완만하게 꺾도록 조향 비례값(P)을 조율해 주세요.`, "#dc3545", finalAcc, ratio);
+          showResult("❌ 실패 (조향 과다)", `조향 제어 상수가 너무 큽니다. 핸들을 더 완만하게 꺾도록 조향 비례값을 조율해 주세요.`, "#dc3545", finalAcc, ratio);
         } else if (ratio > 0.94) {
           showResult("❌ 실패 (조향 부족)", `조향 제어 상수가 너무 작습니다. 핸들을 적극적으로 더 꺾어 회전하도록 코드를 개선해 주세요.`, "#dc3545", finalAcc, ratio);
         } else {
@@ -985,6 +1011,36 @@
       ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
       ctx.beginPath(); ctx.arc(p1.x, p1.y, 6, 0, 2 * Math.PI); ctx.arc(p2.x, p2.y, 6, 0, 2 * Math.PI);
       ctx.fillStyle = color; ctx.fill();
+    }
+
+    // ----------------------------------------------------
+    // 인공지능 피드백 음성 낭독 (TTS) 엔진 구현
+    // ----------------------------------------------------
+    let evaluationSpeechText = "";
+
+    function speakEvaluationFeedback(text) {
+      if (!text) return;
+      window.speechSynthesis.cancel(); // 기존 재생 정지
+
+      // 이모지 및 특수부호 전처리 필터링 (가독성/낭독 자연성 확보)
+      let clean = text.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, ""); 
+      clean = clean.replace(/🤖|📐|💡|📌|🛠|🏁|🚦|🔄|🛣|🚗|➡️|❌|⚠️|🔊|🔇|⭐|🔴/g, ""); 
+      clean = clean.replace(/\([^)]*\)/g, ""); 
+      clean = clean.replace(/\[[^\]]*\]/g, ""); 
+      clean = clean.replace(/!|\?/g, ".");
+
+      const utterance = new SpeechSynthesisUtterance(clean);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 0.9; // 속도를 0.9로 늦춰 부드러운 호흡 유도
+      utterance.pitch = 1.0; 
+
+      const voices = window.speechSynthesis.getVoices();
+      const koVoice = voices.find(voice => voice.lang.includes('ko') || voice.lang.includes('KO'));
+      if (koVoice) {
+        utterance.voice = koVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
     }
 
     // 결과 렌더링 및 구글 시트 저장 연동
@@ -1013,7 +1069,7 @@
             <div id="gaugeBar" class="gauge-bar"></div>
           </div>
           
-          <!-- 합격존 / 조향과다 / 조향부족 시각 지표 (심사위원 어필용) -->
+          <!-- 합격존 / 조향과다 / 조향부족 시각 지표 -->
           <div class="gauge-zones">
             <span>🔴 조향 과다</span>
             <span>⭐ 합격 (70% 이상)</span>
@@ -1033,10 +1089,15 @@
         `;
       }
 
+      // 인공지능 코칭 피드백 및 음성 낭독 컨트롤 버튼 추가
       displayHTML += `
         <div class="res-feedback">
           <strong>인공지능 실시간 코칭 피드백:</strong><br>
           ${desc}
+          <div style="display: flex; gap: 8px; margin-top: 12px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 8px;">
+            <button onclick="speakEvaluationFeedback(evaluationSpeechText)" style="padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; background: white; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px;">🔊 다시 듣기</button>
+            <button onclick="window.speechSynthesis.cancel()" style="padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; background: white; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px;">🔇 음성 끄기</button>
+          </div>
         </div>
         <div id="syncIndicator" class="sync-indicator">
           <span class="spinner"></span>
@@ -1046,6 +1107,10 @@
 
       resultBox.innerHTML = displayHTML;
       resultBox.scrollIntoView({ behavior: 'smooth' });
+
+      // TTS 음성 재생 활성화
+      evaluationSpeechText = `${title}. ${desc}`;
+      speakEvaluationFeedback(evaluationSpeechText);
 
       // 게이지 애니메이션 구동
       if (accuracy !== null) {
@@ -1058,7 +1123,7 @@
       const carNum = document.getElementById('carNumber').value;
       const resultText = title.includes("성공") ? "성공" : "실패";
       
-      // 구글 앱스 스크립트 연동 (CORS 및 리다이렉트 회피 API 통신)
+      // 구글 앱스 스크립트 연동
       if (GAS_WEBAPP_URL) {
         const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(resultText)}&accuracy=${encodeURIComponent(accuracy)}`;
         
@@ -1079,7 +1144,6 @@
             updateSyncStatus(false, "시트 저장 실패 (네트워크 또는 배포 상태 확인)");
           });
       } else {
-        // 로컬 브라우저 단독 테스트 환경 시뮬레이션
         setTimeout(() => {
           updateSyncStatus(true, "시트 저장 완료 (로컬 환경 시뮬레이션)");
         }, 1500);
@@ -1108,6 +1172,7 @@
 
     function closeModal() {
       document.getElementById('errorModal').classList.remove('active');
+      window.speechSynthesis.cancel(); // 에러 모달 닫을 때도 정지
     }
   </script>
 </body>
