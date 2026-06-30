@@ -637,6 +637,39 @@
       }
     }
 
+    /* 실시간 전광판 대형 배너 버튼 스타일 */
+    .tv-banner-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 14px;
+      cursor: pointer;
+    }
+    
+    .tv-banner-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(245, 158, 11, 0.4);
+      background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+    }
+
+    .tv-banner-btn .arrow {
+      transition: transform 0.2s;
+    }
+
+    .tv-banner-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
     /* 2열 배치 레이아웃 정의 */
     .scoring-layout {
       display: grid;
@@ -733,6 +766,12 @@
                 <option value="15번 자동차">15번 자동차</option>
               </select>
             </div>
+            
+            <!-- 실시간 전광판 바로가기 전용 대형 버튼 배너 추가 -->
+            <a href="tv.html" class="tv-banner-btn">
+              <span>📺 교실 TV 실시간 전광판 바로가기</span>
+              <span class="arrow">➡️</span>
+            </a>
             
             <!-- 즉석 시연 패널 -->
             <div class="demo-section" style="margin-bottom: 0;">
