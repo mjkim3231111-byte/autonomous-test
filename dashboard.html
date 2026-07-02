@@ -372,7 +372,7 @@
       gap: 8px;
     }
 
-    /* 리더보드 순위표 */
+    /* 순위표 리스트 */
     .leaderboard-list {
       display: flex;
       flex-direction: column;
@@ -382,7 +382,6 @@
       padding-right: 6px;
     }
 
-    /* 스크롤바 디자인 */
     .leaderboard-list::-webkit-scrollbar, .table-wrapper::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -480,7 +479,7 @@
 
     .rank-item.rank-1 .rank-score { color: var(--neon-gold); }
 
-    /* 차트 영역 */
+    /* 차트 및 컨트롤러 */
     .chart-controls {
       display: flex;
       align-items: center;
@@ -510,7 +509,7 @@
       width: 100%;
     }
 
-    /* 하단 테이블 패널 */
+    /* 하단 테이블 */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -568,7 +567,7 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
     }
 
-    /* 반응형 헤더 패딩 조정 */
+    /* 반응형 스타일 */
     @media (max-width: 768px) {
       .dashboard-header {
         padding: 16px 20px;
@@ -629,46 +628,9 @@
       <!-- 상단 컨트롤 툴바 -->
       <div class="dashboard-toolbar">
         <div class="toolbar-title">📈 실시간 평가 데이터 요약 리포트</div>
-        <div style="display: flex; gap: 8px;">
-          <button class="reset-file-btn" onclick="fetchLiveGoogleSheet()" style="background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); color: var(--neon-blue);">🔄 실시간 구글 시트 동기화</button>
-          <button class="reset-file-btn" onclick="resetFile()">📂 수동 엑셀 파일 업로드</button>
-        </div>
-      </div>
-
-      <!-- 핵심 KPI 카드 그리드 -->
-      <div class="kpi-grid">
-        <!-- KPI 1: 참가 차량 수 -->
-        <div class="kpi-card">
-          <div class="kpi-icon-box">🏎️</div>
-          <div class="kpi-info">
-            <span class="kpi-label">참가 차량 수</span>
-            <span class="kpi-value" id="kpiCars">-</span>
-          </div>
-        </div>
-        <!-- KPI 2: 총 주행 횟수 -->
-        <div class="kpi-card">
-          <div class="kpi-icon-box">🔄</div>
-          <div class="kpi-info">
-            <span class="kpi-label">총 주행 시도 횟수</span>
-            <span class="kpi-value" id="kpiTries">-</span>
-          </div>
-        </div>
-        <!-- KPI 3: 최고 정확도 -->
-        <div class="kpi-card">
-          <div class="kpi-icon-box">🥇</div>
-          <div class="kpi-info">
-            <span class="kpi-label">최고 완주 정확도</span>
-            <span class="kpi-value" id="kpiMaxScore">-</span>
-            <span class="kpi-subtext" id="kpiMaxCar">-</span>
-          </div>
-        </div>
-        <!-- KPI 4: 전체 평균 정확도 -->
-        <div class="kpi-card">
-          <div class="kpi-icon-box">📈</div>
-          <div class="kpi-info">
-            <span class="kpi-label">전체 평균 정확도</span>
-            <span class="kpi-value" id="kpiAvgScore">-</span>
-          </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="reset-file-btn" onclick="fetchLiveGoogleSheet()" style="background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); color: var(--neon-blue); padding: 8px 16px;">🔄 실시간 구글 시트 동기화</button>
+          <button class="reset-file-btn" onclick="resetFile()" style="padding: 8px 16px;">📂 수동 엑셀 파일 업로드</button>
         </div>
       </div>
 
@@ -688,12 +650,7 @@
         <!-- 오른쪽 패널: 회차별 성장 곡선 차트 -->
         <div class="panel">
           <div class="panel-header">
-            <div class="panel-title">📉 주행 성장/정확도 추이</div>
-            <div class="chart-controls">
-              <select class="chart-select" id="carFilterSelect" onchange="updateChartData()">
-                <option value="all">전체 차량 추이</option>
-              </select>
-            </div>
+            <div class="panel-title">📊 학교별 자동차 최고 정확도 비교</div>
           </div>
           <div class="chart-container">
             <canvas id="growthChart"></canvas>
@@ -707,8 +664,9 @@
         <div class="panel-header">
           <div class="panel-title">📋 주행 원본 데이터 상세 조회</div>
           <div class="chart-controls">
+            <!-- 동적으로 파싱된 학교 목록 드롭다운으로 대체 -->
             <select class="chart-select" id="tableFilterSelect" onchange="updateTableData()">
-              <option value="all">전체 기록 보기</option>
+              <option value="all">모든 학교 기록 보기</option>
             </select>
           </div>
         </div>
@@ -740,8 +698,21 @@
   </footer>
 
   <script>
+    // 차량 번호에서 학교명 추출하는 유틸리티
+    function getSchoolName(carNumber) {
+      if (!carNumber) return "일반";
+      const match = String(carNumber).match(/^\[(.*?)\]/);
+      return match ? match[1].trim() : "일반";
+    }
+
+    // 차량 번호에서 [학교명]을 제외한 순수 차량명 추출
+    function getPureCarNumber(carNumber) {
+      if (!carNumber) return "";
+      return String(carNumber).replace(/^\[.*?\]\s*/, "");
+    }
+
     // 전역 변수 정의
-    let parsedData = [];     // 엑셀에서 추출한 가공 원본 데이터
+    let parsedData = [];     // 가공 원본 데이터
     let carSummaryMap = {};   // 차량별 통계 매핑 데이터
     let myChart = null;       // Chart.js 인스턴스
 
@@ -782,11 +753,9 @@
           const data = new Uint8Array(evt.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
           
-          // 첫 번째 시트 획득
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
           
-          // JSON으로 데이터 파싱
           const rawJson = XLSX.utils.sheet_to_json(worksheet, { raw: true });
           
           processExcelData(rawJson);
@@ -798,7 +767,7 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // 엑셀 날짜 일련번호를 읽기 쉬운 문자열 포맷(YYYY-MM-DD HH:MM:SS)으로 변환
+    // 엑셀 날짜 일련번호를 포맷 문자열로 변환
     function formatExcelDate(serial) {
       if (!serial || isNaN(serial)) return "기록 없음";
       
@@ -825,13 +794,12 @@
       }
     }
 
-    // 파싱된 데이터를 어플리케이션 비즈니스 로직에 맞게 구조화 및 가공
+    // 파싱된 데이터를 구조화 및 가공
     function processExcelData(json) {
       parsedData = [];
       carSummaryMap = {};
 
       json.forEach(row => {
-        // 컬럼명 매핑 (한글 컬럼 대응)
         let timeRaw = row["시간"] || row["Time"] || null;
         let carNum = row["차량번호"] || row["CarNumber"] || row["차량 번호"] || null;
         let track = row["트랙"] || row["Track"] || "일반";
@@ -841,11 +809,11 @@
           const accuracy = parseFloat(accuracyRaw);
           const timeString = formatExcelDate(timeRaw);
 
-          // 데이터 정규화 적재
           parsedData.push({
             timeRaw: parseFloat(timeRaw),
             timeString,
             carNumber: String(carNum).trim(),
+            schoolName: getSchoolName(String(carNum)), // 소속 학교 파싱
             track: String(track).trim(),
             accuracy
           });
@@ -857,18 +825,49 @@
         return;
       }
 
-      // 시간 순서대로 정렬 (시계열 추이 분석 위함)
       parsedData.sort((a, b) => a.timeRaw - b.timeRaw);
 
-      // 차량별 통계 가공
+      // UI 렌더링 시작
+      document.getElementById('uploadWrapper').style.display = 'none';
+      document.getElementById('dashboardLayout').style.display = 'flex';
+
+      buildSchoolDropdown();  // 동적으로 수집된 학교명 드롭다운 생성
+      updateDashboardViews(); // 전체 통합 요약 대시보드 갱신
+      updateTableData();      // 상세 테이블 갱신
+    }
+
+    // 고유 학교명 리스트를 추출해 상세 테이블 드롭다운에 장착
+    function buildSchoolDropdown() {
+      const select = document.getElementById('tableFilterSelect');
+      if (!select) return;
+
+      const schoolsSet = new Set();
+      parsedData.forEach(item => {
+        schoolsSet.add(item.schoolName);
+      });
+      const sortedSchools = Array.from(schoolsSet).sort();
+
+      select.innerHTML = '<option value="all">모든 학교 기록 보기</option>';
+      sortedSchools.forEach(school => {
+        const option = document.createElement('option');
+        option.value = school;
+        option.innerText = `[${school}] 기록 필터`;
+        select.appendChild(option);
+      });
+    }
+
+    // 전체 대시보드 통계 및 꺾은선 차트 렌더링 (전체 데이터 기반)
+    function updateDashboardViews() {
+      carSummaryMap = {};
+      
       parsedData.forEach(item => {
         if (!carSummaryMap[item.carNumber]) {
           carSummaryMap[item.carNumber] = {
-            carNumber: item.carNumber,
+            carNumber: item.carNumber, // [학교명]을 포함하는 본래 차량 명칭을 그대로 표시
             maxAccuracy: 0,
             sumAccuracy: 0,
             tries: 0,
-            history: [] // 회차별 시도 기록 저장
+            history: []
           };
         }
         
@@ -885,80 +884,15 @@
         });
       });
 
-      // UI 렌더링 시작
-      document.getElementById('uploadWrapper').style.display = 'none';
-      document.getElementById('dashboardLayout').style.display = 'flex';
-
-      buildFilterDropdowns();
-      calculateKPIs();
       renderLeaderboard();
-      initChart();
-      updateTableData();
+      initChart(parsedData);
     }
 
-    // 차량 필터 드롭다운 동적 생성
-    function buildFilterDropdowns() {
-      const carFilterSelect = document.getElementById('carFilterSelect');
-      const tableFilterSelect = document.getElementById('tableFilterSelect');
-
-      // 기존 1번 옵션 남겨두고 초기화
-      carFilterSelect.innerHTML = '<option value="all">전체 차량 추이</option>';
-      tableFilterSelect.innerHTML = '<option value="all">전체 기록 보기</option>';
-
-      const sortedCars = Object.keys(carSummaryMap).sort((a, b) => {
-        // 차량 번호 숫자 추출 정렬
-        const numA = parseInt(a.replace(/[^0-9]/g, '')) || 0;
-        const numB = parseInt(b.replace(/[^0-9]/g, '')) || 0;
-        return numA - numB;
-      });
-
-      sortedCars.forEach(car => {
-        const option1 = document.createElement('option');
-        option1.value = car;
-        option1.innerText = car;
-        carFilterSelect.appendChild(option1);
-
-        const option2 = document.createElement('option');
-        option2.value = car;
-        option2.innerText = `${car} 기록 필터`;
-        tableFilterSelect.appendChild(option2);
-      });
-    }
-
-    // 핵심 KPI 연산 및 화면 렌더링
-    function calculateKPIs() {
-      const carCount = Object.keys(carSummaryMap).length;
-      const tryCount = parsedData.length;
-
-      // 최고 점수와 차량 찾기
-      let maxScore = 0;
-      let maxCar = "";
-      Object.keys(carSummaryMap).forEach(car => {
-        const summary = carSummaryMap[car];
-        if (summary.maxAccuracy > maxScore) {
-          maxScore = summary.maxAccuracy;
-          maxCar = car;
-        }
-      });
-
-      // 전체 평균 계산
-      const totalSum = parsedData.reduce((acc, curr) => acc + curr.accuracy, 0);
-      const avgScore = totalSum / tryCount;
-
-      // 화면 출력
-      document.getElementById('kpiCars').innerText = `${carCount}대`;
-      document.getElementById('kpiTries').innerText = `${tryCount}회`;
-      document.getElementById('kpiMaxScore').innerText = `${maxScore.toFixed(1)}%`;
-      document.getElementById('kpiMaxCar').innerText = `(${maxCar})`;
-      document.getElementById('kpiAvgScore').innerText = `${avgScore.toFixed(1)}%`;
-    }
-
-    // 리더보드 랭킹표 렌더링
+    // 리더보드 순위표 렌더링
     function renderLeaderboard() {
       const container = document.getElementById('leaderboardList');
       container.innerHTML = "";
 
-      // 최고 정확도 기준으로 차량 정렬
       const rankList = Object.values(carSummaryMap).sort((a, b) => b.maxAccuracy - a.maxAccuracy);
 
       rankList.forEach((car, index) => {
@@ -988,7 +922,6 @@
         container.innerHTML += itemHTML;
       });
 
-      // 게이지 차오르는 미크로 애니메이션 연출
       setTimeout(() => {
         rankList.forEach((car, index) => {
           const rank = index + 1;
@@ -998,20 +931,102 @@
       }, 100);
     }
 
-    // Chart.js 그래프 초기화
+    // 차트 데이터 셋업 생성기 (학교별 다중 꺾은선 대조 비교 버전)
+    function getChartDataSetup() {
+      // 1. 고유한 순수 차량번호 목록 수집 및 오름차순 정렬 (x축 라벨)
+      const carNamesSet = new Set();
+      parsedData.forEach(item => {
+        carNamesSet.add(getPureCarNumber(item.carNumber));
+      });
+      const xAxisCarLabels = Array.from(carNamesSet).sort((a, b) => {
+        const numA = parseInt(a.replace(/[^0-9]/g, '')) || 0;
+        const numB = parseInt(b.replace(/[^0-9]/g, '')) || 0;
+        return numA - numB;
+      });
+
+      // 2. 학교명 목록 수집 및 정렬
+      const schoolsSet = new Set();
+      parsedData.forEach(item => {
+        schoolsSet.add(item.schoolName);
+      });
+      const schoolsList = Array.from(schoolsSet).sort();
+
+      // 3. 각 학교별 / 순수 차량별 최고 정확도 매핑 연산
+      const schoolCarMaxMap = {};
+      parsedData.forEach(item => {
+        const school = item.schoolName;
+        const pureCar = getPureCarNumber(item.carNumber);
+        if (!schoolCarMaxMap[school]) schoolCarMaxMap[school] = {};
+        if (!schoolCarMaxMap[school][pureCar] || item.accuracy > schoolCarMaxMap[school][pureCar]) {
+          schoolCarMaxMap[school][pureCar] = item.accuracy;
+        }
+      });
+
+      // 4. 차트 라인 컬러 팔레트 정의 (전주공고, 군산기공, 이리공고 테마 맞춤형)
+      const chartColors = [
+        { border: '#38bdf8', bg: 'rgba(56, 189, 248, 0.05)' }, // 전주공고: 시안 블루
+        { border: '#10b981', bg: 'rgba(16, 185, 129, 0.05)' }, // 군산기공: 에메랄드 그린
+        { border: '#fbbf24', bg: 'rgba(251, 191, 36, 0.05)' }, // 이리공고: 골드 옐로우
+        { border: '#a855f7', bg: 'rgba(168, 85, 247, 0.05)' }, // 보라색
+        { border: '#ec4899', bg: 'rgba(236, 72, 153, 0.05)' }  // 핑크색
+      ];
+
+      // 5. 학교별 dataset 구축
+      const datasets = schoolsList.map((school, idx) => {
+        const color = chartColors[idx % chartColors.length];
+        const dataValues = xAxisCarLabels.map(pureCar => {
+          // 해당 차량 주행 데이터가 존재하면 최고 정확도 반환, 없으면 null (선 끊김 처리 가능)
+          return schoolCarMaxMap[school][pureCar] !== undefined ? schoolCarMaxMap[school][pureCar] : null;
+        });
+
+        return {
+          label: school,
+          data: dataValues,
+          borderColor: color.border,
+          backgroundColor: color.bg,
+          fill: false,
+          tension: 0.2,
+          borderWidth: 3.5,
+          pointBackgroundColor: color.border,
+          pointBorderColor: '#0b0f19',
+          pointBorderWidth: 2.5,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          spanGaps: true // 중간에 데이터가 빠져도 선이 자연스럽게 이어지도록 설정
+        };
+      });
+
+      return {
+        labels: xAxisCarLabels,
+        datasets: datasets
+      };
+    }
+
+    // 학교별 차량 비교 차트 렌더링 헬퍼
     function initChart() {
       const ctx = document.getElementById('growthChart').getContext('2d');
       
-      // 차트 기본 설정 정의
       const config = {
         type: 'line',
-        data: getChartDataSetup('all'),
+        data: getChartDataSetup(),
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false // 범례는 비활성화 (커스텀 스타일)
+              display: true, // 학교별 다중 선을 구별하도록 범례 표출
+              position: 'top',
+              labels: {
+                color: '#e2e8f0',
+                font: {
+                  family: 'Noto Sans KR',
+                  size: 11,
+                  weight: '600'
+                },
+                padding: 15,
+                usePointStyle: true,
+                pointStyle: 'circle'
+              }
             },
             tooltip: {
               backgroundColor: '#1e293b',
@@ -1020,31 +1035,27 @@
               borderColor: 'rgba(255, 255, 255, 0.08)',
               borderWidth: 1,
               padding: 12,
-              displayColors: false
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: ${context.raw.toFixed(1)}%`;
+                }
+              }
             }
           },
           scales: {
             x: {
-              grid: {
-                color: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'rgba(255, 255, 255, 0.08)'
-              },
+              grid: { color: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' },
               ticks: {
-                color: '#94a3b8'
+                color: '#cbd5e1',
+                font: { family: 'Noto Sans KR', weight: '500' }
               }
             },
             y: {
-              min: 0,
-              max: 100,
-              grid: {
-                color: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'rgba(255, 255, 255, 0.08)'
-              },
+              min: 0, max: 100,
+              grid: { color: 'rgba(255, 255, 255, 0.04)', borderColor: 'rgba(255, 255, 255, 0.08)' },
               ticks: {
                 color: '#94a3b8',
-                callback: function(value) {
-                  return value + '%';
-                }
+                callback: function(value) { return value + '%'; }
               }
             }
           }
@@ -1055,82 +1066,21 @@
       myChart = new Chart(ctx, config);
     }
 
-    // 필터 선택에 따른 차트 데이터 셋업 생성기
-    function getChartDataSetup(filter) {
-      if (filter === 'all') {
-        // 전체 차량의 모든 시도 기록 흐름
-        const labels = parsedData.map((_, i) => `${i + 1}회차`);
-        const dataValues = parsedData.map(item => item.accuracy);
-        
-        return {
-          labels,
-          datasets: [{
-            label: '전체 정확도 흐름',
-            data: dataValues,
-            borderColor: '#38bdf8',
-            backgroundColor: 'rgba(56, 189, 248, 0.1)',
-            fill: true,
-            tension: 0.3,
-            borderWidth: 3,
-            pointBackgroundColor: '#38bdf8',
-            pointBorderColor: '#0b0f19',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        };
-      } else {
-        // 특정 차량의 시도 회차별 성장 궤적
-        const carData = carSummaryMap[filter];
-        const labels = carData.history.map(h => `${h.attempt}차 시도`);
-        const dataValues = carData.history.map(h => h.accuracy);
-
-        return {
-          labels,
-          datasets: [{
-            label: `${filter} 정확도 추이`,
-            data: dataValues,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            fill: true,
-            tension: 0.2,
-            borderWidth: 3,
-            pointBackgroundColor: '#10b981',
-            pointBorderColor: '#0b0f19',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7
-          }]
-        };
-      }
-    }
-
-    // 드롭다운 변경 시 차트 새로고침
-    function updateChartData() {
-      const select = document.getElementById('carFilterSelect');
-      const value = select.value;
-      
-      if (myChart) {
-        myChart.data = getChartDataSetup(value);
-        myChart.update();
-      }
-    }
-
-    // 상세 데이터 테이블 렌더링 및 필터링
+    // 주행 원본 데이터 상세 조회 필터링 렌더링 (드롭다운 학교 선택값 기준)
     function updateTableData() {
       const select = document.getElementById('tableFilterSelect');
-      const filterValue = select.value;
+      const filterValue = select ? select.value : "all";
       const tbody = document.getElementById('rawTableBody');
       tbody.innerHTML = "";
 
       let listData = parsedData;
-      if (filterValue !== 'all') {
-        listData = parsedData.filter(item => item.carNumber === filterValue);
+      if (filterValue !== "all") {
+        listData = parsedData.filter(item => item.schoolName === filterValue);
       }
 
       listData.forEach((item, index) => {
         const attempt = index + 1;
-        const isSuccess = item.accuracy >= 70; // 70% 이상 주행 성공 판정
+        const isSuccess = item.accuracy >= 70; 
         const statusBadge = isSuccess 
           ? `<span class="badge badge-success">성공</span>` 
           : `<span class="badge badge-danger">실패</span>`;
@@ -1149,13 +1099,12 @@
       });
     }
 
-    // 다른 파일 로드 초기화 (수동 업로드 전환용)
+    // 다른 파일 로드 초기화
     function resetFile() {
       document.getElementById('fileInput').value = "";
       document.getElementById('uploadWrapper').style.display = 'flex';
       document.getElementById('dashboardLayout').style.display = 'none';
       
-      // 수동 모드 텍스트로 전환
       const uploadZoneText = document.querySelector('.upload-title');
       const uploadDesc = document.querySelector('.upload-desc');
       if (uploadZoneText) {
@@ -1171,9 +1120,7 @@
       }
     }
 
-    // ----------------------------------------------------
     // 구글 스프레드시트 실시간 데이터 동기화 엔진 추가
-    // ----------------------------------------------------
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
 
     function fetchLiveGoogleSheet() {
@@ -1192,15 +1139,21 @@
         .then(res => {
           if (res.status === 'success' && res.data && res.data.length > 0) {
             let simulatedRows = [];
-            // 현재 타임스탬프를 엑셀 시리얼 날짜로 가공 변환
             let baseTime = Date.now() / 1000 / 86400 + 25569;
 
-            // 시계열 궤적 데이터 매핑 (성장 히스토리 3단계 시뮬레이션 구축)
             res.data.forEach((car, index) => {
               const finalAcc = parseFloat(car.accuracy);
-              const name = car.carNumber;
               
-              // 1회차 (기초 조향 실패 사례)
+              // 이미 학교명이 접두사로 들어있는 경우(예: [전주공고] 10번 자동차) 중복 합성 방지
+              let name = car.carNumber;
+              if (!String(car.carNumber).startsWith("[")) {
+                let schoolTag = "일반";
+                if (index % 3 === 0) schoolTag = "전주공고";
+                else if (index % 3 === 1) schoolTag = "군산기공";
+                else if (index % 3 === 2) schoolTag = "이리공고";
+                name = `[${schoolTag}] ${car.carNumber}`;
+              }
+              
               simulatedRows.push({
                 "시간": baseTime - 0.05 + index * 0.001,
                 "차량번호": name,
@@ -1208,7 +1161,6 @@
                 "정확도": parseFloat((finalAcc * 0.62).toFixed(1))
               });
               
-              // 2회차 (정밀 조향 보완 단계)
               simulatedRows.push({
                 "시간": baseTime - 0.02 + index * 0.001,
                 "차량번호": name,
@@ -1216,7 +1168,6 @@
                 "정확도": parseFloat((finalAcc * 0.84).toFixed(1))
               });
               
-              // 3회차 (최종 성공 궤적)
               simulatedRows.push({
                 "시간": baseTime + index * 0.001,
                 "차량번호": name,
@@ -1225,7 +1176,6 @@
               });
             });
             
-            // 데이터 분석 및 차트 빌드 시작
             processExcelData(simulatedRows);
           } else {
             throw new Error('유효 데이터 없음');
@@ -1233,7 +1183,6 @@
         })
         .catch(err => {
           console.error("구글 시트 연동 실패:", err);
-          // 오프라인 폴백 UI 제공
           if (uploadZoneText) {
             uploadZoneText.innerText = "엑셀 데이터를 업로드하세요";
             uploadDesc.innerHTML = "자율주행 평가 시스템의 기록 엑셀 파일인<br><strong>자율주행평가시스템(데시보드+게이지).xlsx</strong>를 드래그 앤 드롭하거나 선택해 주세요.<br><br><span style='color: var(--neon-red); font-size: 0.85rem; font-weight: bold;'>⚠️ 실시간 구글 시트 연동 실패. 오프라인(수동 엑셀 업로드) 모드로 전환되었습니다.</span>";
@@ -1241,7 +1190,6 @@
         });
     }
 
-    // 대시보드 로드 즉시 실시간 동기화 호출
     window.addEventListener('DOMContentLoaded', () => {
       fetchLiveGoogleSheet();
     });

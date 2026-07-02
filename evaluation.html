@@ -790,6 +790,12 @@
               📢 <strong>필독!</strong> 아래 시연용 자동차 버튼을 클릭하거나 주행 사진을 업로드하기 전에, <strong>현재 실습 중인 차량 번호를 먼저 선택</strong>해 주세요. 차량 번호와 채점하려는 버튼의 번호가 서로 일치해야 구글 스프레드시트에 점수가 정상적으로 동기화됩니다.
             </div>
 
+            <!-- 소속 학교명 입력 필드 추가 -->
+            <div class="selection-group" style="margin-bottom: 12px;">
+              <label for="schoolName">🏫 소속 학교명 입력</label>
+              <input type="text" id="schoolName" placeholder="예: 전주공고 (미입력 시 [일반]으로 자동 매핑)" style="width: 100%; padding: 14px; font-size: 1rem; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; background: #fafafa; color: var(--text-main); outline: none; transition: border 0.2s;" onfocus="this.style.borderColor='var(--primary)'; this.style.backgroundColor='white';" onblur="this.style.borderColor='var(--border)'; this.style.backgroundColor='#fafafa';">
+            </div>
+
             <!-- 실습 차량 번호 선택 -->
             <div class="selection-group" style="margin-bottom: 0;">
               <label for="carNumber">🏎️ 실습 차량 번호 선택</label>
@@ -1202,7 +1208,9 @@
         }, 50);
       }
 
-      const carNum = document.getElementById('carNumber').value;
+      let schoolName = document.getElementById('schoolName').value.trim();
+      if (!schoolName) schoolName = "일반";
+      const carNum = `[${schoolName}] ${document.getElementById('carNumber').value}`;
       const resultText = title.includes("성공") ? "성공" : "실패";
       
       // 구글 앱스 스크립트 연동
