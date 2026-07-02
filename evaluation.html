@@ -670,6 +670,40 @@
       transform: translateX(4px);
     }
 
+    /* 구글 스프레드시트 대형 배너 버튼 스타일 */
+    .sheet-banner-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      text-decoration: none;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 10px;
+      margin-bottom: 16px;
+      cursor: pointer;
+    }
+    
+    .sheet-banner-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35);
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    }
+
+    .sheet-banner-btn .arrow {
+      transition: transform 0.2s;
+    }
+
+    .sheet-banner-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
     /* 2열 배치 레이아웃 정의 */
     .scoring-layout {
       display: grid;
@@ -690,7 +724,7 @@
 
   <!-- 상단 네비게이션 헤더 -->
   <header class="app-header">
-    <a href="index.html" class="back-link">⬅️ 메인 화면</a>
+    <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>🚀 실시간 자동 채점 및 코칭</h1>
     <p>주행 궤적 사진을 촬영하면 컴퓨터 비전 엔진이 차량과 코너 기준선 좌표를 실시간 매칭합니다.</p>
     <!-- 실시간 전광판 바로가기 추가 -->
@@ -739,6 +773,18 @@
           <!-- [오른쪽 열] 평가 설정 및 결과 피드백 리포트 -->
           <div class="layout-right">
             
+            <!-- 실시간 전광판 바로가기 전용 대형 버튼 배너 추가 (위치 상단으로 이동) -->
+            <a href="tv.html" class="tv-banner-btn" style="margin-top: 0; margin-bottom: 10px;">
+              <span>📺 교실 TV 실시간 전광판 바로가기</span>
+              <span class="arrow">➡️</span>
+            </a>
+            
+            <!-- 구글 스프레드시트 기록판으로 직접 이동하는 대형 버튼 추가 (상수 값과 연동) -->
+            <a href="#" id="googleSheetLink" target="_blank" class="sheet-banner-btn">
+              <span>📊 구글 스프레드시트 기록판 열기</span>
+              <span class="arrow">➡️</span>
+            </a>
+            
             <!-- 실습 차량 번호 선택 및 가이드 유도 블록 추가 -->
             <div style="background: var(--primary-light); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; color: #1e40af; font-weight: 500; line-height: 1.5; margin-bottom: 12px; word-break: keep-all; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);">
               📢 <strong>필독!</strong> 아래 시연용 자동차 버튼을 클릭하거나 주행 사진을 업로드하기 전에, <strong>현재 실습 중인 차량 번호를 먼저 선택</strong>해 주세요. 차량 번호와 채점하려는 버튼의 번호가 서로 일치해야 구글 스프레드시트에 점수가 정상적으로 동기화됩니다.
@@ -766,12 +812,6 @@
                 <option value="15번 자동차">15번 자동차</option>
               </select>
             </div>
-            
-            <!-- 실시간 전광판 바로가기 전용 대형 버튼 배너 추가 -->
-            <a href="tv.html" class="tv-banner-btn">
-              <span>📺 교실 TV 실시간 전광판 바로가기</span>
-              <span class="arrow">➡️</span>
-            </a>
             
             <!-- 즉석 시연 패널 -->
             <div class="demo-section" style="margin-bottom: 0;">
@@ -824,6 +864,9 @@
   <script>
     // 구글 앱스 스크립트 API 배포 URL
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
+
+    // [수정 필요] 실제 연동하여 사용하시는 교사용 구글 스프레드시트 주소를 여기에 입력해 주세요!
+    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1F6vQQr5CtK8YKEQ4sJRVUlzMTSB_mbe6ySwI39Lj6rA/edit?gid=0#gid=0";
 
     // 구글 시트 원본 소스코드에서 가져온 설정값과 수학 알고리즘 정의
     const CAR_RGB = { r: 64, g: 175, b: 119 };      // 초록색 차량 스티커 타겟 RGB
@@ -1213,6 +1256,14 @@
       document.getElementById('errorModal').classList.remove('active');
       window.speechSynthesis.cancel(); // 에러 모달 닫을 때도 정지
     }
+
+    // DOM 로드 즉시 구글 스프레드시트 원본 링크 동적 할당
+    window.addEventListener('DOMContentLoaded', () => {
+      const sheetLink = document.getElementById('googleSheetLink');
+      if (sheetLink) {
+        sheetLink.href = GOOGLE_SHEET_URL;
+      }
+    });
   </script>
 </body>
 </html>
