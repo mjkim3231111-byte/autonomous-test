@@ -806,14 +806,20 @@
         let accuracyRaw = row["정확도"] || row["Accuracy"] || null;
 
         if (carNum && accuracyRaw !== null) {
+          const carStr = String(carNum).trim();
+          // [퀴즈] 접두사로 시작하는 퀴즈 데이터는 대시보드 주행 통계 분석에서 원천 필터링
+          if (carStr.startsWith('[퀴즈]')) {
+            return;
+          }
+
           const accuracy = parseFloat(accuracyRaw);
           const timeString = formatExcelDate(timeRaw);
 
           parsedData.push({
             timeRaw: parseFloat(timeRaw),
             timeString,
-            carNumber: String(carNum).trim(),
-            schoolName: getSchoolName(String(carNum)), // 소속 학교 파싱
+            carNumber: carStr,
+            schoolName: getSchoolName(carStr), // 소속 학교 파싱
             track: String(track).trim(),
             accuracy
           });

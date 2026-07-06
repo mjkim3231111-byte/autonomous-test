@@ -1039,6 +1039,35 @@
         <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 모범 답안 (만점)</button>
       </div>
 
+      <!-- 실시간 스마트 기기 퀴즈 현황판 -->
+      <div class="live-quiz-board" style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+        <h3 style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          📊 실시간 스마트 기기 퀴즈 현황판 
+          <span style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 8px; border-radius: 20px; font-weight: 500;">실시간 자동 갱신 🟢</span>
+        </h3>
+        
+        <div style="max-height: 250px; overflow-y: auto; background: rgba(15, 23, 42, 0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; color: var(--text-main);">
+            <thead>
+              <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); color: var(--text-muted);">
+                <th style="padding: 8px 6px;">제출 시간</th>
+                <th style="padding: 8px 6px;">소속 학교</th>
+                <th style="padding: 8px 6px;">이름 / 학번</th>
+                <th style="padding: 8px 6px;">퀴즈 점수</th>
+                <th style="padding: 8px 6px; text-align: center;">수료증 여부</th>
+              </tr>
+            </thead>
+            <tbody id="liveQuizBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                  아직 제출된 모바일 실습 퀴즈 기록이 없습니다.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="btn-row">
         <button class="action-btn btn-secondary" onclick="goToStep(2)">⬅️ 이전 단계</button>
         <!-- 실습 진행용 다음 버튼 -->
@@ -1150,6 +1179,9 @@
   </div>
 
   <script>
+    // 구글 스프레드시트 Apps Script 연동 API
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
+
     const trackBox = document.getElementById('trackBox');
     const greenCircle = document.getElementById('greenCircle');
     const redCircle = document.getElementById('redCircle');
@@ -1292,6 +1324,87 @@
       if (qrModal) {
         qrModal.classList.remove('active');
       }
+    }
+
+    // 퀴즈 실시간 데이터 수급 및 파싱 테이블 렌더링
+    function fetchLiveQuizData() {
+      const container = document.getElementById('liveQuizBody');
+      if (!container || !GAS_WEBAPP_URL) return;
+
+      fetch(`${GAS_WEBAPP_URL}?action=getLeaderboard`, { method: 'GET', mode: 'cors', redirect: 'follow' })
+        .then(response => response.json())
+        .then(res => {
+          // 객체 구조에 맞춰 실제 데이터 배열 추출 (res.status === 'success' 대응)
+          const list = (res && res.status === 'success' && Array.isArray(res.data)) ? res.data : (Array.isArray(res) ? res : []);
+
+          // [퀴즈] 접두사를 가진 데이터만 필터 추출
+          const quizList = list.filter(item => {
+            return item.carNumber && String(item.carNumber).trim().startsWith('[퀴즈]');
+          });
+
+          if (quizList.length === 0) {
+            container.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                  아직 제출된 모바일 실습 퀴즈 기록이 없습니다.
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          // 최신 응시자가 상단에 노출되도록 시간 역순(내림차순) 정렬
+          quizList.sort((a, b) => b.timeRaw - a.timeRaw);
+
+          let html = "";
+          quizList.forEach(item => {
+            const rawCarName = String(item.carNumber).trim();
+            
+            // [퀴즈] [학교명] 이름 구조 추출
+            let schoolName = "기타";
+            let studentName = rawCarName;
+            
+            // 정규식 분석: [퀴즈] [학교명] 이름
+            const match = rawCarName.match(/^\[퀴즈\]\s*\[(.*?)\]\s*(.*)$/);
+            if (match) {
+              schoolName = match[1];
+              studentName = match[2];
+            } else {
+              // 백업 파싱: 괄호만 뽑음
+              const cleanText = rawCarName.replace('[퀴즈]', '').trim();
+              const schoolMatch = cleanText.match(/^\[(.*?)\]/);
+              if (schoolMatch) {
+                schoolName = schoolMatch[1];
+                studentName = cleanText.replace(schoolMatch[0], '').trim();
+              } else {
+                studentName = cleanText;
+              }
+            }
+
+            const score = parseFloat(item.accuracy) || 0;
+            const timeStr = item.timeString || "기록 없음";
+            
+            // 수료 배지 연출
+            let certBadge = `<span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem;">미달 ❌</span>`;
+            if (score === 100) {
+              certBadge = `<span style="background: rgba(16, 185, 129, 0.2); color: #a7f3d0; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">수료 완료 🥇</span>`;
+            }
+
+            html += `
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); hover: background-color: rgba(255,255,255,0.02);">
+                <td style="padding: 10px 6px; color: var(--text-muted); font-size: 0.8rem;">${timeStr}</td>
+                <td style="padding: 10px 6px; font-weight: 700; color: var(--accent-cyan);">[${schoolName}]</td>
+                <td style="padding: 10px 6px; color: var(--text-main); font-weight: 600;">${studentName}</td>
+                <td style="padding: 10px 6px; color: #f59e0b; font-weight: 700;">${score}점</td>
+                <td style="padding: 10px 6px; text-align: center;">${certBadge}</td>
+              </tr>
+            `;
+          });
+          container.innerHTML = html;
+        })
+        .catch(err => {
+          console.error("실시간 퀴즈 수급 오류:", err);
+        });
     }
 
     function speakText() {
@@ -1632,6 +1745,10 @@
         // 음성 캐시 로딩 대응
       };
     }
+
+    // 5초 간격으로 모바일 퀴즈 결과 동적 갱신 폴링 및 최초 1회 실행
+    setInterval(fetchLiveQuizData, 5000);
+    fetchLiveQuizData();
   </script>
 
 </body>

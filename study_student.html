@@ -283,6 +283,26 @@
       box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
     }
 
+    /* 퀴즈 옵션 버튼 전용 스타일 */
+    .quiz-opt-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .quiz-opt-btn.selected {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
     /* 전체 학습관 복귀 링크 */
     .back-to-hub {
       margin-top: 16px;
@@ -345,9 +365,61 @@
     <button class="action-btn btn-primary" id="btnNextCourse" onclick="nextCourse()">다음: 좌회전 코스 ➡️</button>
   </div>
 
+  <!-- 퀴즈 및 제출 전용 카드 (실습 완료 시 활성화) -->
+  <div class="practice-card" id="quizCardSection" style="display: none; margin-top: 16px;">
+    <div class="card-title-area">
+      <div class="app-title" style="font-size: 1.3rem;">📝 Step 4. 어노테이션 이해도 평가</div>
+      <p class="app-subtitle">실습을 훌륭히 마쳤습니다! 아래 퀴즈를 풀고 수료 결과를 제출해 주세요.</p>
+    </div>
+
+    <!-- 퀴즈 1 -->
+    <div class="eval-criteria" id="q1-box" style="border-left-color: var(--accent-cyan); background: rgba(30, 41, 59, 0.4);">
+      <h2 style="font-size: 0.95rem; color: var(--accent-cyan); margin-bottom: 8px;">Q1. 자율주행 모델이 사진에 알맞은 조향각 정답을 매핑하여 학습하도록 원천 데이터에 방향 정답 정보를 달아주는 공정을 무엇이라 할까요?</h2>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+        <button class="quiz-opt-btn" onclick="selectQuizAns(1, 1)">① 이미지 노이즈 제거</button>
+        <button class="quiz-opt-btn" onclick="selectQuizAns(1, 2)">② 데이터 어노테이션 (레이블링)</button>
+        <button class="quiz-opt-btn" onclick="selectQuizAns(1, 3)">③ 데이터 압축 및 보관</button>
+      </div>
+    </div>
+
+    <!-- 퀴즈 2 -->
+    <div class="eval-criteria" id="q2-box" style="border-left-color: var(--accent-cyan); background: rgba(30, 41, 59, 0.4);">
+      <h2 style="font-size: 0.95rem; color: var(--accent-cyan); margin-bottom: 8px;">Q2. 좌회전 또는 우회전 같은 커브(곡선) 구간에서 데이터를 만들 때, 안전한 주행 차선 확보를 위해 반드시 맞추어야 할 기준선은 어디인가요?</h2>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+        <button class="quiz-opt-btn" onclick="selectQuizAns(2, 1)">① 안쪽 실선 또는 황색선</button>
+        <button class="quiz-opt-btn" onclick="selectQuizAns(2, 2)">② 도로 정중앙 가상 점선</button>
+        <button class="quiz-opt-btn" onclick="selectQuizAns(2, 3)">③ 바깥쪽 노란색 실선 (원심력 방어)</button>
+      </div>
+    </div>
+
+    <!-- 인적 사항 입력 폼 -->
+    <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(15, 23, 42, 0.4); padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+      <h3 style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px;">👤 인적사항 입력</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">학교명 (예: 전주공고)</label>
+          <input type="text" id="studentSchool" placeholder="학교명 입력" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; color: white; font-size: 0.85rem;" />
+        </div>
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">이름 또는 학번 (예: 홍길동)</label>
+          <input type="text" id="studentName" placeholder="이름 입력" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; color: white; font-size: 0.85rem;" />
+        </div>
+      </div>
+    </div>
+
+    <button class="action-btn btn-primary" id="btnSubmitQuiz" onclick="submitStudentQuiz()" style="margin-top: 4px;">
+      🚀 퀴즈 최종 제출 및 평가 완료하기
+    </button>
+  </div>
+
   <a href="study_teacher.html" class="back-to-hub">🏫 자율주행 어노테이션 학습관 홈으로 가기</a>
 
   <script>
+    // ----------------------------------------------------
+    // 구글 스프레드시트 Apps Script 연동
+    // ----------------------------------------------------
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
+
     // ----------------------------------------------------
     // 전역 상태 변수
     // ----------------------------------------------------
@@ -355,6 +427,10 @@
     let isDragging = false;
     let targetXOffset = 0;
     let animationFrameId = null;
+
+    // 퀴즈 채점용 전역 변수
+    let quizAnswers = { 1: null, 2: null };
+    const correctAnswers = { 1: 2, 2: 3 };
 
     // 돔 요소 바인딩
     const trackBox = document.getElementById('trackBox');
@@ -370,6 +446,8 @@
     const tabStraight = document.getElementById('tabStraight');
     const tabLeft = document.getElementById('tabLeft');
     const tabRight = document.getElementById('tabRight');
+
+    const quizCardSection = document.getElementById('quizCardSection');
 
     // ----------------------------------------------------
     // 코스 변환 및 세팅 적용
@@ -387,7 +465,7 @@
         btnNextCourse.innerHTML = "다음: 우회전 코스 ➡️";
       } else if (mode === 'right') {
         tabRight.classList.add('active');
-        btnNextCourse.innerHTML = "실습 완료: 다시하기 🔄";
+        btnNextCourse.innerHTML = "실습 완료: 퀴즈 풀기 ➡️";
       }
 
       applyLevelSettings();
@@ -399,8 +477,89 @@
       } else if (currentMode === 'left') {
         setMode('right');
       } else if (currentMode === 'right') {
-        setMode('straight');
+        // 모든 실습 완료 시 퀴즈 영역을 오픈하고 스크롤
+        if (quizCardSection) {
+          quizCardSection.style.display = 'block';
+          quizCardSection.scrollIntoView({ behavior: 'smooth' });
+        }
       }
+    }
+
+    // 퀴즈 선택 기능
+    function selectQuizAns(questionNum, optionNum) {
+      const qBox = document.getElementById(`q${questionNum}-box`);
+      if (!qBox) return;
+      
+      const options = qBox.querySelectorAll('.quiz-opt-btn');
+      options.forEach((opt, idx) => {
+        if (idx === (optionNum - 1)) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+
+      quizAnswers[questionNum] = optionNum;
+    }
+
+    // 퀴즈 결과 제출 처리
+    function submitStudentQuiz() {
+      const schoolInput = document.getElementById('studentSchool');
+      const nameInput = document.getElementById('studentName');
+      
+      if (!schoolInput || !nameInput) return;
+      
+      const school = schoolInput.value.trim();
+      const name = nameInput.value.trim();
+
+      if (quizAnswers[1] === null || quizAnswers[2] === null) {
+        alert("모든 퀴즈의 답안을 선택해 주세요!");
+        return;
+      }
+      if (!school) {
+        alert("소속 학교명을 입력해 주세요 (예: 전주공고)!");
+        schoolInput.focus();
+        return;
+      }
+      if (!name) {
+        alert("이름 또는 학번을 입력해 주세요 (예: 홍길동)!");
+        nameInput.focus();
+        return;
+      }
+
+      // 채점 연산
+      const isQ1Correct = (quizAnswers[1] === correctAnswers[1]);
+      const isQ2Correct = (quizAnswers[2] === correctAnswers[2]);
+      
+      let score = 0;
+      if (isQ1Correct) score += 50;
+      if (isQ2Correct) score += 50;
+
+      const q1Mark = isQ1Correct ? "O" : "X";
+      const q2Mark = isQ2Correct ? "O" : "X";
+      
+      const resultText = `Q1: ${q1Mark}, Q2: ${q2Mark} (${score}점) ` + (score === 100 ? "수료 완료 🥇" : "수료 실패");
+      const carNum = `[퀴즈] [${school}] ${name}`; // [퀴즈] 접두사를 통한 고유 구조화
+
+      // 버튼 로딩 상태 전환
+      const btn = document.getElementById('btnSubmitQuiz');
+      btn.disabled = true;
+      btn.innerText = "제출 중... ⏳";
+
+      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(resultText)}&accuracy=${encodeURIComponent(score)}`;
+
+      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
+        .then(response => {
+          alert(`🎉 퀴즈 제출 완료!\n점수: ${score}점\n결과가 교사용 현황판에 즉시 전송되었습니다.`);
+          btn.innerText = "제출 완료 🟢";
+          btn.style.background = "var(--success-green)";
+        })
+        .catch(err => {
+          console.error("데이터 전송 오류:", err);
+          alert("네트워크 연결 실패로 전송하지 못했습니다. 다시 시도해 주세요.");
+          btn.disabled = false;
+          btn.innerText = "🚀 퀴즈 최종 제출 및 평가 완료하기";
+        });
     }
 
     function applyLevelSettings() {
