@@ -392,23 +392,8 @@
       </div>
     </div>
 
-    <!-- 인적 사항 입력 폼 -->
-    <div style="display: flex; flex-direction: column; gap: 10px; background: rgba(15, 23, 42, 0.4); padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
-      <h3 style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 4px;">👤 인적사항 입력</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <div>
-          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">학교명 (예: 전주공고)</label>
-          <input type="text" id="studentSchool" placeholder="학교명 입력" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; color: white; font-size: 0.85rem;" />
-        </div>
-        <div>
-          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">이름 또는 학번 (예: 홍길동)</label>
-          <input type="text" id="studentName" placeholder="이름 입력" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #0f172a; color: white; font-size: 0.85rem;" />
-        </div>
-      </div>
-    </div>
-
-    <button class="action-btn btn-primary" id="btnSubmitQuiz" onclick="submitStudentQuiz()" style="margin-top: 4px;">
-      🚀 퀴즈 최종 제출 및 평가 완료하기
+    <button class="action-btn btn-primary" id="btnSubmitQuiz" onclick="submitStudentQuiz()" style="margin-top: 10px;">
+      🚀 익명으로 퀴즈 정답 제출하기
     </button>
   </div>
 
@@ -504,26 +489,8 @@
 
     // 퀴즈 결과 제출 처리
     function submitStudentQuiz() {
-      const schoolInput = document.getElementById('studentSchool');
-      const nameInput = document.getElementById('studentName');
-      
-      if (!schoolInput || !nameInput) return;
-      
-      const school = schoolInput.value.trim();
-      const name = nameInput.value.trim();
-
       if (quizAnswers[1] === null || quizAnswers[2] === null) {
         alert("모든 퀴즈의 답안을 선택해 주세요!");
-        return;
-      }
-      if (!school) {
-        alert("소속 학교명을 입력해 주세요 (예: 전주공고)!");
-        schoolInput.focus();
-        return;
-      }
-      if (!name) {
-        alert("이름 또는 학번을 입력해 주세요 (예: 홍길동)!");
-        nameInput.focus();
         return;
       }
 
@@ -538,8 +505,9 @@
       const q1Mark = isQ1Correct ? "O" : "X";
       const q2Mark = isQ2Correct ? "O" : "X";
       
-      const resultText = `Q1: ${q1Mark}, Q2: ${q2Mark} (${score}점) ` + (score === 100 ? "수료 완료 🥇" : "수료 실패");
-      const carNum = `[퀴즈] [${school}] ${name}`; // [퀴즈] 접두사를 통한 고유 구조화
+      const resultText = `Q1: ${q1Mark}, Q2: ${q2Mark}`;
+      // [퀴즈] 접두사를 활용해 퀴즈 결과를 익명 정오표 형태로 압축하여 전송
+      const carNum = `[퀴즈] 익명_${q1Mark}_${q2Mark}`; 
 
       // 버튼 로딩 상태 전환
       const btn = document.getElementById('btnSubmitQuiz');
@@ -550,7 +518,7 @@
 
       fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
         .then(response => {
-          alert(`🎉 퀴즈 제출 완료!\n점수: ${score}점\n결과가 교사용 현황판에 즉시 전송되었습니다.`);
+          alert("🎉 퀴즈 제출 완료! 결과가 전광판에 즉시 실시간 반영되었습니다.");
           btn.innerText = "제출 완료 🟢";
           btn.style.background = "var(--success-green)";
         })
@@ -558,7 +526,7 @@
           console.error("데이터 전송 오류:", err);
           alert("네트워크 연결 실패로 전송하지 못했습니다. 다시 시도해 주세요.");
           btn.disabled = false;
-          btn.innerText = "🚀 퀴즈 최종 제출 및 평가 완료하기";
+          btn.innerText = "🚀 익명으로 퀴즈 정답 제출하기";
         });
     }
 

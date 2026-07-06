@@ -1041,30 +1041,39 @@
 
       <!-- 실시간 스마트 기기 퀴즈 현황판 -->
       <div class="live-quiz-board" style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-        <h3 style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          📊 실시간 스마트 기기 퀴즈 현황판 
-          <span style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 8px; border-radius: 20px; font-weight: 500;">실시간 자동 갱신 🟢</span>
+        <h3 style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span style="display: flex; align-items: center; gap: 8px;">📊 실시간 모바일 퀴즈 학습 성취도 전광판</span>
+          <span style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">실시간 자동 집계 🟢</span>
         </h3>
         
-        <div style="max-height: 250px; overflow-y: auto; background: rgba(15, 23, 42, 0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); padding: 12px;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; color: var(--text-main);">
-            <thead>
-              <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); color: var(--text-muted);">
-                <th style="padding: 8px 6px;">제출 시간</th>
-                <th style="padding: 8px 6px;">소속 학교</th>
-                <th style="padding: 8px 6px;">이름 / 학번</th>
-                <th style="padding: 8px 6px;">퀴즈 점수</th>
-                <th style="padding: 8px 6px; text-align: center;">수료증 여부</th>
-              </tr>
-            </thead>
-            <tbody id="liveQuizBody">
-              <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                  아직 제출된 모바일 실습 퀴즈 기록이 없습니다.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div style="background: rgba(15, 23, 42, 0.5); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); padding: 20px; display: flex; flex-direction: column; gap: 18px;">
+          <!-- 응시 학생 수 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 500;">참여 학생 수</span>
+            <span id="quizTotalCount" style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; font-family: 'Outfit', sans-serif;">0명</span>
+          </div>
+
+          <!-- Q1 정답률 게이지 -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
+              <span style="color: var(--text-main); font-weight: 600;">Q1. 데이터 어노테이션 개념 이해 정답률</span>
+              <span id="q1RateText" style="color: #34d399; font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
+            </div>
+            <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
+              <div id="q1RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
+            </div>
+          </div>
+
+          <!-- Q2 정답률 게이지 -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
+              <span style="color: var(--text-main); font-weight: 600;">Q2. 곡선 구간 조향각 안전 기준 정답률</span>
+              <span id="q2RateText" style="color: var(--accent-blue); font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
+            </div>
+            <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
+              <div id="q2RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #06b6d4); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1326,15 +1335,19 @@
       }
     }
 
-    // 퀴즈 실시간 데이터 수급 및 파싱 테이블 렌더링
+    // 퀴즈 실시간 데이터 수급 및 정답률 게이지 갱신 렌더링
     function fetchLiveQuizData() {
-      const container = document.getElementById('liveQuizBody');
-      if (!container || !GAS_WEBAPP_URL) return;
+      const totalCountEl = document.getElementById('quizTotalCount');
+      const q1TextEl = document.getElementById('q1RateText');
+      const q1BarEl = document.getElementById('q1RateBar');
+      const q2TextEl = document.getElementById('q2RateText');
+      const q2BarEl = document.getElementById('q2RateBar');
+
+      if (!totalCountEl || !q1TextEl || !q1BarEl || !q2TextEl || !q2BarEl || !GAS_WEBAPP_URL) return;
 
       fetch(`${GAS_WEBAPP_URL}?action=getLeaderboard`, { method: 'GET', mode: 'cors', redirect: 'follow' })
         .then(response => response.json())
         .then(res => {
-          // 객체 구조에 맞춰 실제 데이터 배열 추출 (res.status === 'success' 대응)
           const list = (res && res.status === 'success' && Array.isArray(res.data)) ? res.data : (Array.isArray(res) ? res : []);
 
           // [퀴즈] 접두사를 가진 데이터만 필터 추출
@@ -1342,68 +1355,52 @@
             return item.carNumber && String(item.carNumber).trim().startsWith('[퀴즈]');
           });
 
-          if (quizList.length === 0) {
-            container.innerHTML = `
-              <tr>
-                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
-                  아직 제출된 모바일 실습 퀴즈 기록이 없습니다.
-                </td>
-              </tr>
-            `;
+          const total = quizList.length;
+          totalCountEl.innerText = `${total}명`;
+
+          if (total === 0) {
+            q1TextEl.innerText = "0%";
+            q1BarEl.style.width = "0%";
+            q2TextEl.innerText = "0%";
+            q2BarEl.style.width = "0%";
             return;
           }
 
-          // 최신 응시자가 상단에 노출되도록 시간 역순(내림차순) 정렬
-          quizList.sort((a, b) => b.timeRaw - a.timeRaw);
+          let q1CorrectCount = 0;
+          let q2CorrectCount = 0;
 
-          let html = "";
           quizList.forEach(item => {
             const rawCarName = String(item.carNumber).trim();
             
-            // [퀴즈] [학교명] 이름 구조 추출
-            let schoolName = "기타";
-            let studentName = rawCarName;
-            
-            // 정규식 분석: [퀴즈] [학교명] 이름
-            const match = rawCarName.match(/^\[퀴즈\]\s*\[(.*?)\]\s*(.*)$/);
-            if (match) {
-              schoolName = match[1];
-              studentName = match[2];
+            // [퀴즈] 익명_O_X 포맷 파싱 분석
+            if (rawCarName.includes('_')) {
+              const parts = rawCarName.split('_');
+              if (parts[1] === 'O') q1CorrectCount++;
+              if (parts[2] === 'O') q2CorrectCount++;
             } else {
-              // 백업 파싱: 괄호만 뽑음
-              const cleanText = rawCarName.replace('[퀴즈]', '').trim();
-              const schoolMatch = cleanText.match(/^\[(.*?)\]/);
-              if (schoolMatch) {
-                schoolName = schoolMatch[1];
-                studentName = cleanText.replace(schoolMatch[0], '').trim();
-              } else {
-                studentName = cleanText;
+              // 하위 호환성 유지: 100점이면 다 맞춘것으로, 50점이면 Q1만 맞춘것으로 가정
+              const score = parseFloat(item.accuracy) || 0;
+              if (score === 100) {
+                q1CorrectCount++;
+                q2CorrectCount++;
+              } else if (score === 50) {
+                q1CorrectCount++;
               }
             }
-
-            const score = parseFloat(item.accuracy) || 0;
-            const timeStr = item.timeString || "기록 없음";
-            
-            // 수료 배지 연출
-            let certBadge = `<span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem;">미달 ❌</span>`;
-            if (score === 100) {
-              certBadge = `<span style="background: rgba(16, 185, 129, 0.2); color: #a7f3d0; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">수료 완료 🥇</span>`;
-            }
-
-            html += `
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); hover: background-color: rgba(255,255,255,0.02);">
-                <td style="padding: 10px 6px; color: var(--text-muted); font-size: 0.8rem;">${timeStr}</td>
-                <td style="padding: 10px 6px; font-weight: 700; color: var(--accent-cyan);">[${schoolName}]</td>
-                <td style="padding: 10px 6px; color: var(--text-main); font-weight: 600;">${studentName}</td>
-                <td style="padding: 10px 6px; color: #f59e0b; font-weight: 700;">${score}점</td>
-                <td style="padding: 10px 6px; text-align: center;">${certBadge}</td>
-              </tr>
-            `;
           });
-          container.innerHTML = html;
+
+          // 문항별 정답률 백분율 연산
+          const q1Rate = Math.round((q1CorrectCount / total) * 100);
+          const q2Rate = Math.round((q2CorrectCount / total) * 100);
+
+          q1TextEl.innerText = `${q1Rate}%`;
+          q1BarEl.style.width = `${q1Rate}%`;
+          
+          q2TextEl.innerText = `${q2Rate}%`;
+          q2BarEl.style.width = `${q2Rate}%`;
         })
         .catch(err => {
-          console.error("실시간 퀴즈 수급 오류:", err);
+          console.error("실시간 퀴즈 정답률 수급 오류:", err);
         });
     }
 
