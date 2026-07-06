@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>모바일 조향 제어 실습관 - AI 드라이빙 멘토</title>
+  <!-- 구글 Outfit 및 Inter 폰트 적용 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --accent-blue: #38bdf8;
+      --accent-cyan: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-green: #10b981;
+      --error-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .app-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .app-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .practice-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 코스 선택 탭 */
+    .course-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 10px 4px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(6, 182, 212, 0.2));
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+    }
+
+    /* 평가 기준 상자 */
+    .eval-criteria {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 12px;
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .eval-criteria h2 {
+      font-size: 0.9rem;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .eval-criteria p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .eval-criteria .highlight {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    /* 도로 & 조향 라인 SVG 시뮬레이터 */
+    .simulator-box {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .road-line {
+      fill: none;
+      stroke: #64748b;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 8 8;
+    }
+
+    .road-line.reference-line {
+      stroke: #eab308;
+      stroke-width: 10;
+      stroke-dasharray: none;
+      filter: drop-shadow(0 0 5px rgba(234, 179, 8, 0.3));
+    }
+
+    .steer-line {
+      fill: none;
+      stroke: var(--accent-blue);
+      stroke-width: 5;
+      stroke-linecap: round;
+      transition: stroke 0.2s ease;
+    }
+
+    /* 드래그를 조작할 타겟 핸들 */
+    .green-circle {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+      background-color: #10b981;
+      border: 3px solid #10b981;
+      border-radius: 50%;
+      cursor: grab;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+      /* 모바일 터치 피드백 방지용 터치 액션 정의 */
+      touch-action: none;
+    }
+
+    .green-circle:active {
+      cursor: grabbing;
+      transform: translateX(-50%) scale(1.15);
+      background-color: #059669;
+    }
+
+    .red-circle {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 16px;
+      background-color: var(--error-red);
+      border-radius: 50%;
+      z-index: 9;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    }
+
+    /* 결과 피드백 안내문 */
+    #feedbackText {
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-weight: 700;
+      min-height: 24px;
+      transition: color 0.2s ease;
+    }
+
+    /* 시연 및 제어 버튼 */
+    .demo-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .demo-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-wrong {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .btn-correct {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #a7f3d0;
+    }
+
+    .btn-wrong:active, .btn-correct:active {
+      transform: scale(0.97);
+    }
+
+    /* 하단 이동 버튼 */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #0f172a;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
+    }
+
+    /* 전체 학습관 복귀 링크 */
+    .back-to-hub {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--accent-blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .back-to-hub:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="app-title">AI Driving Mentor</div>
+    <div class="app-subtitle">🤖 자율주행 모바일/패드 실습실</div>
+  </header>
+
+  <div class="practice-card">
+    <!-- 탭 컨트롤 -->
+    <div class="course-tabs">
+      <button class="tab-btn active" id="tabStraight" onclick="setMode('straight')">1. 직진 코스</button>
+      <button class="tab-btn" id="tabLeft" onclick="setMode('left')">2. 좌회전 코스</button>
+      <button class="tab-btn" id="tabRight" onclick="setMode('right')">3. 우회전 코스</button>
+    </div>
+
+    <!-- 평가 기준 안내 -->
+    <div class="eval-criteria" id="evalCriteria"></div>
+
+    <!-- 드래그/터치 인터렉션 시뮬레이터 -->
+    <div class="simulator-box" id="trackBox">
+      <svg id="roadGuideSvg">
+        <path id="leftLine" class="road-line" d=""></path>
+        <path id="rightLine" class="road-line" d=""></path>
+      </svg>
+      
+      <svg id="svgCanvas">
+        <line id="steerLine" class="steer-line" x1="50%" y1="90%" x2="50%" y2="20%" />
+      </svg>
+      
+      <div class="red-circle" id="redCircle"></div>
+      <div class="green-circle" id="greenCircle"></div>
+    </div>
+
+    <div id="feedbackText">초록색 원을 좌우로 터치 드래그하여 정답선을 맞추세요.</div>
+
+    <!-- 시연 조작단 -->
+    <div class="demo-controls">
+      <button class="demo-btn btn-wrong" onclick="demoWrong()">❌ 감점 예시</button>
+      <button class="demo-btn btn-correct" onclick="demoCorrect()">✅ 만점 예시</button>
+    </div>
+
+    <!-- 코스 진행 버튼 -->
+    <button class="action-btn btn-primary" id="btnNextCourse" onclick="nextCourse()">다음: 좌회전 코스 ➡️</button>
+  </div>
+
+  <a href="study_teacher.html" class="back-to-hub">🏫 자율주행 어노테이션 학습관 홈으로 가기</a>
+
+  <script>
+    // ----------------------------------------------------
+    // 전역 상태 변수
+    // ----------------------------------------------------
+    let currentMode = 'straight';
+    let isDragging = false;
+    let targetXOffset = 0;
+    let animationFrameId = null;
+
+    // 돔 요소 바인딩
+    const trackBox = document.getElementById('trackBox');
+    const leftLine = document.getElementById('leftLine');
+    const rightLine = document.getElementById('rightLine');
+    const steerLine = document.getElementById('steerLine');
+    const greenCircle = document.getElementById('greenCircle');
+    const redCircle = document.getElementById('redCircle');
+    const feedbackText = document.getElementById('feedbackText');
+    const evalCriteria = document.getElementById('evalCriteria');
+    const btnNextCourse = document.getElementById('btnNextCourse');
+
+    const tabStraight = document.getElementById('tabStraight');
+    const tabLeft = document.getElementById('tabLeft');
+    const tabRight = document.getElementById('tabRight');
+
+    // ----------------------------------------------------
+    // 코스 변환 및 세팅 적용
+    // ----------------------------------------------------
+    function setMode(mode) {
+      currentMode = mode;
+      
+      // 탭 액티브 상태 조율
+      [tabStraight, tabLeft, tabRight].forEach(btn => btn.classList.remove('active'));
+      if (mode === 'straight') {
+        tabStraight.classList.add('active');
+        btnNextCourse.innerHTML = "다음: 좌회전 코스 ➡️";
+      } else if (mode === 'left') {
+        tabLeft.classList.add('active');
+        btnNextCourse.innerHTML = "다음: 우회전 코스 ➡️";
+      } else if (mode === 'right') {
+        tabRight.classList.add('active');
+        btnNextCourse.innerHTML = "실습 완료: 다시하기 🔄";
+      }
+
+      applyLevelSettings();
+    }
+
+    function nextCourse() {
+      if (currentMode === 'straight') {
+        setMode('left');
+      } else if (currentMode === 'left') {
+        setMode('right');
+      } else if (currentMode === 'right') {
+        setMode('straight');
+      }
+    }
+
+    function applyLevelSettings() {
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      greenCircle.style.transition = 'none';
+      greenCircle.style.left = '50%';
+      
+      let innerWidth = trackBox.clientWidth || 360; 
+      let center = innerWidth / 2;
+      
+      leftLine.className.baseVal = "road-line";
+      rightLine.className.baseVal = "road-line";
+      
+      let curveOffset = 0; 
+
+      if (currentMode === 'straight') {
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 직진 코스</h2><p>수평선 중심에서 조향각이 치우치지 않고 <span class='highlight'>양쪽 점선 정중앙</span>에 수직으로 곧게 뻗어야 만점입니다.</p>";
+        curveOffset = 0; 
+      } 
+      else if (currentMode === 'left') {
+        rightLine.className.baseVal = "road-line reference-line"; 
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 좌회전 코스</h2><p>좌회전 시에는 차선 이탈을 방지하기 위해 <span class='highlight'>우측(바깥쪽) 노란색 실선</span>과 평행하게 조향선을 맞춥니다.</p>";
+        curveOffset = -innerWidth * 0.45; // 모바일 폭에 맞춘 가중치 조정
+      } 
+      else if (currentMode === 'right') {
+        leftLine.className.baseVal = "road-line reference-line"; 
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 우회전 코스</h2><p>우회전 시에는 차선 이탈을 방지하기 위해 <span class='highlight'>좌측(바깥쪽) 노란색 실선</span>과 평행하도록 조향선을 정밀하게 조작합니다.</p>";
+        curveOffset = innerWidth * 0.45;
+      }
+
+      targetXOffset = curveOffset * 0.65;
+
+      let botY = 320; 
+      let topY = -30; 
+      let ctrlY = 120; 
+      let laneW = innerWidth * 0.32; 
+
+      let lStartX = center - laneW;
+      let lEndX = center - laneW + curveOffset;
+      let lCtrlX = center - laneW + (curveOffset * 0.45); 
+      leftLine.setAttribute('d', `M ${lStartX},${botY} Q ${lCtrlX},${ctrlY} ${lEndX},${topY}`);
+
+      let rStartX = center + laneW;
+      let rEndX = center + laneW + curveOffset;
+      let rCtrlX = center + laneW + (curveOffset * 0.45);
+      rightLine.setAttribute('d', `M ${rStartX},${botY} Q ${rCtrlX},${ctrlY} ${rEndX},${topY}`);
+      
+      updateLine();
+      feedbackText.innerText = "초록색 원을 좌우로 터치 드래그하여 기준선을 맞춰보세요.";
+      feedbackText.style.color = "#94a3b8";
+    }
+
+    // ----------------------------------------------------
+    // 드래그 및 터치 인터렉션 연동 구현
+    // ----------------------------------------------------
+    function updateLine() {
+      if(!trackBox || !greenCircle || !redCircle || !steerLine) return;
+      
+      let gx = greenCircle.offsetLeft;
+      let gy = greenCircle.offsetTop + (greenCircle.offsetHeight / 2);
+      let rx = redCircle.offsetLeft;
+      let ry = redCircle.offsetTop + (redCircle.offsetHeight / 2);
+
+      steerLine.setAttribute('x1', rx);
+      steerLine.setAttribute('y1', ry);
+      steerLine.setAttribute('x2', gx);
+      steerLine.setAttribute('y2', gy);
+    }
+
+    function provideRealTimeFeedback(currentX, centerX) {
+      let idealX = centerX + targetXOffset;
+      let diff = currentX - idealX;
+      
+      // 모바일 감도(허용 오차) 감안하여 약 25px 이내 안착 시 정답 처리
+      if (Math.abs(diff) <= 25) {
+        steerLine.style.stroke = "#10b981"; 
+        greenCircle.style.borderColor = "#10b981";
+        feedbackText.innerText = "✅ [만점] 평가 기준을 완벽하게 맞췄습니다!";
+        feedbackText.style.color = "#10b981";
+      } else {
+        steerLine.style.stroke = "#ef4444";
+        greenCircle.style.borderColor = "#ef4444";
+        feedbackText.innerText = "❌ [감점] 기준선과 어긋나 이탈 위험이 있습니다.";
+        feedbackText.style.color = "#ef4444";
+      }
+    }
+
+    function animateToX(targetX, duration = 500) {
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      
+      greenCircle.style.transition = `left ${duration}ms ease-in-out`;
+      greenCircle.style.left = targetX + 'px';
+      
+      let start = performance.now();
+      function step(now) {
+        updateLine();
+        provideRealTimeFeedback(greenCircle.offsetLeft, trackBox.clientWidth / 2);
+        if (now - start < duration) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          greenCircle.style.transition = 'none'; 
+        }
+      }
+      animationFrameId = requestAnimationFrame(step);
+    }
+
+    // 모범 답안 시연
+    function demoCorrect() {
+      let center = trackBox.clientWidth / 2;
+      let idealX = center + targetXOffset;
+      animateToX(idealX);
+    }
+
+    // 감점 예시 시연
+    function demoWrong() {
+      let center = trackBox.clientWidth / 2;
+      let wrongX;
+      
+      if (currentMode === 'straight') {
+        wrongX = center + 80; 
+      } else if (currentMode === 'left') {
+        wrongX = center + 30; 
+      } else {
+        wrongX = center - 30; 
+      }
+      animateToX(wrongX);
+    }
+
+    // ----------------------------------------------------
+    // 마우스 & 터치 이벤트 바인딩
+    // ----------------------------------------------------
+    function startDrag(e) {
+      isDragging = true;
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      greenCircle.style.transition = 'none';
+    }
+
+    function doDrag(e) {
+      if (!isDragging) return;
+      
+      // 모바일의 기본 스크롤 동작 방지 (터치할 때 화면 전체가 밀리는 현상 방어)
+      if (e.type.includes('touch')) {
+        e.preventDefault();
+      }
+
+      let clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      let rect = trackBox.getBoundingClientRect();
+      let x = clientX - rect.left;
+      let innerWidth = trackBox.clientWidth;
+      
+      x = Math.max(20, Math.min(x, innerWidth - 20));
+      greenCircle.style.left = x + 'px';
+      
+      updateLine();
+      provideRealTimeFeedback(x, innerWidth / 2);
+    }
+
+    function stopDrag(e) {
+      if (!isDragging) return;
+      isDragging = false;
+    }
+
+    // 이벤트 리스너 이식
+    greenCircle.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', doDrag);
+    window.addEventListener('mouseup', stopDrag);
+
+    greenCircle.addEventListener('touchstart', startDrag, {passive: false});
+    window.addEventListener('touchmove', doDrag, {passive: false});
+    window.addEventListener('touchend', stopDrag);
+
+    // 윈도우 리사이즈 및 회전 시 좌표 다시 매칭
+    window.addEventListener('resize', () => {
+      applyLevelSettings();
+    });
+
+    // 최초 로드 실행
+    applyLevelSettings();
+  </script>
+</body>
+</html>

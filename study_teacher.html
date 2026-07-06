@@ -998,9 +998,14 @@
 
     <!-- 3단계: 조향 제어 어노테이션 실습 -->
     <div class="learn-card" id="step-card-3">
-      <div class="card-title-area">
-        <h2 class="card-title">🔧 Step 3. 조향 제어 어노테이션 직접 해보기</h2>
-        <p class="card-subtitle">각 코스별 기준선 설명을 읽고, 마우스를 드래그하여 조향 기준선을 맞춰보세요.</p>
+      <div class="card-title-area" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h2 class="card-title">🔧 Step 3. 조향 제어 어노테이션 직접 해보기</h2>
+          <p class="card-subtitle">각 코스별 기준선 설명을 읽고, 마우스를 드래그하여 조향 기준선을 맞춰보세요.</p>
+        </div>
+        <button class="action-btn btn-primary" onclick="openQrModal()" style="width: auto; padding: 10px 16px; font-size: 0.9rem; margin-top: 4px;">
+          📱 스마트 기기로 실습하기 (QR)
+        </button>
       </div>
 
       <!-- 기존 실습 탭 -->
@@ -1113,6 +1118,33 @@
         <button class="action-btn btn-primary" onclick="speakText()"><span class="btn-icon">🔊</span> 다시 듣기</button>
         <button class="action-btn btn-secondary" onclick="stopSpeaking()"><span class="btn-icon">🔇</span> 음성 끄기</button>
         <button class="action-btn btn-danger" onclick="closeModal()"><span class="btn-icon">❌</span> 닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스마트 기기 실습 QR 모달 -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal-card" style="max-width: 420px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px;">
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0; width: 100%;">
+        <h3 style="font-size: 1.3rem; color: var(--accent-blue);">📱 스마트 기기로 실습하기</h3>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">
+        태블릿(스마트패드)이나 개인 스마트폰의 기본 카메라 앱을 켜고 아래 QR 코드를 스캔하세요. 터치 제어로 조향각 실습을 직접 진행할 수 있습니다.
+      </p>
+      
+      <!-- QR 코드가 생성되어 노출될 이미지 공간 -->
+      <div id="qrCodeContainer" style="background: white; padding: 12px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); width: 220px; height: 220px; display: flex; align-items: center; justify-content: center;">
+        <img id="qrCodeImg" src="" alt="실습 QR 코드" style="width: 100%; height: 100%; display: block;" />
+      </div>
+
+      <!-- 접속할 URL 주소를 텍스트로도 친절히 표출 -->
+      <div style="width: 100%;">
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">접속 주소:</p>
+        <div id="qrLinkText" style="font-size: 0.8rem; color: var(--accent-cyan); word-break: break-all; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; user-select: all;">-</div>
+      </div>
+
+      <div class="modal-controls" style="border-top: none; width: 100%; justify-content: center; padding-top: 8px;">
+        <button class="action-btn btn-danger" onclick="closeQrModal()" style="width: 100%;"><span class="btn-icon">❌</span> 실습 창 닫기</button>
       </div>
     </div>
   </div>
@@ -1235,6 +1267,31 @@
         conceptModal.classList.remove('active');
       }
       stopSpeaking();
+    }
+
+    // 스마트 기기 실습 QR 모달 열기/닫기
+    function openQrModal() {
+      const qrModal = document.getElementById('qrModal');
+      const qrCodeImg = document.getElementById('qrCodeImg');
+      const qrLinkText = document.getElementById('qrLinkText');
+      if (!qrModal || !qrCodeImg || !qrLinkText) return;
+
+      // 현재 파일명이 들어있는 경로를 추출하여 study_student.html 경로를 동적으로 합성
+      const currentUrl = window.location.href;
+      let targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/study_student.html';
+      
+      // 모바일 실습 전용 URL 정보 업데이트 및 구글 QR API 매핑
+      qrLinkText.innerText = targetUrl;
+      qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(targetUrl)}`;
+      
+      qrModal.classList.add('active');
+    }
+
+    function closeQrModal() {
+      const qrModal = document.getElementById('qrModal');
+      if (qrModal) {
+        qrModal.classList.remove('active');
+      }
     }
 
     function speakText() {
