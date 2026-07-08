@@ -80,10 +80,10 @@
       animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* 사전/사후 탭 선택기 */
+    /* 사전/사후/교사 통합 탭 선택기 */
     .tab-selector {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       background: rgba(15, 23, 42, 0.6);
       padding: 6px;
       border-radius: 12px;
@@ -95,8 +95,8 @@
       background: none;
       border: none;
       color: var(--text-muted);
-      padding: 12px;
-      font-size: 0.95rem;
+      padding: 12px 6px;
+      font-size: 0.82rem;
       font-weight: 700;
       border-radius: 8px;
       cursor: pointer;
@@ -104,7 +104,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .tab-btn.active-pre {
@@ -117,6 +117,12 @@
       background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
       color: white;
       box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .tab-btn.active-teacher {
+      background: linear-gradient(135deg, var(--success-green), #34d399);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
 
     /* 문항 블록 */
@@ -229,6 +235,12 @@
       box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
     }
 
+    .scale-item.teacher-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.1);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+
     .scale-item input[type="radio"]:checked + .scale-circle::after {
       transform: scale(1);
     }
@@ -239,6 +251,10 @@
 
     .scale-item.post-mode input[type="radio"]:checked + .scale-circle::after {
       background: var(--accent-purple);
+    }
+
+    .scale-item.teacher-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--success-green);
     }
 
     .scale-item input[type="radio"]:checked ~ .scale-label {
@@ -282,6 +298,15 @@
       transform: translateY(-1px);
     }
 
+    .btn-teacher {
+      background: linear-gradient(135deg, var(--success-green), #059669);
+    }
+
+    .btn-teacher:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+
     .action-btn:disabled {
       background: #334155;
       color: #64748b;
@@ -322,77 +347,29 @@
   <!-- 헤더 영역 -->
   <div class="header-area">
     <div class="app-title">AI Driving Mentor</div>
-    <p class="app-subtitle">자율주행 인공지능 어노테이션 교육<br>실습 전/후 역량 진단실에 오신 것을 환영합니다.</p>
+    <p class="app-subtitle">자율주행 인공지능 어노테이션 교육<br>실습 전/후 역량 진단 및 앱 만족도 조사</p>
   </div>
 
   <!-- 설문조사 메인 박스 -->
   <div class="survey-container">
     
-    <!-- 사전/사후 모드 선택 탭 -->
+    <!-- 사전/사후/교사 모드 선택 탭 -->
     <div class="tab-selector">
       <button class="tab-btn active-pre" id="tabPre" onclick="changeMode('pre')">
-        <span>📝</span> 실습 전 사전 평가
+        <span>📝</span> 사전 진단 (학생)
       </button>
       <button class="tab-btn" id="tabPost" onclick="changeMode('post')">
-        <span>🏆</span> 실습 후 사후 평가
+        <span>🏆</span> 사후 진단 (학생)
+      </button>
+      <button class="tab-btn" id="tabTeacher" onclick="changeMode('teacher')">
+        <span>👨‍🏫</span> 앱 만족도 (교사)
       </button>
     </div>
 
-    <!-- 설문 문항 양식 -->
+    <!-- 설문 문항 동적 빌드 영역 -->
     <form id="surveyForm">
-      <!-- Q1 -->
-      <div class="question-card">
-        <div class="question-title">
-          <span class="question-number">Q1.</span>
-          <span>자율주행 컴퓨터가 카메라 이미지 데이터를 학습하여 스스로 판단하는 운전 원리를 잘 알고 있나요?</span>
-        </div>
-        <div class="scale-row" id="q1-row">
-          <!-- 5점 척도 라디오 버튼 세트 -->
-        </div>
-      </div>
-
-      <!-- Q2 -->
-      <div class="question-card">
-        <div class="question-title">
-          <span class="question-number">Q2.</span>
-          <span>인공지능 학습을 위한 데이터 레이블링(어노테이션)의 역할과 중요성을 설명할 수 있나요?</span>
-        </div>
-        <div class="scale-row" id="q2-row">
-          <!-- 5점 척도 라디오 버튼 세트 -->
-        </div>
-      </div>
-
-      <!-- Q3 -->
-      <div class="question-card">
-        <div class="question-title">
-          <span class="question-number">Q3.</span>
-          <span>커브(곡선) 구간의 데이터를 생성할 때, 안전을 위해 왜 바깥쪽 실선을 정답 기준으로 삼아야 하는지 알고 있나요?</span>
-        </div>
-        <div class="scale-row" id="q3-row">
-          <!-- 5점 척도 라디오 버튼 세트 -->
-        </div>
-      </div>
-
-      <!-- Q4 -->
-      <div class="question-card">
-        <div class="question-title">
-          <span class="question-number">Q4.</span>
-          <span>실제 도로 사진을 보고 알맞은 조향각 정답(레이블)을 터치 또는 드래그를 활용해 정확히 작업할 수 있나요?</span>
-        </div>
-        <div class="scale-row" id="q4-row">
-          <!-- 5점 척도 라디오 버튼 세트 -->
-        </div>
-      </div>
-
-      <!-- Q5 -->
-      <div class="question-card">
-        <div class="question-title">
-          <span class="question-number">Q5.</span>
-          <span>자율주행 기술, 인공지능 및 데이터 과학 수업 활동에 관심이 있고 기쁜 마음으로 참여하겠습니까?</span>
-        </div>
-        <div class="scale-row" id="q5-row">
-          <!-- 5점 척도 라디오 버튼 세트 -->
-        </div>
+      <div id="surveyQuestionsContainer">
+        <!-- 자바스크립트로 동적 로드됨 -->
       </div>
 
       <!-- 제출하기 단추 -->
@@ -408,65 +385,108 @@
     // 구글 Apps Script 연동 웹앱 주소
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
     
-    // 현재 모드: 'pre' (사전), 'post' (사후)
+    // 현재 모드: 'pre' (학생 사전), 'post' (학생 사후), 'teacher' (교사 만족도)
     let currentMode = 'pre';
 
     // 5점 리커트 척도 문구 세트
     const scaleLabels = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"];
 
-    // 페이지 로드 시 5점 척도 선택지 생성
-    function renderScales() {
-      for (let q = 1; q <= 5; q++) {
-        const row = document.getElementById(`q${q}-row`);
-        if (!row) continue;
+    // 1) 학생용 5대 역량 검증 질문 리스트
+    const studentQuestions = [
+      "자율주행 컴퓨터가 카메라 이미지 데이터를 학습하여 스스로 판단하는 운전 원리를 잘 알고 있나요?",
+      "인공지능 학습을 위한 데이터 레이블링(어노테이션)의 역할과 중요성을 설명할 수 있나요?",
+      "커브(곡선) 구간의 데이터를 생성할 때, 안전을 위해 왜 바깥쪽 실선을 정답 기준으로 삼아야 하는지 알고 있나요?",
+      "실제 도로 사진을 보고 알맞은 조향각 정답(레이블)을 터치 또는 드래그를 활용해 정확히 작업할 수 있나요?",
+      "자율주행 기술, 인공지능 및 데이터 과학 수업 활동에 관심이 있고 기쁜 마음으로 참여하겠습니까?"
+    ];
+
+    // 2) 교사용 4대 앱만족도 검증 질문 리스트
+    const teacherQuestions = [
+      "「AI 드라이빙 멘토」 앱은 자율주행 차선 인식 및 데이터 어노테이션 원리를 이해하고 관련 수업을 설계하는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱을 활용한 수업은 학생들이 자기주도적으로 학습하고 수업 참여율과 주의 집중도를 높이는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱의 실시간 피드백 및 전광판 기능은 학생들의 학습 동기와 협력적 의사소통을 유도하는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱을 향후 다른 정보 교육 과정이나 인공지능 수업에서 재사용할 의향이 있다."
+    ];
+
+    // 현재 모드에 따라 질문 문항과 5점 척도 라디오 버튼 동적 렌더링
+    function renderQuestions() {
+      const container = document.getElementById('surveyQuestionsContainer');
+      if (!container) return;
+
+      const questionsList = currentMode === 'teacher' ? teacherQuestions : studentQuestions;
+      const modeClass = currentMode === 'pre' ? 'pre-mode' : (currentMode === 'post' ? 'post-mode' : 'teacher-mode');
+      
+      let html = "";
+      questionsList.forEach((qText, index) => {
+        const qNum = index + 1;
         
-        let html = "";
+        let scaleHtml = "";
         for (let score = 1; score <= 5; score++) {
-          const modeClass = currentMode === 'pre' ? 'pre-mode' : 'post-mode';
-          html += `
+          scaleHtml += `
             <div class="scale-item ${modeClass}">
-              <input type="radio" name="q${q}" value="${score}" required>
+              <input type="radio" name="q${qNum}" value="${score}" required>
               <div class="scale-circle"></div>
               <span class="scale-label">${scaleLabels[score-1]}</span>
             </div>
           `;
         }
-        row.innerHTML = html;
-      }
+
+        html += `
+          <div class="question-card">
+            <div class="question-title">
+              <span class="question-number">Q${qNum}.</span>
+              <span>${qText}</span>
+            </div>
+            <div class="scale-row" id="q${qNum}-row">
+              ${scaleHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
-    // 모드(사전/사후) 탭 전환
+    // 모드(사전/사후/교사) 탭 전환
     function changeMode(mode) {
-      if (currentMode === mode) return;
       currentMode = mode;
 
       const tabPre = document.getElementById('tabPre');
       const tabPost = document.getElementById('tabPost');
+      const tabTeacher = document.getElementById('tabTeacher');
       const btnSubmit = document.getElementById('btnSubmit');
 
       // 탭 디자인 리셋 및 상태 매핑
       tabPre.className = "tab-btn";
       tabPost.className = "tab-btn";
+      tabTeacher.className = "tab-btn";
 
       if (mode === 'pre') {
         tabPre.classList.add('active-pre');
         btnSubmit.className = "action-btn btn-pre";
         btnSubmit.innerText = "🚀 사전 자가진단 제출하기";
-      } else {
+      } else if (mode === 'post') {
         tabPost.classList.add('active-post');
         btnSubmit.className = "action-btn btn-post";
         btnSubmit.innerText = "🚀 사후 자가진단 제출하기";
+      } else {
+        tabTeacher.classList.add('active-teacher');
+        btnSubmit.className = "action-btn btn-teacher";
+        btnSubmit.innerText = "🚀 앱 만족도 평가 제출하기";
       }
 
-      // 라디오 척도 다시 렌더링 (디자인 색상 갱신용)
-      renderScales();
+      // 문항 다시 빌드
+      renderQuestions();
     }
 
     // 설문 결과 전송 처리
     function submitSurvey() {
-      // 5개 질문 중 미선택이 있는지 검사
+      const questionsList = currentMode === 'teacher' ? teacherQuestions : studentQuestions;
+      const len = questionsList.length;
+
+      // 문항 누락 검사
       let answers = [];
-      for (let q = 1; q <= 5; q++) {
+      for (let q = 1; q <= len; q++) {
         const selected = document.querySelector(`input[name="q${q}"]:checked`);
         if (!selected) {
           alert(`Q${q} 문항의 응답이 선택되지 않았습니다!`);
@@ -477,22 +497,26 @@
 
       // 결과 전송 포맷 조합
       const answersText = answers.join('_');
-      // [설문-사전] 또는 [설문-사후] 태그와 응답 데이터를 포함하는 carNum 생성
-      const carNum = `[설문-${currentMode === 'pre' ? '사전' : '사후'}] 익명_${answersText}`;
+      // [설문-사전], [설문-사후], [설문-교사] 형식으로 분기 태깅
+      let tag = "사전";
+      if (currentMode === 'post') tag = "사후";
+      else if (currentMode === 'teacher') tag = "교사";
+
+      const carNum = `[설문-${tag}] 익명_${answersText}`;
       
       // 평균 점수 연산
       const totalScore = answers.reduce((acc, curr) => acc + parseInt(curr), 0);
-      const avgScore = (totalScore / 5).toFixed(2);
+      const avgScore = (totalScore / len).toFixed(2);
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.innerText = "전송 중... ⏳";
 
-      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent('사전사후 설문 응답')}&accuracy=${encodeURIComponent(avgScore)}`;
+      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(tag + ' 설문 응답')}&accuracy=${encodeURIComponent(avgScore)}`;
 
       fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
         .then(response => {
-          alert(`🎉 ${currentMode === 'pre' ? '사전' : '사후'} 자가진단 제출 완료!\n결과가 분석판에 즉시 전송되었습니다.`);
+          alert(`🎉 제출이 완료되었습니다!\n결과가 분석판에 즉시 실시간 반영되었습니다.`);
           btn.innerText = "제출 완료 🟢";
           btn.style.background = "var(--success-green)";
         })
@@ -500,23 +524,17 @@
           console.error("설문 데이터 전송 에러:", err);
           alert("네트워크 통신 에러가 발생했습니다. 다시 시도해 주세요.");
           btn.disabled = false;
-          if (currentMode === 'pre') {
-            btn.className = "action-btn btn-pre";
-            btn.innerText = "🚀 사전 자가진단 제출하기";
-          } else {
-            btn.className = "action-btn btn-post";
-            btn.innerText = "🚀 사후 자가진단 제출하기";
-          }
+          changeMode(currentMode); // 상태 원복
         });
     }
 
     // 초기 화면 생성
     window.onload = () => {
-      // URL 파라미터 강제 모드 파싱 (?mode=pre 또는 ?mode=post)
+      // URL 파라미터 강제 모드 파싱 (?mode=pre, ?mode=post, ?mode=teacher)
       const urlParams = new URLSearchParams(window.location.search);
       const forcedMode = urlParams.get('mode');
       
-      if (forcedMode === 'pre' || forcedMode === 'post') {
+      if (forcedMode === 'pre' || forcedMode === 'post' || forcedMode === 'teacher') {
         // 탭 전환 선택기 비주얼 영구 감춤 처리
         const selector = document.querySelector('.tab-selector');
         if (selector) selector.style.display = 'none';
@@ -524,7 +542,8 @@
         // 해당 강제 모드로 고정 초기화
         changeMode(forcedMode);
       } else {
-        renderScales();
+        // 기본값: pre 모드로 빌드
+        changeMode('pre');
       }
     };
   </script>

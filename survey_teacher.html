@@ -454,6 +454,44 @@
       </div>
     </div>
 
+    <!-- 3. 우측 하단: 교사용 앱 만족도 조사 요약 판넬 -->
+    <div class="board-card" style="margin-top: 24px;">
+      <div class="card-headline" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 16px;">
+        <span style="display: flex; align-items: center; gap: 8px;">👨‍🏫 교육용 앱 만족도 조사 결과 (실시간)</span>
+        <span id="teacherTotalCount" style="font-size: 0.8rem; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); padding: 4px 10px; border-radius: 20px; font-weight: 700;">응시 교사: 0명</span>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 2.5fr; gap: 20px; align-items: center;">
+        <!-- 종합 평점 별점 표시판 -->
+        <div style="background: rgba(15, 23, 42, 0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 6px;">종합 만족도 평점</span>
+          <span id="teacherAvgScore" style="font-size: 2.3rem; color: var(--success-green); font-weight: 800; font-family: 'Outfit', sans-serif; line-height: 1.1;">0.00</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">5.00 만점</span>
+          <div style="margin-top: 10px; font-size: 1.2rem; color: #f59e0b;" id="teacherStars">☆☆☆☆☆</div>
+        </div>
+
+        <!-- 교사용 4문항 상세 통계표 -->
+        <div class="analysis-table-wrapper">
+          <table class="analysis-table" style="font-size: 0.82rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted);">
+                <th style="width: 75%; padding: 8px 6px;">교사 만족도 평가 항목 (5점 만점)</th>
+                <th style="width: 25%; padding: 8px 6px; text-align: center;">실시간 평점</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+              <!-- 교사 4대 문항 평점 동적 바인딩 -->
+              <tr>
+                <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                  아직 제출된 교사용 만족도 설문 데이터가 없습니다.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- QR 코드 모달 -->
@@ -462,23 +500,32 @@
       <div class="modal-title">📱 학생 모바일 설문 자가진단 QR 코드</div>
       <p class="modal-subtitle">수업 단계에 맞는 QR 코드를 스캔하여 진단에 참여해 주세요.<br>(모바일/패드로 진입 시 해당 평가 양식으로 강제 고정됩니다.)</p>
       
-      <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
         <!-- 사전 평가 QR 카드 -->
-        <div style="flex: 1; min-width: 260px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.05);">
-          <div style="font-weight: 700; color: var(--accent-pink); margin-bottom: 12px; font-size: 0.95rem;">📝 1. 실습 전 사전 설문조사</div>
-          <div class="qr-frame" style="border: 2px solid rgba(236, 72, 153, 0.3);">
-            <img id="qrCodeImgPre" src="" alt="PRE QR" style="width: 150px; height: 150px; display: block;">
+        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.05);">
+          <div style="font-weight: 700; color: var(--accent-pink); margin-bottom: 8px; font-size: 0.88rem;">📝 1. 실습 전 사전 설문</div>
+          <div class="qr-frame" style="border: 2px solid rgba(236, 72, 153, 0.3); padding: 8px; margin-bottom: 8px;">
+            <img id="qrCodeImgPre" src="" alt="PRE QR" style="width: 120px; height: 120px; display: block;">
           </div>
-          <div class="qr-link-display" id="qrLinkTextPre" style="color: var(--accent-pink); background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.15);">URL 로딩 중...</div>
+          <div class="qr-link-display" id="qrLinkTextPre" style="font-size: 0.68rem; color: var(--accent-pink); background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.15);">URL 로딩 중...</div>
         </div>
 
         <!-- 사후 평가 QR 카드 -->
-        <div style="flex: 1; min-width: 260px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.05);">
-          <div style="font-weight: 700; color: var(--accent-purple); margin-bottom: 12px; font-size: 0.95rem;">🏆 2. 실습 후 사후 설문조사</div>
-          <div class="qr-frame" style="border: 2px solid rgba(168, 85, 247, 0.3);">
-            <img id="qrCodeImgPost" src="" alt="POST QR" style="width: 150px; height: 150px; display: block;">
+        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.05);">
+          <div style="font-weight: 700; color: var(--accent-purple); margin-bottom: 8px; font-size: 0.88rem;">🏆 2. 실습 후 사후 설문</div>
+          <div class="qr-frame" style="border: 2px solid rgba(168, 85, 247, 0.3); padding: 8px; margin-bottom: 8px;">
+            <img id="qrCodeImgPost" src="" alt="POST QR" style="width: 120px; height: 120px; display: block;">
           </div>
-          <div class="qr-link-display" id="qrLinkTextPost" style="color: var(--accent-purple); background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.15);">URL 로딩 중...</div>
+          <div class="qr-link-display" id="qrLinkTextPost" style="font-size: 0.68rem; color: var(--accent-purple); background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.15);">URL 로딩 중...</div>
+        </div>
+
+        <!-- 교사용 설문 QR 카드 -->
+        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);">
+          <div style="font-weight: 700; color: var(--success-green); margin-bottom: 8px; font-size: 0.88rem;">👨‍🏫 3. 교사용 앱 만족도</div>
+          <div class="qr-frame" style="border: 2px solid rgba(16, 185, 129, 0.3); padding: 8px; margin-bottom: 8px;">
+            <img id="qrCodeImgTeacher" src="" alt="TEACHER QR" style="width: 120px; height: 120px; display: block;">
+          </div>
+          <div class="qr-link-display" id="qrLinkTextTeacher" style="font-size: 0.68rem; color: var(--success-green); background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.15);">URL 로딩 중...</div>
         </div>
       </div>
 
@@ -577,6 +624,7 @@
           // 사전 설문과 사후 설문 데이터만 격리 수집
           const preSurveys = list.filter(item => item.carNumber && String(item.carNumber).trim().startsWith('[설문-사전]'));
           const postSurveys = list.filter(item => item.carNumber && String(item.carNumber).trim().startsWith('[설문-사후]'));
+          const teacherSurveys = list.filter(item => item.carNumber && String(item.carNumber).trim().startsWith('[설문-교사]'));
 
           // 인원 표기 갱신
           document.getElementById('preCountText').innerText = `${preSurveys.length}명`;
@@ -632,6 +680,70 @@
 
           // 5) 세부 통계 비교 분석표 테이블 리렌더링
           renderAnalysisTable(preAverages, postAverages, postDistributions, postSurveys.length);
+
+          // 6) 교사용 앱 만족도 집계 및 바인딩
+          const teacherMetricLabels = [
+            "① 수업 활용도 및 설계 도움성",
+            "② 학생 참여율 및 주의 집중도",
+            "③ 학습 동기 및 협력 촉진성",
+            "④ 교육 도구 차기 재사용 의향"
+          ];
+          
+          let teacherSums = [0, 0, 0, 0];
+          teacherSurveys.forEach(item => {
+            const raw = String(item.carNumber).trim();
+            const parts = raw.split('_');
+            for (let i = 0; i < 4; i++) {
+              const val = parseInt(parts[i + 1]) || 0;
+              teacherSums[i] += val;
+            }
+          });
+          
+          const teacherAverages = teacherSums.map(sum => teacherSurveys.length > 0 ? (sum / teacherSurveys.length) : 0);
+          
+          // 종합 평균 점수
+          let totalTeacherSum = teacherAverages.reduce((acc, curr) => acc + curr, 0);
+          let avgTeacherScore = teacherAverages.length > 0 ? (totalTeacherSum / teacherAverages.length) : 0;
+          
+          document.getElementById('teacherTotalCount').innerText = `응시 교사: ${teacherSurveys.length}명`;
+          document.getElementById('teacherAvgScore').innerText = avgTeacherScore.toFixed(2);
+          
+          // 별점 변환
+          const starCount = Math.round(avgTeacherScore);
+          let starsHtml = "";
+          for(let s=1; s<=5; s++) {
+            starsHtml += s <= starCount ? "★" : "☆";
+          }
+          document.getElementById('teacherStars').innerText = starsHtml;
+          
+          // 교사 테이블 렌더링
+          const teacherTbody = document.getElementById('teacherTableBody');
+          if (teacherTbody) {
+            if (teacherSurveys.length === 0) {
+              teacherTbody.innerHTML = `
+                <tr>
+                  <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    아직 제출된 교사용 만족도 설문 데이터가 없습니다.
+                  </td>
+                </tr>
+              `;
+            } else {
+              let tHtml = "";
+              for (let i = 0; i < 4; i++) {
+                tHtml += `
+                  <tr>
+                    <td style="padding: 10px 6px;">
+                      <span class="metric-name" style="font-size: 0.82rem; font-weight: 500;">${teacherMetricLabels[i]}</span>
+                    </td>
+                    <td style="padding: 10px 6px; text-align: center;">
+                      <span class="score-badge post-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success-green); border-color: rgba(16, 185, 129, 0.2); font-family: 'Outfit', sans-serif;">${teacherAverages[i].toFixed(2)}</span>
+                    </td>
+                  </tr>
+                `;
+              }
+              teacherTbody.innerHTML = tHtml;
+            }
+          }
         })
         .catch(err => {
           console.error("실시간 설문 수급 중 에러:", err);
@@ -660,7 +772,6 @@
         }
 
         // 사후 평가 5점 척도 미니 시각화 바 생성
-        // 파란색 스펙트럼 색상으로 점수가 높을수록 진하게
         const colors = ["#ef4444", "#f97316", "#eab308", "#6366f1", "#a855f7"];
         let segmentHtml = "";
         
@@ -700,15 +811,17 @@
       tbody.innerHTML = html;
     }
 
-    // QR 모달 열기 및 사전/사후 분기 주소 매핑
+    // QR 모달 열기 및 사전/사후/교사용 분기 주소 매핑
     function openQrModal() {
       const qrOverlay = document.getElementById('qrOverlay');
       const qrPreImg = document.getElementById('qrCodeImgPre');
       const qrPreText = document.getElementById('qrLinkTextPre');
       const qrPostImg = document.getElementById('qrCodeImgPost');
       const qrPostText = document.getElementById('qrLinkTextPost');
+      const qrTeacherImg = document.getElementById('qrCodeImgTeacher');
+      const qrTeacherText = document.getElementById('qrLinkTextTeacher');
       
-      if (!qrOverlay || !qrPreImg || !qrPreText || !qrPostImg || !qrPostText) return;
+      if (!qrOverlay || !qrPreImg || !qrPreText || !qrPostImg || !qrPostText || !qrTeacherImg || !qrTeacherText) return;
 
       const currentUrl = window.location.href;
       const baseStudentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/survey_student.html';
@@ -722,6 +835,11 @@
       const postUrl = `${baseStudentUrl}?mode=post`;
       qrPostText.innerText = postUrl;
       qrPostImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(postUrl)}`;
+
+      // 교사 평가 강제 고정 주소 (?mode=teacher)
+      const teacherUrl = `${baseStudentUrl}?mode=teacher`;
+      qrTeacherText.innerText = teacherUrl;
+      qrTeacherImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(teacherUrl)}`;
       
       qrOverlay.classList.add('active');
     }
