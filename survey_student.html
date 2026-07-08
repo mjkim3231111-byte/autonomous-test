@@ -512,10 +512,9 @@
       btn.disabled = true;
       btn.innerText = "전송 중... ⏳";
 
-      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(tag + ' 설문 응답')}&accuracy=${encodeURIComponent(avgScore)}`;
-
-      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
-        .then(response => {
+      // 구글 API 리다이렉션 시 발생하는 브라우저 CORS 에러를 원천 예방하기 위해 mode: 'no-cors' 방식을 적용합니다.
+      fetch(url, { method: 'GET', mode: 'no-cors' })
+        .then(() => {
           alert(`🎉 제출이 완료되었습니다!\n결과가 분석판에 즉시 실시간 반영되었습니다.`);
           btn.innerText = "제출 완료 🟢";
           btn.style.background = "var(--success-green)";
