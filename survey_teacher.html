@@ -382,6 +382,92 @@
       background: #475569;
     }
 
+    /* QR 코드 개별 확대 줌 모달 스타일 */
+    .zoom-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(15px);
+      z-index: 1200; /* 일반 모달보다 최상단에 표출 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .zoom-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .zoom-card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 35px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+      transform: scale(0.92);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .zoom-overlay.active .zoom-card {
+      transform: scale(1);
+    }
+
+    .zoom-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .zoom-qr-frame {
+      background: white;
+      padding: 18px;
+      border-radius: 20px;
+      display: inline-block;
+      margin: 15px 0;
+      border: 3px solid transparent;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transition: border-color 0.3s ease;
+    }
+
+    .zoom-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      font-size: 1.8rem;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .zoom-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .qr-zoom-trigger:hover {
+      transform: translateY(-4px) scale(1.025);
+      border-color: var(--accent-cyan) !important;
+      box-shadow: 0 12px 24px rgba(56, 189, 248, 0.15) !important;
+    }
+
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.2); opacity: 0.5; }
@@ -502,8 +588,11 @@
       
       <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
         <!-- 사전 평가 QR 카드 -->
-        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.05);">
-          <div style="font-weight: 700; color: var(--accent-pink); margin-bottom: 8px; font-size: 0.88rem;">📝 1. 실습 전 사전 설문</div>
+        <div class="qr-zoom-trigger" onclick="zoomQr('📝 1. 실습 전 사전 설문', 'pre', 'var(--accent-pink)')" style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.05); cursor: pointer; transition: all 0.25s ease;">
+          <div style="font-weight: 700; color: var(--accent-pink); margin-bottom: 8px; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>📝 1. 실습 전 사전 설문</span>
+            <span style="font-size: 0.65rem; background: rgba(236, 72, 153, 0.15); padding: 2px 6px; border-radius: 6px; font-weight: 500;">🔍 크게 보기</span>
+          </div>
           <div class="qr-frame" style="border: 2px solid rgba(236, 72, 153, 0.3); padding: 8px; margin-bottom: 8px;">
             <img id="qrCodeImgPre" src="" alt="PRE QR" style="width: 120px; height: 120px; display: block;">
           </div>
@@ -511,8 +600,11 @@
         </div>
 
         <!-- 사후 평가 QR 카드 -->
-        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.05);">
-          <div style="font-weight: 700; color: var(--accent-purple); margin-bottom: 8px; font-size: 0.88rem;">🏆 2. 실습 후 사후 설문</div>
+        <div class="qr-zoom-trigger" onclick="zoomQr('🏆 2. 실습 후 사후 설문', 'post', 'var(--accent-purple)')" style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.05); cursor: pointer; transition: all 0.25s ease;">
+          <div style="font-weight: 700; color: var(--accent-purple); margin-bottom: 8px; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>🏆 2. 실습 후 사후 설문</span>
+            <span style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.15); padding: 2px 6px; border-radius: 6px; font-weight: 500;">🔍 크게 보기</span>
+          </div>
           <div class="qr-frame" style="border: 2px solid rgba(168, 85, 247, 0.3); padding: 8px; margin-bottom: 8px;">
             <img id="qrCodeImgPost" src="" alt="POST QR" style="width: 120px; height: 120px; display: block;">
           </div>
@@ -520,8 +612,11 @@
         </div>
 
         <!-- 교사용 설문 QR 카드 -->
-        <div style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);">
-          <div style="font-weight: 700; color: var(--success-green); margin-bottom: 8px; font-size: 0.88rem;">👨‍🏫 3. 교사용 앱 만족도</div>
+        <div class="qr-zoom-trigger" onclick="zoomQr('👨‍🏫 3. 교사용 앱 만족도', 'teacher', 'var(--success-green)')" style="flex: 1; min-width: 200px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05); cursor: pointer; transition: all 0.25s ease;">
+          <div style="font-weight: 700; color: var(--success-green); margin-bottom: 8px; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>👨‍🏫 3. 교사용 앱 만족도</span>
+            <span style="font-size: 0.65rem; background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 6px; font-weight: 500;">🔍 크게 보기</span>
+          </div>
           <div class="qr-frame" style="border: 2px solid rgba(16, 185, 129, 0.3); padding: 8px; margin-bottom: 8px;">
             <img id="qrCodeImgTeacher" src="" alt="TEACHER QR" style="width: 120px; height: 120px; display: block;">
           </div>
@@ -530,6 +625,22 @@
       </div>
 
       <button class="close-btn" onclick="closeQrModal()">창 닫기</button>
+    </div>
+  </div>
+
+  <!-- QR 코드 초대형 줌 모달 -->
+  <div class="zoom-overlay" id="qrZoomOverlay" onclick="closeZoomModal()">
+    <button class="zoom-close" onclick="closeZoomModal()">×</button>
+    <div class="zoom-card" onclick="event.stopPropagation()">
+      <div class="zoom-title" id="zoomTitle">QR 코드 확대</div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">스마트 폰/태블릿 카메라로 QR 코드를 비춰주세요.</p>
+      
+      <div class="zoom-qr-frame" id="zoomQrFrame">
+        <img id="zoomQrImg" src="" alt="ZOOMED QR" style="width: 320px; height: 320px; display: block;">
+      </div>
+      
+      <div class="qr-link-display" id="zoomLinkText" style="font-size: 0.78rem; padding: 10px 14px; margin-top: 10px; word-break: break-all;">URL 주소</div>
+      <button class="close-btn" onclick="closeZoomModal()" style="margin-top: 24px; background: #334155;">확대창 닫기</button>
     </div>
   </div>
 
@@ -848,6 +959,42 @@
       const qrOverlay = document.getElementById('qrOverlay');
       if (qrOverlay) {
         qrOverlay.classList.remove('active');
+      }
+    }
+
+    // QR 개별 확대 줌 함수
+    function zoomQr(title, mode, themeColor) {
+      const zoomOverlay = document.getElementById('qrZoomOverlay');
+      const zoomTitle = document.getElementById('zoomTitle');
+      const zoomQrImg = document.getElementById('zoomQrImg');
+      const zoomLinkText = document.getElementById('zoomLinkText');
+      const zoomQrFrame = document.getElementById('zoomQrFrame');
+
+      if (!zoomOverlay || !zoomTitle || !zoomQrImg || !zoomLinkText || !zoomQrFrame) return;
+
+      const currentUrl = window.location.href;
+      const baseStudentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/survey_student.html';
+      const targetUrl = `${baseStudentUrl}?mode=${mode}`;
+
+      // 타이틀 및 줌 링크 정보 테마별 갱신
+      zoomTitle.innerText = title;
+      zoomTitle.style.color = themeColor;
+      zoomLinkText.innerText = targetUrl;
+      zoomLinkText.style.color = themeColor;
+      zoomLinkText.style.borderColor = themeColor;
+      
+      // 350x350 초대형 QR 코드 비동기 생성 및 프레임 색상 매핑
+      zoomQrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(targetUrl)}`;
+      zoomQrFrame.style.borderColor = themeColor;
+
+      // 확대 줌 오버레이 팝업 활성화
+      zoomOverlay.classList.add('active');
+    }
+
+    function closeZoomModal() {
+      const zoomOverlay = document.getElementById('qrZoomOverlay');
+      if (zoomOverlay) {
+        zoomOverlay.classList.remove('active');
       }
     }
 
