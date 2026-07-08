@@ -807,8 +807,8 @@
 
         if (carNum && accuracyRaw !== null) {
           const carStr = String(carNum).trim();
-          // [퀴즈] 접두사로 시작하는 퀴즈 데이터는 대시보드 주행 통계 분석에서 원천 필터링
-          if (carStr.startsWith('[퀴즈]')) {
+          // [퀴즈] 및 [설문-] 접두사로 시작하는 학습 데이터는 대시보드 주행 통계 분석에서 원천 필터링
+          if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-')) {
             return;
           }
 
@@ -1148,6 +1148,11 @@
             let baseTime = Date.now() / 1000 / 86400 + 25569;
 
             res.data.forEach((car, index) => {
+              const carStr = String(car.carNumber).trim();
+              // [퀴즈] 및 [설문-] 데이터는 랭킹 시뮬레이션에 주입되지 않도록 스킵
+              if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-')) {
+                return;
+              }
               const finalAcc = parseFloat(car.accuracy);
               
               // 이미 학교명이 접두사로 들어있는 경우(예: [전주공고] 10번 자동차) 중복 합성 방지

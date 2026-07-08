@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사전-사후 자가진단실 - AI 드라이빙 멘토</title>
+  <!-- 프리미엄 글꼴 및 라이브러리 탑재 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #38bdf8;
+      --accent-blue: #2563eb;
+      --accent-pink: #f472b6;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-green: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* 상단 헤더 */
+    .header-area {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .app-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-cyan), #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .app-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 설문 카드 컨테이너 */
+    .survey-container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 사전/사후 탭 선택기 */
+    .tab-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active-pre {
+      background: linear-gradient(135deg, var(--accent-pink), #ec4899);
+      color: white;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    }
+
+    .tab-btn.active-post {
+      background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* 문항 블록 */
+    .question-card {
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .question-card:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .question-title {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .question-number {
+      color: var(--accent-cyan);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+    }
+
+    /* 5점 척도 선택단 */
+    .scale-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .scale-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* 투명 라디오 감추기 */
+    .scale-item input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    /* 라디오 단추 디자인 커스텀 */
+    .scale-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .scale-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      transform: scale(0);
+      transition: transform 0.2s ease;
+    }
+
+    .scale-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    /* 선택 완료 시 테마 색상 활성화 */
+    .scale-item input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .scale-item.pre-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-pink);
+      background: rgba(244, 114, 182, 0.1);
+      box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+    }
+
+    .scale-item.post-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-purple);
+      background: rgba(168, 85, 247, 0.1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .scale-item input[type="radio"]:checked + .scale-circle::after {
+      transform: scale(1);
+    }
+
+    .scale-item.pre-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--accent-pink);
+    }
+
+    .scale-item.post-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--accent-purple);
+    }
+
+    .scale-item input[type="radio"]:checked ~ .scale-label {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* 제출 버튼 */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-pre {
+      background: linear-gradient(135deg, var(--accent-pink), #db2777);
+    }
+
+    .btn-pre:hover {
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-post {
+      background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+    }
+
+    .btn-post:hover {
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:disabled {
+      background: #334155;
+      color: #64748b;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .back-to-hub {
+      margin-top: 24px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-to-hub:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* 애니메이션 효과 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 영역 -->
+  <div class="header-area">
+    <div class="app-title">AI Driving Mentor</div>
+    <p class="app-subtitle">자율주행 인공지능 어노테이션 교육<br>실습 전/후 역량 진단실에 오신 것을 환영합니다.</p>
+  </div>
+
+  <!-- 설문조사 메인 박스 -->
+  <div class="survey-container">
+    
+    <!-- 사전/사후 모드 선택 탭 -->
+    <div class="tab-selector">
+      <button class="tab-btn active-pre" id="tabPre" onclick="changeMode('pre')">
+        <span>📝</span> 실습 전 사전 평가
+      </button>
+      <button class="tab-btn" id="tabPost" onclick="changeMode('post')">
+        <span>🏆</span> 실습 후 사후 평가
+      </button>
+    </div>
+
+    <!-- 설문 문항 양식 -->
+    <form id="surveyForm">
+      <!-- Q1 -->
+      <div class="question-card">
+        <div class="question-title">
+          <span class="question-number">Q1.</span>
+          <span>자율주행 컴퓨터가 카메라 이미지 데이터를 학습하여 스스로 판단하는 운전 원리를 잘 알고 있나요?</span>
+        </div>
+        <div class="scale-row" id="q1-row">
+          <!-- 5점 척도 라디오 버튼 세트 -->
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question-card">
+        <div class="question-title">
+          <span class="question-number">Q2.</span>
+          <span>인공지능 학습을 위한 데이터 레이블링(어노테이션)의 역할과 중요성을 설명할 수 있나요?</span>
+        </div>
+        <div class="scale-row" id="q2-row">
+          <!-- 5점 척도 라디오 버튼 세트 -->
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question-card">
+        <div class="question-title">
+          <span class="question-number">Q3.</span>
+          <span>커브(곡선) 구간의 데이터를 생성할 때, 안전을 위해 왜 바깥쪽 실선을 정답 기준으로 삼아야 하는지 알고 있나요?</span>
+        </div>
+        <div class="scale-row" id="q3-row">
+          <!-- 5점 척도 라디오 버튼 세트 -->
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question-card">
+        <div class="question-title">
+          <span class="question-number">Q4.</span>
+          <span>실제 도로 사진을 보고 알맞은 조향각 정답(레이블)을 터치 또는 드래그를 활용해 정확히 작업할 수 있나요?</span>
+        </div>
+        <div class="scale-row" id="q4-row">
+          <!-- 5점 척도 라디오 버튼 세트 -->
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question-card">
+        <div class="question-title">
+          <span class="question-number">Q5.</span>
+          <span>자율주행 기술, 인공지능 및 데이터 과학 수업 활동에 관심이 있고 기쁜 마음으로 참여하겠습니까?</span>
+        </div>
+        <div class="scale-row" id="q5-row">
+          <!-- 5점 척도 라디오 버튼 세트 -->
+        </div>
+      </div>
+
+      <!-- 제출하기 단추 -->
+      <button type="button" class="action-btn btn-pre" id="btnSubmit" onclick="submitSurvey()">
+        🚀 사전 자가진단 제출하기
+      </button>
+    </form>
+  </div>
+
+  <a href="index.html" class="back-to-hub">🏠 자율주행 학습관 홈으로 이동</a>
+
+  <script>
+    // 구글 Apps Script 연동 웹앱 주소
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCyaFjvqg00f4ntYwW_zek39jAJrjSEmagYqPX0gSEOeGRQlHeJxpQT9Wrs-b0XiU/exec";
+    
+    // 현재 모드: 'pre' (사전), 'post' (사후)
+    let currentMode = 'pre';
+
+    // 5점 리커트 척도 문구 세트
+    const scaleLabels = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"];
+
+    // 페이지 로드 시 5점 척도 선택지 생성
+    function renderScales() {
+      for (let q = 1; q <= 5; q++) {
+        const row = document.getElementById(`q${q}-row`);
+        if (!row) continue;
+        
+        let html = "";
+        for (let score = 1; score <= 5; score++) {
+          const modeClass = currentMode === 'pre' ? 'pre-mode' : 'post-mode';
+          html += `
+            <div class="scale-item ${modeClass}">
+              <input type="radio" name="q${q}" value="${score}" required>
+              <div class="scale-circle"></div>
+              <span class="scale-label">${scaleLabels[score-1]}</span>
+            </div>
+          `;
+        }
+        row.innerHTML = html;
+      }
+    }
+
+    // 모드(사전/사후) 탭 전환
+    function changeMode(mode) {
+      if (currentMode === mode) return;
+      currentMode = mode;
+
+      const tabPre = document.getElementById('tabPre');
+      const tabPost = document.getElementById('tabPost');
+      const btnSubmit = document.getElementById('btnSubmit');
+
+      // 탭 디자인 리셋 및 상태 매핑
+      tabPre.className = "tab-btn";
+      tabPost.className = "tab-btn";
+
+      if (mode === 'pre') {
+        tabPre.classList.add('active-pre');
+        btnSubmit.className = "action-btn btn-pre";
+        btnSubmit.innerText = "🚀 사전 자가진단 제출하기";
+      } else {
+        tabPost.classList.add('active-post');
+        btnSubmit.className = "action-btn btn-post";
+        btnSubmit.innerText = "🚀 사후 자가진단 제출하기";
+      }
+
+      // 라디오 척도 다시 렌더링 (디자인 색상 갱신용)
+      renderScales();
+    }
+
+    // 설문 결과 전송 처리
+    function submitSurvey() {
+      // 5개 질문 중 미선택이 있는지 검사
+      let answers = [];
+      for (let q = 1; q <= 5; q++) {
+        const selected = document.querySelector(`input[name="q${q}"]:checked`);
+        if (!selected) {
+          alert(`Q${q} 문항의 응답이 선택되지 않았습니다!`);
+          return;
+        }
+        answers.push(selected.value);
+      }
+
+      // 결과 전송 포맷 조합
+      const answersText = answers.join('_');
+      // [설문-사전] 또는 [설문-사후] 태그와 응답 데이터를 포함하는 carNum 생성
+      const carNum = `[설문-${currentMode === 'pre' ? '사전' : '사후'}] 익명_${answersText}`;
+      
+      // 평균 점수 연산
+      const totalScore = answers.reduce((acc, curr) => acc + parseInt(curr), 0);
+      const avgScore = (totalScore / 5).toFixed(2);
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = "전송 중... ⏳";
+
+      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent('사전사후 설문 응답')}&accuracy=${encodeURIComponent(avgScore)}`;
+
+      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
+        .then(response => {
+          alert(`🎉 ${currentMode === 'pre' ? '사전' : '사후'} 자가진단 제출 완료!\n결과가 분석판에 즉시 전송되었습니다.`);
+          btn.innerText = "제출 완료 🟢";
+          btn.style.background = "var(--success-green)";
+        })
+        .catch(err => {
+          console.error("설문 데이터 전송 에러:", err);
+          alert("네트워크 통신 에러가 발생했습니다. 다시 시도해 주세요.");
+          btn.disabled = false;
+          if (currentMode === 'pre') {
+            btn.className = "action-btn btn-pre";
+            btn.innerText = "🚀 사전 자가진단 제출하기";
+          } else {
+            btn.className = "action-btn btn-post";
+            btn.innerText = "🚀 사후 자가진단 제출하기";
+          }
+        });
+    }
+
+    // 초기 화면 생성
+    window.onload = () => {
+      renderScales();
+    };
+  </script>
+</body>
+</html>
