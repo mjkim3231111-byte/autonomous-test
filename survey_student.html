@@ -512,7 +512,20 @@
 
     // 초기 화면 생성
     window.onload = () => {
-      renderScales();
+      // URL 파라미터 강제 모드 파싱 (?mode=pre 또는 ?mode=post)
+      const urlParams = new URLSearchParams(window.location.search);
+      const forcedMode = urlParams.get('mode');
+      
+      if (forcedMode === 'pre' || forcedMode === 'post') {
+        // 탭 전환 선택기 비주얼 영구 감춤 처리
+        const selector = document.querySelector('.tab-selector');
+        if (selector) selector.style.display = 'none';
+        
+        // 해당 강제 모드로 고정 초기화
+        changeMode(forcedMode);
+      } else {
+        renderScales();
+      }
     };
   </script>
 </body>

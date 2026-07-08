@@ -321,8 +321,8 @@
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 24px;
       padding: 30px;
-      width: 90%;
-      max-width: 400px;
+      width: 95%;
+      max-width: 750px;
       text-align: center;
       transform: scale(0.9);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -459,12 +459,29 @@
   <!-- QR 코드 모달 -->
   <div class="modal-overlay" id="qrOverlay" onclick="closeQrModal()">
     <div class="qr-modal" onclick="event.stopPropagation()">
-      <div class="modal-title">📱 모바일 설문 참가</div>
-      <p class="modal-subtitle">아래 QR 코드를 태블릿이나 모바일 폰으로 스캔하여<br>사전/사후 평가를 제출하세요.</p>
-      <div class="qr-frame">
-        <img id="qrCodeImg" src="" alt="QR CODE" style="width: 180px; height: 180px; display: block;">
+      <div class="modal-title">📱 학생 모바일 설문 자가진단 QR 코드</div>
+      <p class="modal-subtitle">수업 단계에 맞는 QR 코드를 스캔하여 진단에 참여해 주세요.<br>(모바일/패드로 진입 시 해당 평가 양식으로 강제 고정됩니다.)</p>
+      
+      <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+        <!-- 사전 평가 QR 카드 -->
+        <div style="flex: 1; min-width: 260px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(236, 72, 153, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.05);">
+          <div style="font-weight: 700; color: var(--accent-pink); margin-bottom: 12px; font-size: 0.95rem;">📝 1. 실습 전 사전 설문조사</div>
+          <div class="qr-frame" style="border: 2px solid rgba(236, 72, 153, 0.3);">
+            <img id="qrCodeImgPre" src="" alt="PRE QR" style="width: 150px; height: 150px; display: block;">
+          </div>
+          <div class="qr-link-display" id="qrLinkTextPre" style="color: var(--accent-pink); background: rgba(236, 72, 153, 0.06); border-color: rgba(236, 72, 153, 0.15);">URL 로딩 중...</div>
+        </div>
+
+        <!-- 사후 평가 QR 카드 -->
+        <div style="flex: 1; min-width: 260px; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.05);">
+          <div style="font-weight: 700; color: var(--accent-purple); margin-bottom: 12px; font-size: 0.95rem;">🏆 2. 실습 후 사후 설문조사</div>
+          <div class="qr-frame" style="border: 2px solid rgba(168, 85, 247, 0.3);">
+            <img id="qrCodeImgPost" src="" alt="POST QR" style="width: 150px; height: 150px; display: block;">
+          </div>
+          <div class="qr-link-display" id="qrLinkTextPost" style="color: var(--accent-purple); background: rgba(168, 85, 247, 0.06); border-color: rgba(168, 85, 247, 0.15);">URL 로딩 중...</div>
+        </div>
       </div>
-      <div class="qr-link-display" id="qrLinkText">URL 로딩 중...</div>
+
       <button class="close-btn" onclick="closeQrModal()">창 닫기</button>
     </div>
   </div>
@@ -683,18 +700,28 @@
       tbody.innerHTML = html;
     }
 
-    // QR 모달 열기/닫기
+    // QR 모달 열기 및 사전/사후 분기 주소 매핑
     function openQrModal() {
       const qrOverlay = document.getElementById('qrOverlay');
-      const qrCodeImg = document.getElementById('qrCodeImg');
-      const qrLinkText = document.getElementById('qrLinkText');
-      if (!qrOverlay || !qrCodeImg || !qrLinkText) return;
+      const qrPreImg = document.getElementById('qrCodeImgPre');
+      const qrPreText = document.getElementById('qrLinkTextPre');
+      const qrPostImg = document.getElementById('qrCodeImgPost');
+      const qrPostText = document.getElementById('qrLinkTextPost');
+      
+      if (!qrOverlay || !qrPreImg || !qrPreText || !qrPostImg || !qrPostText) return;
 
       const currentUrl = window.location.href;
-      let targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/survey_student.html';
+      const baseStudentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/survey_student.html';
       
-      qrLinkText.innerText = targetUrl;
-      qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(targetUrl)}`;
+      // 사전 평가 강제 고정 주소 (?mode=pre)
+      const preUrl = `${baseStudentUrl}?mode=pre`;
+      qrPreText.innerText = preUrl;
+      qrPreImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(preUrl)}`;
+
+      // 사후 평가 강제 고정 주소 (?mode=post)
+      const postUrl = `${baseStudentUrl}?mode=post`;
+      qrPostText.innerText = postUrl;
+      qrPostImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(postUrl)}`;
       
       qrOverlay.classList.add('active');
     }
