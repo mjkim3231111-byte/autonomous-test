@@ -489,6 +489,11 @@
       const container = document.getElementById('leaderboardList');
       if (!container) return;
 
+      // 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬을 보장하여 순위 오류 예방
+      if (data && data.length > 0) {
+        data.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
+      }
+
       if (!data || data.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
