@@ -746,60 +746,54 @@
           📸 자율주행 궤적 AI 자동 채점기
         </h2>
 
-        <!-- 좌우 2열 배치 레이아웃 -->
+        <!-- 좌우 2열 배치 레이아웃 (제어판과 결과 출력판 격리) -->
         <div class="scoring-layout">
           
-          <!-- [왼쪽 열] 사진 업로드 및 실시간 이미지 분석 화면 -->
+          <!-- [왼쪽 열] 실시간 이미지 분석 궤적 시각화 및 결과 리포트 출력 영역 -->
           <div class="layout-left">
-            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: -4px;">📷 주행 코스 사진 촬영</h3>
-            <!-- 업로드 존 -->
-            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-              <div class="upload-icon">📸</div>
-              <div class="upload-title">카메라 사진으로 채점하기</div>
-              <div class="upload-desc">이곳을 터치하여 직접 촬영하거나 이미지를 드래그해 넣으세요.</div>
-            </div>
-            
-            <!-- 숨겨진 파일 인풋 -->
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processImage(event)">
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 6px;">🖥️ AI 주행 궤적 및 분석 리포트</h3>
             
             <div class="loading-spinner" id="loadingSpinner">⚙️ AI 컴퓨터 비전 분석 구동 중...</div>
 
             <!-- 캔버스 영역 (max-width: 380px로 가로폭 콤팩트 축소) -->
-            <div class="canvas-wrapper" id="canvasWrapper">
+            <div class="canvas-wrapper" id="canvasWrapper" style="margin-bottom: 16px;">
               <canvas id="myCanvas"></canvas>
             </div>
+
+            <!-- 결과 피드백 리포트 박스 (가시성을 높이기 위해 왼쪽 캔버스 바로 아래로 정렬) -->
+            <div id="resultBox" style="margin-top: 0; width: 100%;"></div>
           </div>
           
-          <!-- [오른쪽 열] 평가 설정 및 결과 피드백 리포트 -->
+          <!-- [오른쪽 열] 소속명 입력 ➡️ 차량 번호 선택 ➡️ 채점(업로드 또는 즉석 시연) 실행 제어 패널 -->
           <div class="layout-right">
             
-            <!-- 실시간 전광판 바로가기 전용 대형 버튼 배너 추가 (위치 상단으로 이동) -->
-            <a href="tv.html" class="tv-banner-btn" style="margin-top: 0; margin-bottom: 10px;">
-              <span>📺 교실 TV 실시간 전광판 바로가기</span>
-              <span class="arrow">➡️</span>
-            </a>
+            <!-- 실시간 전광판 및 구글 시트 배너 버튼 -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px;">
+              <a href="tv.html" class="tv-banner-btn" style="margin: 0; padding: 14px 18px;">
+                <span>📺 교실 TV 실시간 전광판 바로가기</span>
+                <span class="arrow">➡️</span>
+              </a>
+              <a href="#" id="googleSheetLink" target="_blank" class="sheet-banner-btn" style="margin: 0; padding: 14px 18px;">
+                <span>📊 구글 스프레드시트 기록판 열기</span>
+                <span class="arrow">➡️</span>
+              </a>
+            </div>
             
-            <!-- 구글 스프레드시트 기록판으로 직접 이동하는 대형 버튼 추가 (상수 값과 연동) -->
-            <a href="#" id="googleSheetLink" target="_blank" class="sheet-banner-btn">
-              <span>📊 구글 스프레드시트 기록판 열기</span>
-              <span class="arrow">➡️</span>
-            </a>
-            
-            <!-- 실습 차량 번호 선택 및 가이드 유도 블록 추가 -->
-            <div style="background: var(--primary-light); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; color: #1e40af; font-weight: 500; line-height: 1.5; margin-bottom: 12px; word-break: keep-all; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);">
-              📢 <strong>필독!</strong> 아래 시연용 자동차 버튼을 클릭하거나 주행 사진을 업로드하기 전에, <strong>현재 실습 중인 차량 번호를 먼저 선택</strong>해 주세요. 차량 번호와 채점하려는 버튼의 번호가 서로 일치해야 구글 스프레드시트에 점수가 정상적으로 동기화됩니다.
+            <!-- 사용 방법 유도 블록 -->
+            <div style="background: var(--primary-light); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; color: #1e40af; font-weight: 500; line-height: 1.5; margin-bottom: 4px; word-break: keep-all; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);">
+              📢 <strong>채점 순서:</strong> 아래 순서대로 학교명을 입력하고 차량 번호를 정한 뒤, 사진을 직접 업로드하거나 시연 버튼을 눌러 채점을 시작하세요!
             </div>
 
-            <!-- 소속 학교명 입력 필드 추가 -->
-            <div class="selection-group" style="margin-bottom: 12px;">
-              <label for="schoolName">🏫 소속 학교명 입력</label>
+            <!-- 1단계: 소속 학교명 입력 필드 -->
+            <div class="selection-group" style="margin-bottom: 4px;">
+              <label for="schoolName" style="font-weight: 700; color: var(--primary);">🏫 1단계: 소속 학교명 입력</label>
               <input type="text" id="schoolName" placeholder="예: 전주공고 (미입력 시 [일반]으로 자동 매핑)" style="width: 100%; padding: 14px; font-size: 1rem; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; background: #fafafa; color: var(--text-main); outline: none; transition: border 0.2s;" onfocus="this.style.borderColor='var(--primary)'; this.style.backgroundColor='white';" onblur="this.style.borderColor='var(--border)'; this.style.backgroundColor='#fafafa';">
             </div>
 
-            <!-- 실습 차량 번호 선택 -->
-            <div class="selection-group" style="margin-bottom: 0;">
-              <label for="carNumber">🏎️ 실습 차량 번호 선택</label>
-              <select id="carNumber">
+            <!-- 2단계: 실습 차량 번호 선택 -->
+            <div class="selection-group" style="margin-bottom: 8px;">
+              <label for="carNumber" style="font-weight: 700; color: var(--primary);">🏎️ 2단계: 실습 차량 번호 선택</label>
+              <select id="carNumber" style="width: 100%; padding: 14px; font-size: 1rem; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; background: #fafafa; color: var(--text-main); outline: none;">
                 <option value="">-- 평가할 차량을 선택하세요 --</option>
                 <option value="1번 자동차">1번 자동차</option>
                 <option value="2번 자동차">2번 자동차</option>
@@ -819,32 +813,44 @@
               </select>
             </div>
             
-            <!-- 즉석 시연 패널 -->
-            <div class="demo-section" style="margin-bottom: 0;">
-              <h3>⚡ 학생 제출 데이터 즉석 시연 (1~15번 차량)</h3>
-              <p class="demo-desc">학생들이 각자의 코드로 튜닝하여 주행시킨 모형 자동차들의 실제 궤적 사진입니다. 버튼을 클릭하면 즉각 채점이 실행됩니다.</p>
-              <div class="demo-buttons">
-                <button class="demo-btn" onclick="triggerQuickDemo('1번 자동차', 'samples/1.jpg')">1번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('2번 자동차', 'samples/2.jpg')">2번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('3번 자동차', 'samples/3.jpg')">3번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('4번 자동차', 'samples/4.jpg')">4번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('5번 자동차', 'samples/5.jpg')">5번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('6번 자동차', 'samples/6.jpg')">6번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('7번 자동차', 'samples/7.jpg')">7번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('8번 자동차', 'samples/8.jpg')">8번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('9번 자동차', 'samples/9.jpg')">9번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('10번 자동차', 'samples/10.jpg')">10번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('11번 자동차', 'samples/11.jpg')">11번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('12번 자동차', 'samples/12.jpg')">12번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('13번 자동차', 'samples/13.jpg')">13번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('14번 자동차', 'samples/14.jpg')">14번차</button>
-                <button class="demo-btn" onclick="triggerQuickDemo('15번 자동차', 'samples/15.jpg')">15번차</button>
+            <!-- 3단계: 채점하기 (카메라 업로드 / 샘플 즉석 시연) -->
+            <div style="display: flex; flex-direction: column; gap: 14px; border-top: 1px dashed var(--border); padding-top: 16px;">
+              <label style="font-weight: 700; color: var(--primary); display: block; margin-bottom: -4px;">⚙️ 3단계: 채점 진행하기 (택 1)</label>
+              
+              <!-- 파일 업로드로 채점 -->
+              <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" style="padding: 24px; margin-bottom: 0; border: 2px dashed var(--primary); background: var(--primary-light);">
+                <div class="upload-icon" style="font-size: 2rem; margin-bottom: 6px;">📸</div>
+                <div class="upload-title" style="font-size: 1.1rem; color: var(--primary); font-weight: 700;">실시간 사진 찍어 채점하기</div>
+                <div class="upload-desc" style="color: #475569;">이곳을 눌러 카메라 촬영 또는 이미지 업로드</div>
+              </div>
+              <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="processImage(event)">
+              
+              <!-- 즉석 시연 패널로 채점 -->
+              <div class="demo-section" style="margin: 0; padding: 16px; border: 1px solid var(--border); background: #f8fafc; border-radius: 14px;">
+                <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">⚡ 학생 튜닝 모형차 즉석 시연</h4>
+                <p class="demo-desc" style="margin-bottom: 12px; font-size: 0.78rem;">학생들이 실제 튜닝한 15대의 자동차 주행 결과 궤적 샘플입니다.</p>
+                <div class="demo-buttons" style="gap: 8px;">
+                  <button class="demo-btn" onclick="triggerQuickDemo('1번 자동차', 'samples/1.jpg')">1번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('2번 자동차', 'samples/2.jpg')">2번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('3번 자동차', 'samples/3.jpg')">3번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('4번 자동차', 'samples/4.jpg')">4번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('5번 자동차', 'samples/5.jpg')">5번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('6번 자동차', 'samples/6.jpg')">6번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('7번 자동차', 'samples/7.jpg')">7번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('8번 자동차', 'samples/8.jpg')">8번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('9번 자동차', 'samples/9.jpg')">9번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('10번 자동차', 'samples/10.jpg')">10번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('11번 자동차', 'samples/11.jpg')">11번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('12번 자동차', 'samples/12.jpg')">12번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('13번 자동차', 'samples/13.jpg')">13번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('14번 자동차', 'samples/14.jpg')">14번차</button>
+                  <button class="demo-btn" onclick="triggerQuickDemo('15번 자동차', 'samples/15.jpg')">15번차</button>
+                </div>
               </div>
             </div>
             
-            <!-- 결과 리포트 박스 -->
-            <div id="resultBox" style="margin-top: 0;"></div>
           </div>
+        </div>
           
         </div>
       </div>
