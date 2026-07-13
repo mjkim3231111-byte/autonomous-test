@@ -489,8 +489,14 @@
       const container = document.getElementById('leaderboardList');
       if (!container) return;
 
-      // 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬을 보장하여 순위 오류 예방
+      // 설문조사 관련 데이터(차량번호 이름에 '설문'이 포함된 경우)를 원천 필터링하여 리더보드 순위에서 배제
       if (data && data.length > 0) {
+        data = data.filter(item => {
+          if (!item.carNumber) return false;
+          return !item.carNumber.includes('설문');
+        });
+
+        // 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬을 보장하여 순위 오류 예방
         data.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
       }
 
