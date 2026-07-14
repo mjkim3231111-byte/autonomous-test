@@ -4,13 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>교사용 수업 운영 가이드 - AI 드라이빙 멘토</title>
+  <!-- Google Fonts: Outfit & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: 'Malgun Gothic', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+    body { 
+      font-family: 'Noto Sans KR', sans-serif; 
+      background-color: #f8fafc; 
+      margin: 0; 
+      padding: 0; 
+      color: #334155; 
+      line-height: 1.7; 
+    }
     
     /* 상단 헤더 */
-    .header { background-color: #002D62; color: white; text-align: center; padding: 40px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
-    .header h1 { margin: 0; font-size: 32px; letter-spacing: -1px; }
-    .header p { margin-top: 10px; font-size: 16px; color: #94a3b8; }
+    .header { 
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+      color: white; 
+      text-align: center; 
+      padding: 50px 20px; 
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); 
+      position: relative; 
+    }
+    
+    .header h1 { 
+      margin: 0; 
+      font-size: 2.2rem; 
+      font-weight: 900;
+      letter-spacing: -1.5px; 
+    }
+    
+    .header p { 
+      margin-top: 12px; 
+      font-size: 1.1rem; 
+      color: #94a3b8; 
+      font-weight: 500;
+    }
     
     /* 통일된 뒤로가기 버튼 스타일 (왼쪽 상단) */
     .back-link {
@@ -21,13 +52,13 @@
       color: #cbd5e1;
       text-decoration: none;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
       background: rgba(255, 255, 255, 0.08);
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 30px;
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
@@ -35,6 +66,7 @@
     .back-link:hover {
       color: white;
       background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-50%) scale(1.03);
     }
 
     @media (max-width: 768px) {
@@ -47,31 +79,90 @@
         display: inline-flex;
         margin-bottom: 12px;
       }
+      .back-link:hover {
+        transform: scale(1.03);
+      }
     }
     
     /* 본문 컨테이너 */
-    .container { max-width: 900px; margin: -20px auto 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .container { 
+      max-width: 960px; 
+      margin: -25px auto 60px auto; 
+      background: white; 
+      padding: 45px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+      border: 1px solid #e2e8f0;
+    }
     
     /* 각 섹션 제목 */
-    h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 40px; }
+    h2 { 
+      color: #0f172a; 
+      border-bottom: 2.5px solid #2563eb; 
+      padding-bottom: 12px; 
+      margin-top: 45px; 
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+    }
     h2:first-child { margin-top: 0; }
     
+    h3 {
+      font-size: 1.15rem;
+      color: #1e3a8a;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
     /* 리스트 스타일 */
-    ul { padding-left: 20px; color: #475569; }
-    li { margin-bottom: 8px; }
+    ul, ol { 
+      padding-left: 24px; 
+      color: #475569; 
+    }
+    li { 
+      margin-bottom: 10px; 
+      font-size: 0.98rem;
+    }
     
     /* 강조 박스 */
-    .highlight-box { background-color: #f8fafc; border-left: 4px solid #002D62; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+    .highlight-box { 
+      background-color: #eff6ff; 
+      border-left: 5px solid #2563eb; 
+      padding: 18px 24px; 
+      margin: 24px 0; 
+      border-radius: 4px 12px 12px 4px; 
+      font-size: 0.95rem;
+      color: #1e40af;
+      font-weight: 500;
+    }
     
     /* 표 스타일 */
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #cbd5e1; padding: 15px; text-align: left; }
-    th { background-color: #f1f5f9; font-weight: bold; color: #0f172a; }
-    td { color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02); }
+    th, td { border: 1px solid #cbd5e1; padding: 16px; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 800; color: #0f172a; font-size: 0.95rem; }
+    td { color: #334155; font-size: 0.95rem; }
     
     /* 돌아가기 버튼 */
-    .back-btn { display: inline-block; margin-top: 40px; padding: 12px 25px; background-color: #e2e8f0; color: #475569; text-decoration: none; border-radius: 8px; font-weight: bold; transition: all 0.2s; }
-    .back-btn:hover { background-color: #cbd5e1; color: #0f172a; }
+    .back-btn { 
+      display: inline-flex; 
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px; 
+      padding: 14px 28px; 
+      background-color: #1e293b; 
+      color: white; 
+      text-decoration: none; 
+      border-radius: 12px; 
+      font-weight: 700; 
+      transition: all 0.2s; 
+      box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15);
+    }
+    .back-btn:hover { 
+      background-color: #0f172a; 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(30, 41, 59, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -79,64 +170,93 @@
   <div class="header">
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>👨‍🏫 교사용 수업 운영 가이드</h1>
-    <p>AI 드라이빙 멘토 1차시 완벽 대비 매뉴얼</p>
+    <p>스마트 진단 및 5:5 대화형 AI 채점기를 활용한 1차시 완벽 가이드</p>
   </div>
 
   <div class="container">
     
     <h2>1. ⏱️ 표준 수업 운영 매뉴얼 (1차시 50분 기준)</h2>
-    <ul>
-      <li><strong>[도입] 10분:</strong> 자율주행 조향 제어(차선 인식)의 원리 설명 및 어노테이션(데이터 라벨링) 개념 안내</li>
-      <li><strong>[전개] 30분:</strong> 학생 개별 알고리즘 튜닝 및 실습 진행
+    <div class="highlight-box">
+      본 시스템은 사전/사후 학생 자가진단 및 인공지능 주행평가 궤적 분석 데이터를 구글 스프레드시트에 실시간으로 완벽 분류하여 자동 적재합니다.
+    </div>
+    <ol>
+      <li><strong>[도입] 10분 : 사전 진단 및 학습 준비</strong>
         <ul>
-          <li>교사는 교실을 순회하며 학생의 자동차 주행 결과를 <strong>스마트 패드로 촬영</strong>합니다.</li>
-          <li>촬영 즉시 AI가 궤적을 분석하여 성공 여부와 정확도를 판별합니다.</li>
-          <li>실패한 학생은 코드를 수정하여 재도전하며, 이 과정은 시스템에 누적 기록됩니다.</li>
+          <li>교사용 화면 상단의 <b>[사전 설문 QR]</b>을 띄우고 학생들의 스마트폰/태블릿 스캔을 유도합니다.</li>
+          <li>학생들은 사전에 자율주행 조향각 튜닝에 관한 자가진단 설문을 제출합니다.</li>
         </ul>
       </li>
-      <li><strong>[정리] 10분:</strong> TV 전광판을 통한 랭킹 확인, 우수 튜닝 사례 공유 및 엑셀(CSV) 데이터 다운로드</li>
-    </ul>
+      <li><strong>[전개] 30분 : 자율주행 튜닝 및 AI 자동 채점</strong>
+        <ul>
+          <li>학생들은 모바일 실습실에 접속하여 조향 비례 제어 알고리즘 코드를 튜닝하여 모형차를 가동합니다.</li>
+          <li>교사는 학생들이 튜닝한 자동차 주행 궤적 사진을 <b>카메라로 촬영</b>하거나, 15대의 <b>즉석 시연 샘플</b>을 통해 실시간 채점을 구동합니다.</li>
+          <li>AI 비전 엔진이 차선 검출 및 차량의 수직 이탈 거리를 실시간으로 자동 분석하여 백엔드로 전송합니다.</li>
+        </ul>
+      </li>
+      <li><strong>[정리] 10분 : 사후 진단 및 전광판 시상</strong>
+        <ul>
+          <li>교사용 화면의 <b>[사후 설문 QR]</b>을 통해 사후 성취 수준 자가진단을 제출받습니다.</li>
+          <li>F11을 눌러 명예의 전당 전광판(tv.html)을 교실 화면에 비추어 정확도가 가장 높았던 상위 3인 학생의 차량을 실시간 랭킹 보드로 공유하고 성취감을 극대화합니다.</li>
+        </ul>
+      </li>
+    </ol>
 
-    <h2>2. 📊 구글 시트 연동 및 데이터 관리 방식</h2>
-    <div class="highlight-box">
-      본 시스템은 학생들의 평가 데이터를 구글 시트에 실시간으로 자동 저장합니다. 별도의 수기 기록이 필요하지 않습니다.
-    </div>
+    <h2>2. 📡 스마트 3분할 QR 모달 및 실시간 퀴즈 집계</h2>
     <ul>
-      <li><strong>연동 방법:</strong> 교사용 구글 계정으로 로그인한 뒤, 제공된 '평가용 구글 시트 템플릿'을 사본으로 저장하여 사용합니다.</li>
-      <li><strong>엑셀 다운로드:</strong> 수업 종료 후 시트의 <code>[파일] - [다운로드] - [CSV]</code>를 클릭하여 나이스(NEIS) 수행평가 기록용으로 즉시 활용할 수 있습니다.</li>
+      <li><strong>3분할 QR 대형 줌(Zoom) 모달 기능 :</strong> 교사용 전광판 상단에 탑재된 [사전 설문], [실습실 접속], [사후 설문] QR 코드를 마우스로 클릭하면, 화면 중앙에 <b>초대형 350x350 픽셀의 QR 코드 레이어 팝업</b>이 뜹니다. 교실 맨 뒤에 앉아있는 학생들도 태블릿으로 오차 없이 손쉽게 스캔이 가능합니다.</li>
+      <li><strong>실시간 모바일 퀴즈 성취도 자동 집계 :</strong> 학생들이 실습 중 해결한 AI 퀴즈 데이터(Q1 데이터 어노테이션 개념, Q2 안전 곡선 조향각 기준)가 5초 간격으로 교실 전광판에 자동 폴링 집계되어 차오르는 게이지 그래프로 구현됩니다. 수업 분위기를 환기하고 핵심 요점을 정리하는 형성평가 도구로 최적입니다.</li>
     </ul>
 
-    <h2>3. 📺 교실 TV 전광판 세팅 방법</h2>
+    <h2>3. 📸 5:5 대칭형 AI 자동 채점기 조작 매뉴얼</h2>
+    <p>채점기 페이지(evaluation.html)는 인지 흐름에 최적화된 좌우 5:5 대칭형 레이아웃으로 설계되어 있습니다.</p>
     <ul>
-      <li>교실 앞쪽의 스마트 TV나 프로젝터에서 인터넷 브라우저를 엽니다.</li>
-      <li>자율주행 명예의 전당 전광판 페이지(<a href="tv.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">tv.html 바로가기</a>)에 접속한 뒤 키보드의 <b>F11</b>을 눌러 전체 화면 모드로 설정합니다.</li>
-      <li>전광판에는 구글 스프레드시트와 실시간 동기화된 상위 5대 차량의 주행 궤적 정확도가 5초 간격으로 자동 폴링 갱신되며, 시각적인 게이지 애니메이션으로 연출되어 학생들의 흥미를 극대화합니다.</li>
+      <li><strong>좌측 열 (조작 및 입력 제어판) :</strong>
+        <ul>
+          <li><b>1단계:</b> 🏫 소속 학교명 입력 (예: 전주공고)</li>
+          <li><b>2단계:</b> 🏎️ 실습 차량 번호 선택 (1~20번 자동차 중 해당 학생의 모형차 번호)</li>
+          <li><b>3단계 (택 1):</b> 📸 [실시간 사진 찍어 채점하기]를 눌러 촬영하거나, ⚡ [학생 튜닝 모형차 즉석 시연]에서 1~15번 차량 버튼을 눌러 채점을 가동합니다.</li>
+        </ul>
+      </li>
+      <li><strong>우측 열 (실시간 AI 결과 출력판) :</strong>
+        <ul>
+          <li>채점 전에는 <b>[🤖 자율주행 채점 대기 중]</b> 가이드 플레이스홀더가 빈 공간을 채워주어 시각적 안정감을 유지합니다.</li>
+          <li>채점이 가동되면 실시간 비전 컴퓨터가 동작하며 가이드라인 차선과 차선 인식 수직 궤적을 480px 대형 캔버스 상에 예쁘게 오버레이 그래픽으로 드로잉합니다.</li>
+          <li>AI 성취도 점수와 함께 <b>인공지능 TTS 음성 피드백 낭독 기능</b>이 구동되어, 음향 가이드를 통한 생생한 피드백이 제공됩니다.</li>
+        </ul>
+      </li>
     </ul>
 
-    <h2>4. 💯 성취도 평가 기준표 (루브릭)</h2>
+    <h2>4. 🏆 명예의 전당 및 구글 시트 연동 원리</h2>
+    <ul>
+      <li><strong>랭킹 내림차순 자동 정렬 :</strong> 전광판(tv.html) 화면은 1위(🥇), 2위(🥈), 3위(🥉) 순으로 자율주행 일치율(정확도)이 가장 높은 우수한 주행 궤적 차량을 실시간 <b>내림차순으로 완벽 정렬</b>하여 전시합니다.</li>
+      <li><strong>설문조사 데이터 제외 필터링 :</strong> 학생들이 폰으로 제출한 사전/사후 설문 데이터는 랭킹 보드 목록에서 <b>자바스크립트 필터링을 통해 원천 제외</b>되어, 주행 점수 랭킹에 영향을 주지 않고 순수한 주행 기록만 전광판에 렌더링됩니다.</li>
+      <li><strong>스프레드시트 개별 탭 분리 적재 :</strong> 학생들의 주행 평가는 [1번째 시트]에 적재되며, 모든 설문조사 응답은 하단에 신설된 <b>[설문조사] 시트 탭</b>에 완벽히 분리 격리되어 저장됩니다. 데이터가 엉키지 않아 학기 말 수행평가 자료로 다운로드하기에 극도로 용이합니다.</li>
+    </ul>
+
+    <h2>5. 💯 성취도 평가 루브릭 기준표</h2>
     <table>
       <thead>
         <tr>
           <th>평가 등급</th>
           <th>조향 정확도 (AI 분석)</th>
-          <th>기준 설명 및 피드백 내용</th>
+          <th>수행평가 판정 및 피드백 요약</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>A (우수)</strong></td>
           <td><strong>80% 이상</strong></td>
-          <td>차선을 정확히 인식하고 안정적인 코너링을 구현함. 완벽한 알고리즘 튜닝.</td>
+          <td>차선을 이탈하지 않고 최적의 주행각을 구현함. 완벽한 데이터 라벨링 및 알고리즘 최적화 성공.</td>
         </tr>
         <tr>
           <td><strong>B (보통)</strong></td>
           <td><strong>60% ~ 79%</strong></td>
-          <td>차선 이탈이 일부 발생하나 코스를 완주함. 조향 과다/부족에 대한 추가 튜닝 권장.</td>
+          <td>경미한 차선 이탈이 발생하나 코스를 완주함. 조향 과다 또는 조향 부족에 대해 보완 코드 튜닝이 요구됨.</td>
         </tr>
         <tr>
           <td><strong>C (노력 요함)</strong></td>
           <td><strong>60% 미만</strong></td>
-          <td>차선을 이탈하여 주행에 실패함. 주행 원리 영상 재시청 및 기초 코드 점검 필요.</td>
+          <td>차선을 크게 탈선하여 코스 이탈 판정. 모바일 가이드 학습실에서 기초 조향 비례식을 재점검할 필요가 있음.</td>
         </tr>
       </tbody>
     </table>
