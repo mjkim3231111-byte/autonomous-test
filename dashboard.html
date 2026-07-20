@@ -1144,50 +1144,48 @@
         })
         .then(res => {
           if (res.status === 'success' && res.data && res.data.length > 0) {
-            let simulatedRows = [];
-            let baseTime = Date.now() / 1000 / 86400 + 25569;
+            let realRows = [];
 
             res.data.forEach((car, index) => {
               const carStr = String(car.carNumber).trim();
-              // [퀴즈] 및 [설문-] 데이터는 랭킹 시뮬레이션에 주입되지 않도록 스킵
-              if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-')) {
+              
+              // [퀴즈] 및 [설문-] 접두사를 가진 비주행 데이터는 대시보드 통계에서 원천 배제
+              if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-') || carStr.includes('설문') || carStr.includes('퀴즈')) {
                 return;
               }
+
               const finalAcc = parseFloat(car.accuracy);
-              
-              // 이미 학교명이 접두사로 들어있는 경우(예: [전주공고] 10번 자동차) 중복 합성 방지
-              let name = car.carNumber;
-              if (!String(car.carNumber).startsWith("[")) {
-                let schoolTag = "일반";
-                if (index % 3 === 0) schoolTag = "전주공고";
-                else if (index % 3 === 1) schoolTag = "군산기공";
-                else if (index % 3 === 2) schoolTag = "이리공고";
-                name = `[${schoolTag}] ${car.carNumber}`;
+              if (isNaN(finalAcc)) return;
+
+              // 구글 시트에 기재된 원본 타임스탬프 또는 날짜 유지
+              let timeSerial = null;
+              if (car.timestamp || car.timeRaw || car.time) {
+                const rawDate = car.timestamp || car.timeRaw || car.time;
+                if (!isNaN(rawDate)) {
+                  timeSerial = parseFloat(rawDate);
+                } else {
+                  // 날짜 문자열인 경우 Excel 일련번호로 변환 시도
+                  const parsedTime = new Date(rawDate).getTime();
+                  if (!isNaN(parsedTime)) {
+                    timeSerial = parsedTime / 1000 / 86400 + 25569;
+                  }
+                }
               }
               
-              simulatedRows.push({
-                "시간": baseTime - 0.05 + index * 0.001,
-                "차량번호": name,
-                "트랙": "일반 코너",
-                "정확도": parseFloat((finalAcc * 0.62).toFixed(1))
-              });
-              
-              simulatedRows.push({
-                "시간": baseTime - 0.02 + index * 0.001,
-                "차량번호": name,
-                "트랙": "일반 코너",
-                "정확도": parseFloat((finalAcc * 0.84).toFixed(1))
-              });
-              
-              simulatedRows.push({
-                "시간": baseTime + index * 0.001,
-                "차량번호": name,
-                "트랙": "일반 코너",
+              // 타임스탬프 정보가 없을 경우 기준 시간 산출
+              if (!timeSerial) {
+                timeSerial = (Date.now() / 1000 / 86400 + 25569) - (res.data.length - index) * 0.001;
+              }
+
+              realRows.push({
+                "시간": timeSerial,
+                "차량번호": carStr,
+                "트랙": car.track || "일반 코너",
                 "정확도": finalAcc
               });
             });
             
-            processExcelData(simulatedRows);
+            processExcelData(realRows);
           } else {
             throw new Error('유효 데이터 없음');
           }
