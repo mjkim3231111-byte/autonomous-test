@@ -425,12 +425,21 @@
     .rank-item.rank-3 .rank-badge { color: #f97316; }
 
     .rank-car-info {
-      width: 120px;
+      min-width: 180px;
+      max-width: 240px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .rank-car-name {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.35;
     }
 
     .rank-car-tries {
@@ -630,7 +639,6 @@
         <div class="toolbar-title">📈 실시간 평가 데이터 요약 리포트</div>
         <div style="display: flex; gap: 8px; align-items: center;">
           <button class="reset-file-btn" onclick="fetchLiveGoogleSheet()" style="background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.3); color: var(--neon-blue); padding: 8px 16px;">🔄 실시간 구글 시트 동기화</button>
-          <button class="reset-file-btn" onclick="resetFile()" style="padding: 8px 16px;">📂 수동 엑셀 파일 업로드</button>
         </div>
       </div>
 
