@@ -403,7 +403,15 @@
       <span>실시간 랭킹 보드</span>
     </div>
     <div class="header-info">
-      <!-- 구글 스프레드시트 기록판 직접 이동 전용 그린 버튼 추가 -->
+      <!-- 학교별 랭킹 필터 선택 드롭다운 추가 -->
+      <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 12px; border-radius: 10px;">
+        <span style="font-size: 0.9rem; color: #38bdf8; font-weight: 700;">🏫 학교 전광판:</span>
+        <select id="schoolFilterSelect" onchange="onSchoolFilterChange()" style="background: #0b0f19; color: white; border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
+          <option value="ALL">🌐 전체 학교 통합 랭킹</option>
+        </select>
+      </div>
+
+      <!-- 구글 스프레드시트 기록판 직접 이동 전용 그린 버튼 -->
       <a href="https://docs.google.com/spreadsheets/d/1F6vQQr5CtK8YKEQ4sJRVUlzMTSB_mbe6ySwI39Lj6rA/edit?gid=0#gid=0" target="_blank" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #ffffff; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 14px rgba(16, 185, 129, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 10px rgba(16, 185, 129, 0.2)';">
         📊 구글 시트 기록판 ➡️
       </a>
@@ -484,35 +492,83 @@
       }
     }
 
+    let currentRawData = []; // 서버에서 원본으로 수신된 데이터 보존
+
+    function onSchoolFilterChange() {
+      const select = document.getElementById('schoolFilterSelect');
+      if (select) {
+        localStorage.setItem('selectedTvSchool', select.value);
+        updateLeaderboardUI(currentRawData);
+      }
+    }
+
+    // 데이터 내 등장하는 모든 학교명 동적 추출 및 셀렉트박스 옵션 갱신
+    function updateSchoolDropdown(data) {
+      const select = document.getElementById('schoolFilterSelect');
+      if (!select || !data || data.length === 0) return;
+
+      const schoolsSet = new Set();
+      data.forEach(item => {
+        if (!item.carNumber) return;
+        // "[학교명] X번 자동차" 규격에서 대괄호 속 학교명 추출
+        const match = item.carNumber.match(/\[(.*?)\]/);
+        if (match && match[1]) {
+          schoolsSet.add(match[1].trim());
+        }
+      });
+
+      const savedSchool = localStorage.getItem('selectedTvSchool') || 'ALL';
+      let optionsHTML = `<option value="ALL" ${savedSchool === 'ALL' ? 'selected' : ''}>🌐 전체 학교 통합 랭킹</option>`;
+      
+      schoolsSet.forEach(school => {
+        const isSelected = savedSchool === school ? 'selected' : '';
+        optionsHTML += `<option value="${school}" ${isSelected}>🏫 [${school}] 전광판 보기</option>`;
+      });
+
+      select.innerHTML = optionsHTML;
+    }
+
     // 랭킹 보드 UI 렌더링
     function updateLeaderboardUI(data) {
       const container = document.getElementById('leaderboardList');
       if (!container) return;
 
-      // 설문조사 관련 데이터(차량번호 이름에 '설문'이 포함된 경우)를 원천 필터링하여 리더보드 순위에서 배제
-      if (data && data.length > 0) {
-        data = data.filter(item => {
-          if (!item.carNumber) return false;
-          return !item.carNumber.includes('설문');
-        });
+      currentRawData = data || [];
+      updateSchoolDropdown(currentRawData);
 
-        // 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬을 보장하여 순위 오류 예방
-        data.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
+      let filteredData = [...currentRawData];
+
+      // 1. 설문조사 관련 데이터 원천 제외
+      filteredData = filteredData.filter(item => {
+        if (!item.carNumber) return false;
+        return !item.carNumber.includes('설문');
+      });
+
+      // 2. 선택된 특정 학교 필터링 적용
+      const selectedSchool = document.getElementById('schoolFilterSelect')?.value || localStorage.getItem('selectedTvSchool') || 'ALL';
+      if (selectedSchool !== 'ALL') {
+        filteredData = filteredData.filter(item => {
+          return item.carNumber.includes(`[${selectedSchool}]`) || (item.school && item.school.includes(selectedSchool));
+        });
       }
 
-      if (!data || data.length === 0) {
+      // 3. 해당 학교 내에서 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬
+      filteredData.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
+
+      if (filteredData.length === 0) {
+        const schoolText = selectedSchool === 'ALL' ? '' : `[${selectedSchool}] `;
         container.innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">🏎️</div>
-            <div class="empty-title">완주 기록이 아직 없습니다.</div>
-            <div class="empty-desc">학생들이 태블릿으로 주행 궤적을 평가하면 여기에 명예의 전당이 채워집니다!</div>
+            <div class="empty-title">${schoolText}완주 기록이 아직 없습니다.</div>
+            <div class="empty-desc">학생들이 태블릿으로 주행 궤적을 평가하면 해당 학교의 전용 명예의 전당이 렌더링됩니다!</div>
           </div>
         `;
         return;
       }
 
       let listHTML = '';
-      data.forEach((item, index) => {
+      filteredData.forEach((item, index) => {
         const rank = index + 1;
         let medal = '';
         if (rank === 1) medal = '🥇';
@@ -551,7 +607,7 @@
 
       // 애니메이션 효과: 차오르는 그래프 연출
       setTimeout(() => {
-        data.forEach((item, index) => {
+        filteredData.forEach((item, index) => {
           const rank = index + 1;
           const bar = document.getElementById(`gauge-${rank}`);
           if (bar) {
