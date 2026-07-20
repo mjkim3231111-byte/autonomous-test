@@ -395,23 +395,27 @@
 <body>
 
   <!-- 상단 헤더 -->
-  <header class="tv-header">
-    <!-- 왼쪽 상단 통일된 메인 화면 뒤로가기 버튼 -->
-    <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
-    <div class="header-logo">
-      <h1>🏎️ AUTONOMOUS SPEEDWAY</h1>
-      <span>실시간 랭킹 보드</span>
-    </div>
-    <div class="header-info">
-      <!-- 학교별 랭킹 필터 선택 드롭다운 추가 -->
-      <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 12px; border-radius: 10px;">
-        <span style="font-size: 0.9rem; color: #38bdf8; font-weight: 700;">🏫 학교 전광판:</span>
-        <select id="schoolFilterSelect" onchange="onSchoolFilterChange()" style="background: #0b0f19; color: white; border: 1px solid #38bdf8; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
+  <header class="tv-header" style="flex-direction: column; gap: 16px; padding: 25px 40px; align-items: center;">
+    <a href="index.html?start=true" class="back-link" style="position: absolute; left: 24px; top: 25px;">⬅️ 메인 화면</a>
+    
+    <!-- 중앙 상단 대형 로고 & 학교 필터 선택 영역 -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
+      <div class="header-logo" style="margin-left: 0; justify-content: center;">
+        <h1>🏎️ AUTONOMOUS SPEEDWAY</h1>
+        <span>실시간 랭킹 보드</span>
+      </div>
+
+      <!-- 상단 중앙 대형 학교 선택 전광판 컨트롤러 -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border: 2px solid #38bdf8; padding: 10px 28px; border-radius: 40px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.35); margin-top: 5px;">
+        <span style="font-size: 1.2rem; color: #38bdf8; font-weight: 900; letter-spacing: -0.5px;">🏫 현재 전광판:</span>
+        <select id="schoolFilterSelect" onchange="onSchoolFilterChange()" style="background: #0f172a; color: #ffffff; border: 1.5px solid #38bdf8; padding: 8px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 1.15rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); outline: none;">
           <option value="ALL">🌐 전체 학교 통합 랭킹</option>
         </select>
       </div>
+    </div>
 
-      <!-- 구글 스프레드시트 기록판 직접 이동 전용 그린 버튼 -->
+    <!-- 우측 상단 유틸리티 버튼 및 연결 상태 -->
+    <div class="header-info" style="position: absolute; right: 24px; top: 25px;">
       <a href="https://docs.google.com/spreadsheets/d/1F6vQQr5CtK8YKEQ4sJRVUlzMTSB_mbe6ySwI39Lj6rA/edit?gid=0#gid=0" target="_blank" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #ffffff; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 14px rgba(16, 185, 129, 0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 10px rgba(16, 185, 129, 0.2)';">
         📊 구글 시트 기록판 ➡️
       </a>
