@@ -504,9 +504,9 @@
 
       const carNum = `[설문-${tag}] 익명_${answersText}`;
       
-      // 평균 점수 연산
+      // 정확한 5점 척도 순수 표준 평균 점수 연산 (3,3,3,3,3 -> 정확히 3.0)
       const totalScore = answers.reduce((acc, curr) => acc + parseInt(curr), 0);
-      const avgScore = (totalScore / len).toFixed(2);
+      const avgScore = parseFloat((totalScore / len).toFixed(1));
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
