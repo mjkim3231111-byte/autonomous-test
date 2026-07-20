@@ -1043,24 +1043,29 @@
       <div class="live-quiz-board" style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
         <h3 style="font-size: 1.1rem; color: var(--accent-blue); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
           <span style="display: flex; align-items: center; gap: 8px;">📊 실시간 모바일 퀴즈 학습 성취도 전광판</span>
-          <span style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">실시간 자동 집계 🟢</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button onclick="resetQuizStats()" style="font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 5px 12px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.4); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.35)';" onmouseout="this.style.background='rgba(239, 68, 68, 0.2)';">
+              🔄 퀴즈 집계 0명으로 초기화
+            </button>
+            <span style="font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 5px 10px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">실시간 자동 집계 🟢</span>
+          </div>
         </h3>
         
         <div style="background: rgba(15, 23, 42, 0.5); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); padding: 20px; display: flex; flex-direction: column; gap: 18px;">
           <!-- 응시 학생 수 -->
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
             <span style="font-size: 0.95rem; color: #94a3b8; font-weight: 500;">참여 학생 수</span>
-            <span id="quizTotalCount" style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; font-family: 'Outfit', sans-serif;">18명</span>
+            <span id="quizTotalCount" style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; font-family: 'Outfit', sans-serif;">0명</span>
           </div>
 
           <!-- Q1 정답률 게이지 -->
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
               <span style="color: #f1f5f9; font-weight: 600;">Q1. 데이터 어노테이션 개념 이해 정답률</span>
-              <span id="q1RateText" style="color: #34d399; font-weight: 700; font-family: 'Outfit', sans-serif;">89%</span>
+              <span id="q1RateText" style="color: #34d399; font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
             </div>
             <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
-              <div id="q1RateBar" style="width: 89%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
+              <div id="q1RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
             </div>
           </div>
 
@@ -1068,10 +1073,10 @@
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
               <span style="color: #f1f5f9; font-weight: 600;">Q2. 곡선 구간 조향각 안전 기준 정답률</span>
-              <span id="q2RateText" style="color: var(--accent-blue); font-weight: 700; font-family: 'Outfit', sans-serif;">78%</span>
+              <span id="q2RateText" style="color: var(--accent-blue); font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
             </div>
             <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
-              <div id="q2RateBar" style="width: 78%; height: 100%; background: linear-gradient(90deg, #38bdf8, #06b6d4); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);"></div>
+              <div id="q2RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #06b6d4); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);"></div>
             </div>
           </div>
         </div>
@@ -1335,6 +1340,28 @@
       }
     }
 
+    // 교사용 퀴즈 성취도 집계 초기화 기능
+    function resetQuizStats() {
+      const agree = confirm("⚠️ 퀴즈 전광판 초기화\n\n현재 전광판에 누적된 퀴즈 참여 학생 수와 정답률을 0명 / 0%로 초기화하시겠습니까?\n다음 학급이나 새 학교 수업 시 깨끗하게 재집계됩니다.");
+      if (!agree) return;
+
+      localStorage.setItem('quizResetTime', Date.now());
+
+      const totalCountEl = document.getElementById('quizTotalCount');
+      const q1TextEl = document.getElementById('q1RateText');
+      const q1BarEl = document.getElementById('q1RateBar');
+      const q2TextEl = document.getElementById('q2RateText');
+      const q2BarEl = document.getElementById('q2RateBar');
+
+      if (totalCountEl) totalCountEl.innerText = "0명";
+      if (q1TextEl) q1TextEl.innerText = "0%";
+      if (q1BarEl) q1BarEl.style.width = "0%";
+      if (q2TextEl) q2TextEl.innerText = "0%";
+      if (q2BarEl) q2BarEl.style.width = "0%";
+
+      alert("✅ 퀴즈 집계가 0명으로 초기화되었습니다! 새 수업 참여자 데이터가 실시간 집계됩니다.");
+    }
+
     // 퀴즈 실시간 데이터 수급 및 정답률 게이지 갱신 렌더링
     function fetchLiveQuizData() {
       const totalCountEl = document.getElementById('quizTotalCount');
@@ -1343,33 +1370,55 @@
       const q2TextEl = document.getElementById('q2RateText');
       const q2BarEl = document.getElementById('q2RateBar');
 
-      if (!totalCountEl || !q1TextEl || !q1BarEl || !q2TextEl || !q2BarEl || !GAS_WEBAPP_URL) return;
+      if (!totalCountEl || !q1TextEl || !q1BarEl || !q2TextEl || !q2BarEl) return;
+
+      // 교사가 초기화를 눌렀거나 최근 퀴즈 시트 연동 해제 시 0명으로 쾌적 유지
+      const resetTime = parseInt(localStorage.getItem('quizResetTime') || '0', 10);
+
+      if (!GAS_WEBAPP_URL) {
+        totalCountEl.innerText = "0명";
+        q1TextEl.innerText = "0%";
+        q1BarEl.style.width = "0%";
+        q2TextEl.innerText = "0%";
+        q2BarEl.style.width = "0%";
+        return;
+      }
 
       fetch(`${GAS_WEBAPP_URL}?action=getLeaderboard`, { method: 'GET', mode: 'cors', redirect: 'follow' })
         .then(response => response.json())
         .then(res => {
           const list = (res && res.status === 'success' && Array.isArray(res.data)) ? res.data : (Array.isArray(res) ? res : []);
 
-          // '퀴즈', '[퀴즈]', 'Quiz', '설문' 키워드를 가진 모든 퀴즈제출 데이터 유연 포용
+          // [퀴즈] 접두사를 가진 데이터 필터 (초기화 타임스탬프 이후 건만 집계)
           const quizList = list.filter(item => {
-            if (!item.carNumber) return false;
-            const str = String(item.carNumber).trim();
-            return str.includes('퀴즈') || str.includes('Quiz') || str.includes('설문') || str.includes('_O_') || str.includes('_X_');
+            if (!item.carNumber || !String(item.carNumber).trim().startsWith('[퀴즈]')) return false;
+            if (resetTime > 0 && item.timestamp) {
+              const itemTime = new Date(item.timestamp).getTime();
+              if (!isNaN(itemTime) && itemTime < resetTime) return false;
+            }
+            return true;
           });
 
-          const total = quizList.length;
-
-          // 구글 시트에 퀴즈 데이터가 유입되면 실시간 갱신, 유입 전에는 안정적인 18명 보고서 지표 제공
-          if (total === 0) {
-            totalCountEl.innerText = "18명";
-            q1TextEl.innerText = "89%";
-            q1BarEl.style.width = "89%";
-            q2TextEl.innerText = "78%";
-            q2BarEl.style.width = "78%";
+          // 초기화 후이거나 퀴즈 데이터가 없으면 0명으로 렌더링
+          if (resetTime > 0 && quizList.length === 0) {
+            totalCountEl.innerText = "0명";
+            q1TextEl.innerText = "0%";
+            q1BarEl.style.width = "0%";
+            q2TextEl.innerText = "0%";
+            q2BarEl.style.width = "0%";
             return;
           }
 
+          const total = quizList.length;
           totalCountEl.innerText = `${total}명`;
+
+          if (total === 0) {
+            q1TextEl.innerText = "0%";
+            q1BarEl.style.width = "0%";
+            q2TextEl.innerText = "0%";
+            q2BarEl.style.width = "0%";
+            return;
+          }
 
           let q1CorrectCount = 0;
           let q2CorrectCount = 0;
@@ -1377,18 +1426,18 @@
           quizList.forEach(item => {
             const rawCarName = String(item.carNumber).trim();
             
-            // _O_X 포맷 파싱 분석
+            // [퀴즈] 익명_O_X 포맷 파싱 분석
             if (rawCarName.includes('_')) {
               const parts = rawCarName.split('_');
-              if (parts.length >= 2 && (parts[1] === 'O' || parts[1] === '1')) q1CorrectCount++;
-              if (parts.length >= 3 && (parts[2] === 'O' || parts[2] === '1')) q2CorrectCount++;
+              if (parts[1] === 'O') q1CorrectCount++;
+              if (parts[2] === 'O') q2CorrectCount++;
             } else {
-              // 점수 기준 파싱
+              // 하위 호환성 유지: 100점이면 다 맞춘것으로, 50점이면 Q1만 맞춘것으로 가정
               const score = parseFloat(item.accuracy) || 0;
-              if (score >= 80) {
+              if (score === 100) {
                 q1CorrectCount++;
                 q2CorrectCount++;
-              } else if (score >= 40) {
+              } else if (score === 50) {
                 q1CorrectCount++;
               }
             }
@@ -1405,12 +1454,7 @@
           q2BarEl.style.width = `${q2Rate}%`;
         })
         .catch(err => {
-          console.error("실시간 퀴즈 정답률 수급 예외 발생 (기본값 제공):", err);
-          totalCountEl.innerText = "18명";
-          q1TextEl.innerText = "89%";
-          q1BarEl.style.width = "89%";
-          q2TextEl.innerText = "78%";
-          q2BarEl.style.width = "78%";
+          console.error("실시간 퀴즈 정답률 수급 오류:", err);
         });
     }
 
