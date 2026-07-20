@@ -409,7 +409,7 @@
       <div style="display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border: 2px solid #38bdf8; padding: 10px 28px; border-radius: 40px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.35); margin-top: 5px;">
         <span style="font-size: 1.2rem; color: #38bdf8; font-weight: 900; letter-spacing: -0.5px;">🏫 현재 전광판:</span>
         <select id="schoolFilterSelect" onchange="onSchoolFilterChange()" style="background: #0f172a; color: #ffffff; border: 1.5px solid #38bdf8; padding: 8px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 1.15rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); outline: none;">
-          <option value="ALL">🌐 전체 학교 통합 랭킹</option>
+          <option value="ALL">전체 학교</option>
         </select>
       </div>
     </div>
@@ -522,17 +522,17 @@
       });
 
       const savedSchool = localStorage.getItem('selectedTvSchool') || 'ALL';
-      let optionsHTML = `<option value="ALL" ${savedSchool === 'ALL' ? 'selected' : ''}>🌐 전체 학교 통합 랭킹</option>`;
+      let optionsHTML = `<option value="ALL" ${savedSchool === 'ALL' ? 'selected' : ''}>전체 학교</option>`;
       
       schoolsSet.forEach(school => {
         const isSelected = savedSchool === school ? 'selected' : '';
-        optionsHTML += `<option value="${school}" ${isSelected}>🏫 [${school}] 전광판 보기</option>`;
+        optionsHTML += `<option value="${school}" ${isSelected}>${school}</option>`;
       });
 
       select.innerHTML = optionsHTML;
     }
 
-    // 랭킹 보드 UI 렌더링
+    // 랭킹 보드 UI 렌더링 (오직 순수 자동차 주행 랭킹만 렌더링)
     function updateLeaderboardUI(data) {
       const container = document.getElementById('leaderboardList');
       if (!container) return;
@@ -542,13 +542,22 @@
 
       let filteredData = [...currentRawData];
 
-      // 1. 설문조사 관련 데이터 원천 제외
+      // 1. 설문조사, 자가진단, 퀴즈 관련 모든 비주행 데이터를 전광판 순위에서 100% 원천 제외
       filteredData = filteredData.filter(item => {
         if (!item.carNumber) return false;
-        return !item.carNumber.includes('설문');
+        const carStr = String(item.carNumber);
+        
+        // '설문', '진단', '만족도', '퀴즈' 키워드가 들어간 행 제외
+        if (carStr.includes('설문') || carStr.includes('진단') || carStr.includes('만족도') || carStr.includes('퀴즈')) {
+          return false;
+        }
+
+        // 유효한 자율주행 정확도(accuracy) 숫자가 존재하는 완주 기록만 통과
+        const acc = parseFloat(item.accuracy);
+        return !isNaN(acc) && acc >= 0;
       });
 
-      // 2. 선택된 특정 학교 필터링 적용
+      // 2. 선택된 특정 학교 필터링 적용 (덕암정보고, 전주공고 등)
       const selectedSchool = document.getElementById('schoolFilterSelect')?.value || localStorage.getItem('selectedTvSchool') || 'ALL';
       if (selectedSchool !== 'ALL') {
         filteredData = filteredData.filter(item => {
@@ -556,7 +565,7 @@
         });
       }
 
-      // 3. 해당 학교 내에서 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬
+      // 3. 순수한 자동차 주행 궤적 정확도(accuracy) 기준 내림차순(점수가 높은 순) 정렬
       filteredData.sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy));
 
       if (filteredData.length === 0) {
