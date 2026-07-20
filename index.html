@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI 드라이빙 멘토</title>
   <style>
     /* 기본 배경 및 폰트 설정 */
-    body {
-      font-family: 'Malgun Gothic', sans-serif;
-      background-color: #f1f5f9;
-      margin: 0;
-      padding: 0;
+    body { 
+      font-family: 'Malgun Gothic', sans-serif; 
+      background-color: #f1f5f9; 
+      margin: 0; 
+      padding: 0; 
       color: #333;
       overflow-x: hidden;
     }
-
+    
     /* 1. 표지(Cover) 스타일 (미래지향적 디지털 자율주행 배경 적용) */
     #coverPage {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
+      top: 0; left: 0; width: 100%; height: 100vh;
       background-image: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.82)), url('cover_bg.png');
       background-size: cover;
       background-position: center;
@@ -35,7 +31,6 @@
       z-index: 100;
       transition: opacity 0.6s ease-out;
     }
-
     .cover-content {
       background: rgba(15, 23, 42, 0.72);
       backdrop-filter: blur(14px);
@@ -48,200 +43,39 @@
       width: 90%;
       box-sizing: border-box;
     }
-
-    .cover-content h1 {
-      font-size: 54px;
-      margin-top: 0;
-      margin-bottom: 12px;
-      letter-spacing: -2px;
-      font-weight: 900;
-      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .cover-content .subtitle {
-      font-size: 20px;
-      color: #38bdf8;
-      margin-bottom: 24px;
-      font-weight: 700;
-    }
-
-    .feature-list {
-      text-align: left;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 24px 30px;
-      border-radius: 16px;
-      margin-bottom: 30px;
-      line-height: 1.9;
-      font-size: 17.5px;
-    }
-
-    .start-btn {
-      background-color: #3b82f6;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      padding: 14px 45px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35);
-      transition: all 0.3s;
-    }
-
-    .start-btn:hover {
-      background-color: #2563eb;
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.5);
-    }
+    .cover-content h1 { font-size: 54px; margin-top: 0; margin-bottom: 12px; letter-spacing: -2px; font-weight: 900; text-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+    .cover-content .subtitle { font-size: 20px; color: #38bdf8; margin-bottom: 24px; font-weight: 700; }
+    .feature-list { text-align: left; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255,255,255,0.06); padding: 24px 30px; border-radius: 16px; margin-bottom: 30px; line-height: 1.9; font-size: 17.5px; }
+    .start-btn { background-color: #3b82f6; color: white; font-size: 18px; font-weight: bold; padding: 14px 45px; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35); transition: all 0.3s; }
+    .start-btn:hover { background-color: #2563eb; transform: translateY(-3px); box-shadow: 0 12px 24px rgba(59, 130, 246, 0.5); }
 
     /* 2. 메인 카드 스타일 */
-    #mainContent {
-      display: none;
-      opacity: 0;
-      transition: opacity 0.8s ease-in;
-    }
-
-    .header {
-      background-color: #002D62;
-      color: white;
-      text-align: center;
-      padding: 50px 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 36px;
-      letter-spacing: -1px;
-    }
-
-    .header p {
-      margin-top: 15px;
-      font-size: 18px;
-      color: #94a3b8;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: -30px auto 50px auto;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 30px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 40px 30px;
-      text-align: center;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      border-top: 5px solid transparent;
-    }
-
-    .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    .card-teacher:hover {
-      border-top-color: #64748b;
-    }
-
-    .card-learn:hover {
-      border-top-color: #38bdf8;
-    }
-
-    .card-practice:hover {
-      border-top-color: #10b981;
-    }
-
-    .card-tv:hover {
-      border-top-color: #fbbf24;
-    }
-
-    .card-excel:hover {
-      border-top-color: #8b5cf6;
-    }
-
-    .card-survey:hover {
-      border-top-color: #f472b6;
-    }
-
-    .icon {
-      font-size: 60px;
-      margin-bottom: 20px;
-    }
-
-    .card h2 {
-      margin: 0 0 15px 0;
-      font-size: 24px;
-      color: #0f172a;
-    }
-
-    .card p {
-      font-size: 15px;
-      color: #64748b;
-      line-height: 1.6;
-      flex-grow: 1;
-      word-break: keep-all;
-    }
-
-    .enter-text {
-      margin-top: 25px;
-      font-weight: bold;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-
-    .card-teacher .enter-text {
-      color: #475569;
-      background: #f1f5f9;
-    }
-
-    .card-learn .enter-text {
-      color: #0284c7;
-      background: #e0f2fe;
-    }
-
-    .card-practice .enter-text {
-      color: #059669;
-      background: #d1fae5;
-    }
-
-    .card-tv .enter-text {
-      color: #d97706;
-      background: #fef3c7;
-    }
-
-    .card-excel .enter-text {
-      color: #7c3aed;
-      background: #f3e8ff;
-    }
-
-    .card-survey .enter-text {
-      color: #db2777;
-      background: #fdf2f8;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 30px;
-      color: #94a3b8;
-      font-size: 14px;
-      margin-top: 40px;
-    }
+    #mainContent { display: none; opacity: 0; transition: opacity 0.8s ease-in; }
+    .header { background-color: #002D62; color: white; text-align: center; padding: 50px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .header h1 { margin: 0; font-size: 36px; letter-spacing: -1px; }
+    .header p { margin-top: 15px; font-size: 18px; color: #94a3b8; }
+    .container { max-width: 1100px; margin: -30px auto 50px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+    .card { background: white; border-radius: 15px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; text-decoration: none; color: inherit; display: flex; flex-direction: column; border-top: 5px solid transparent; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    .card-teacher:hover { border-top-color: #64748b; }
+    .card-learn:hover { border-top-color: #38bdf8; }
+    .card-practice:hover { border-top-color: #10b981; }
+    .card-tv:hover { border-top-color: #fbbf24; }
+    .card-excel:hover { border-top-color: #8b5cf6; }
+    .card-survey:hover { border-top-color: #f472b6; }
+    .icon { font-size: 60px; margin-bottom: 20px; }
+    .card h2 { margin: 0 0 15px 0; font-size: 24px; color: #0f172a; }
+    .card p { font-size: 15px; color: #64748b; line-height: 1.6; flex-grow: 1; word-break: keep-all; }
+    .enter-text { margin-top: 25px; font-weight: bold; font-size: 16px; padding: 10px; border-radius: 8px; transition: background 0.3s; }
+    .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
+    .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
+    .card-practice .enter-text { color: #059669; background: #d1fae5; }
+    .card-tv .enter-text { color: #d97706; background: #fef3c7; }
+    .card-excel .enter-text { color: #7c3aed; background: #f3e8ff; }
+    .card-survey .enter-text { color: #db2777; background: #fdf2f8; }
+    .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; margin-top: 40px; }
   </style>
 </head>
-
 <body>
 
   <div id="coverPage">
@@ -273,9 +107,9 @@
 
       <a href="study_teacher.html" class="card card-learn">
         <div class="icon">📖</div>
-        <h2>학습 데이터 만들기</h2>
-        <p>어노테이션(Annotation)의 개념과 올바른 작업 방법을 배우고, 실제 주행 동영상을 통해 AI 학습용 데이터를 구축하는 과정을 알아봅니다.</p>
-        <div class="enter-text">데이터 학습 시작 ➡️</div>
+        <h2>어노테이션 학습 및 이해도 평가</h2>
+        <p>어노테이션(Annotation)의 개념과 올바른 데이터 라벨링 방법을 배우고, 실시간 퀴즈 전광판을 통해 학생들의 자율주행 원리 이해도를 평가 및 모니터링합니다.</p>
+        <div class="enter-text">학습 및 이해도 평가 ➡️</div>
       </a>
 
       <a href="evaluation.html" class="card card-practice">
@@ -337,5 +171,4 @@
     }
   </script>
 </body>
-
 </html>
