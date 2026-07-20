@@ -506,28 +506,14 @@
       const q2Mark = isQ2Correct ? "O" : "X";
       
       const resultText = `Q1: ${q1Mark}, Q2: ${q2Mark}`;
-      // [퀴즈] 접두사를 활용해 퀴즈 결과를 익명 정오표 형태로 압축하여 전송
-      const carNum = `[퀴즈] 익명_${q1Mark}_${q2Mark}`; 
-
-      // 버튼 로딩 상태 전환
+      
+      // 구글 시트로의 퀴즈 데이터 전송을 하지 않고, 로컬 학생 화면에서 즉시 결과 피드백 제공
       const btn = document.getElementById('btnSubmitQuiz');
       btn.disabled = true;
-      btn.innerText = "제출 중... ⏳";
+      btn.innerText = `제출 완료 🟢 (내 점수: ${score}점)`;
+      btn.style.background = "var(--success-green)";
 
-      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(resultText)}&accuracy=${encodeURIComponent(score)}`;
-
-      fetch(url, { method: 'GET', mode: 'cors', redirect: 'follow' })
-        .then(response => {
-          alert("🎉 퀴즈 제출 완료! 결과가 전광판에 즉시 실시간 반영되었습니다.");
-          btn.innerText = "제출 완료 🟢";
-          btn.style.background = "var(--success-green)";
-        })
-        .catch(err => {
-          console.error("데이터 전송 오류:", err);
-          alert("네트워크 연결 실패로 전송하지 못했습니다. 다시 시도해 주세요.");
-          btn.disabled = false;
-          btn.innerText = "🚀 익명으로 퀴즈 정답 제출하기";
-        });
+      alert(`🎉 퀴즈 채점 완료!\n\n제출 결과: ${resultText}\n최종 퀴즈 점수: ${score}점`);
     }
 
     function applyLevelSettings() {
