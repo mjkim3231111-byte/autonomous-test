@@ -805,18 +805,20 @@
         let track = row["트랙"] || row["Track"] || "일반";
         let accuracyRaw = row["정확도"] || row["Accuracy"] || null;
 
-        if (carNum && accuracyRaw !== null) {
+        if (carNum && accuracyRaw !== null && accuracyRaw !== undefined) {
           const carStr = String(carNum).trim();
           // [퀴즈] 및 [설문-] 접두사로 시작하는 학습 데이터는 대시보드 주행 통계 분석에서 원천 필터링
-          if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-')) {
+          if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-') || carStr.includes('설문') || carStr.includes('퀴즈')) {
             return;
           }
 
-          const accuracy = parseFloat(accuracyRaw);
+          let accuracy = parseFloat(accuracyRaw);
+          if (isNaN(accuracy)) accuracy = 0;
+          
           const timeString = formatExcelDate(timeRaw);
 
           parsedData.push({
-            timeRaw: parseFloat(timeRaw),
+            timeRaw: parseFloat(timeRaw) || 0,
             timeString,
             carNumber: carStr,
             schoolName: getSchoolName(carStr), // 소속 학교 파싱
@@ -1147,15 +1149,17 @@
             let realRows = [];
 
             res.data.forEach((car, index) => {
-              const carStr = String(car.carNumber).trim();
+              const carStr = String(car.carNumber || '').trim();
+              if (!carStr) return;
               
-              // [퀴즈] 및 [설문-] 접두사를 가진 비주행 데이터는 대시보드 통계에서 원천 배제
+              // [퀴즈] 및 [설문-] 접두사를 가진 비주행 데이터만 원천 제외 (주행 실패 0% 기록은 100% 포함)
               if (carStr.startsWith('[퀴즈]') || carStr.startsWith('[설문-') || carStr.includes('설문') || carStr.includes('퀴즈')) {
                 return;
               }
 
-              const finalAcc = parseFloat(car.accuracy);
-              if (isNaN(finalAcc)) return;
+              // 정확도 수치 파싱 (0%나 공백도 0점 주행 실패 기록으로 100% 유효 파싱)
+              let finalAcc = parseFloat(car.accuracy);
+              if (isNaN(finalAcc)) finalAcc = 0;
 
               // 구글 시트에 기재된 원본 타임스탬프 또는 날짜 유지
               let timeSerial = null;
@@ -1172,7 +1176,7 @@
                 }
               }
               
-              // 타임스탬프 정보가 없을 경우 기준 시간 산출
+              // 타임스탬프 정보가 없을 경우 순서대로 기준 시간 산출
               if (!timeSerial) {
                 timeSerial = (Date.now() / 1000 / 86400 + 25569) - (res.data.length - index) * 0.001;
               }
