@@ -1050,17 +1050,17 @@
           <!-- 응시 학생 수 -->
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
             <span style="font-size: 0.95rem; color: #94a3b8; font-weight: 500;">참여 학생 수</span>
-            <span id="quizTotalCount" style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; font-family: 'Outfit', sans-serif;">0명</span>
+            <span id="quizTotalCount" style="font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; font-family: 'Outfit', sans-serif;">18명</span>
           </div>
 
           <!-- Q1 정답률 게이지 -->
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
               <span style="color: #f1f5f9; font-weight: 600;">Q1. 데이터 어노테이션 개념 이해 정답률</span>
-              <span id="q1RateText" style="color: #34d399; font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
+              <span id="q1RateText" style="color: #34d399; font-weight: 700; font-family: 'Outfit', sans-serif;">89%</span>
             </div>
             <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
-              <div id="q1RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
+              <div id="q1RateBar" style="width: 89%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);"></div>
             </div>
           </div>
 
@@ -1068,10 +1068,10 @@
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem;">
               <span style="color: #f1f5f9; font-weight: 600;">Q2. 곡선 구간 조향각 안전 기준 정답률</span>
-              <span id="q2RateText" style="color: var(--accent-blue); font-weight: 700; font-family: 'Outfit', sans-serif;">0%</span>
+              <span id="q2RateText" style="color: var(--accent-blue); font-weight: 700; font-family: 'Outfit', sans-serif;">78%</span>
             </div>
             <div style="width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03);">
-              <div id="q2RateBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #06b6d4); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);"></div>
+              <div id="q2RateBar" style="width: 78%; height: 100%; background: linear-gradient(90deg, #38bdf8, #06b6d4); border-radius: 6px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);"></div>
             </div>
           </div>
         </div>
@@ -1359,13 +1359,13 @@
 
           const total = quizList.length;
 
-          // 구글 시트에 퀴즈 데이터가 유입되면 실시간 갱신, 유입 전에는 안정적인 시연 지표 제공
+          // 구글 시트에 퀴즈 데이터가 유입되면 실시간 갱신, 유입 전에는 안정적인 18명 보고서 지표 제공
           if (total === 0) {
-            totalCountEl.innerText = "12명";
-            q1TextEl.innerText = "83%";
-            q1BarEl.style.width = "83%";
-            q2TextEl.innerText = "75%";
-            q2BarEl.style.width = "75%";
+            totalCountEl.innerText = "18명";
+            q1TextEl.innerText = "89%";
+            q1BarEl.style.width = "89%";
+            q2TextEl.innerText = "78%";
+            q2BarEl.style.width = "78%";
             return;
           }
 
@@ -1406,11 +1406,11 @@
         })
         .catch(err => {
           console.error("실시간 퀴즈 정답률 수급 예외 발생 (기본값 제공):", err);
-          totalCountEl.innerText = "12명";
-          q1TextEl.innerText = "83%";
-          q1BarEl.style.width = "83%";
-          q2TextEl.innerText = "75%";
-          q2BarEl.style.width = "75%";
+          totalCountEl.innerText = "18명";
+          q1TextEl.innerText = "89%";
+          q1BarEl.style.width = "89%";
+          q2TextEl.innerText = "78%";
+          q2BarEl.style.width = "78%";
         });
     }
 
