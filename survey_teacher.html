@@ -648,13 +648,13 @@
     // 구글 Apps Script 연동 웹앱 주소 (설문조사 시트 분기 버전)
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqByrOwTpZ_S2zXEl8-flEBjBqirZXbrY-Bx5TOFIu3AHpSbm4U7gBinN0eb1j5dA/exec";
 
-    // 5대 핵심 지표 정보 배열 정의
+    // 5대 핵심 지표 정보 배열 정의 (교사 개편 쉬운 문항 반영)
     const metricLabels = [
-      { name: "① 자율주행 원리", desc: "이미지 데이터 기반 인공지능 운전 원리 이해" },
-      { name: "② 어노테이션 개념", desc: "데이터 레이블링의 역할과 중요도 인지" },
-      { name: "③ 안전 조향 기준", desc: "곡선 차선 이탈 방지를 위한 바깥 노란선 이해" },
-      { name: "④ 어노테이션 수행", desc: "올바른 각도로 방향 정답을 레이블링하는 능력" },
-      { name: "⑤ 학습 흥미도", desc: "인공지능 및 데이터 과학 분야에 대한 관심과 참여도" }
+      { name: "① AI 운전 원리", desc: "인공지능이 사진을 보고 운전하는 원리는 아나요?" },
+      { name: "② 어노테이션 중요성", desc: "인공지능 학습의 어노테이션이 왜 중요한지 아나요?" },
+      { name: "③ 안전 코너 조향 기준", desc: "커브길을 돌 때 왜 바깥쪽 선을 보고 핸들을 틀어야 하는지 아나요?" },
+      { name: "④ 핸들 방향 조절 능력", desc: "도로 사진을 보고 핸들 방향을 정확히 조절할 수 있나요?" },
+      { name: "⑤ 학습 재미 및 흥미", desc: "자율주행과 인공지능 수업이 재미있고 흥미로웠나요?" }
     ];
 
     let radarChart = null;
