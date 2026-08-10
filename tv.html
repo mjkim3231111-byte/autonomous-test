@@ -468,7 +468,17 @@
         })
         .then(res => {
           if (res.status === 'success') {
-            updateLeaderboardUI(res.data);
+            // 구글 시트 원본의 학교 실명을 "1기수"로 동적 마스킹 처리
+            const sanitizedData = res.data.map(item => {
+              if (item.carNumber) {
+                item.carNumber = String(item.carNumber).replace(/덕암정보고|전주공고/g, "1기수");
+              }
+              if (item.school) {
+                item.school = String(item.school).replace(/덕암정보고|전주공고/g, "1기수");
+              }
+              return item;
+            });
+            updateLeaderboardUI(sanitizedData);
             updateStatus(true, "구글 시트 실시간 연동 중 (정상)");
           } else {
             throw new Error(res.message || '데이터 형식 오류');

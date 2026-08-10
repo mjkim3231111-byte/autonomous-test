@@ -1157,6 +1157,13 @@
             let realRows = [];
 
             res.data.forEach((car, index) => {
+              // 구글 시트 원본의 학교 실명을 "1기수"로 동적 마스킹 처리
+              if (car.carNumber) {
+                car.carNumber = String(car.carNumber).replace(/덕암정보고|전주공고/g, "1기수");
+              }
+              if (car.school) {
+                car.school = String(car.school).replace(/덕암정보고|전주공고/g, "1기수");
+              }
               const carStr = String(car.carNumber || '').trim();
               if (!carStr) return;
               
