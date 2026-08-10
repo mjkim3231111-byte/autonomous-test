@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사전-사후 자가진단실 - AI 드라이빙 멘토</title>
+  <!-- 프리미엄 글꼴 및 라이브러리 탑재 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #38bdf8;
+      --accent-blue: #2563eb;
+      --accent-pink: #f472b6;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-green: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* 상단 헤더 */
+    .header-area {
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .app-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-cyan), #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .app-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 설문 카드 컨테이너 */
+    .survey-container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 사전/사후/교사 통합 탭 선택기 */
+    .tab-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .tab-btn.active-pre {
+      background: linear-gradient(135deg, var(--accent-pink), #ec4899);
+      color: white;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    }
+
+    .tab-btn.active-post {
+      background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .tab-btn.active-teacher {
+      background: linear-gradient(135deg, var(--success-green), #34d399);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    /* 문항 블록 */
+    .question-card {
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .question-card:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .question-title {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .question-number {
+      color: var(--accent-cyan);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+    }
+
+    /* 5점 척도 선택단 */
+    .scale-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .scale-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* 투명 라디오 감추기 */
+    .scale-item input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    /* 라디오 단추 디자인 커스텀 */
+    .scale-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .scale-circle::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      transform: scale(0);
+      transition: transform 0.2s ease;
+    }
+
+    .scale-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    /* 선택 완료 시 테마 색상 활성화 */
+    .scale-item input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .scale-item.pre-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-pink);
+      background: rgba(244, 114, 182, 0.1);
+      box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+    }
+
+    .scale-item.post-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--accent-purple);
+      background: rgba(168, 85, 247, 0.1);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .scale-item.teacher-mode input[type="radio"]:checked + .scale-circle {
+      border-color: var(--success-green);
+      background: rgba(16, 185, 129, 0.1);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .scale-item input[type="radio"]:checked + .scale-circle::after {
+      transform: scale(1);
+    }
+
+    .scale-item.pre-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--accent-pink);
+    }
+
+    .scale-item.post-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--accent-purple);
+    }
+
+    .scale-item.teacher-mode input[type="radio"]:checked + .scale-circle::after {
+      background: var(--success-green);
+    }
+
+    .scale-item input[type="radio"]:checked ~ .scale-label {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* 제출 버튼 */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-pre {
+      background: linear-gradient(135deg, var(--accent-pink), #db2777);
+    }
+
+    .btn-pre:hover {
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-post {
+      background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+    }
+
+    .btn-post:hover {
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-teacher {
+      background: linear-gradient(135deg, var(--success-green), #059669);
+    }
+
+    .btn-teacher:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:disabled {
+      background: #334155;
+      color: #64748b;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .back-to-hub {
+      margin-top: 24px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-to-hub:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* 애니메이션 효과 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 영역 -->
+  <div class="header-area">
+    <div class="app-title">AI Driving Mentor</div>
+    <p class="app-subtitle">자율주행 인공지능 어노테이션 교육<br>실습 전/후 역량 진단 및 앱 만족도 조사</p>
+  </div>
+
+  <!-- 설문조사 메인 박스 -->
+  <div class="survey-container">
+    
+    <!-- 사전/사후/교사 모드 선택 탭 -->
+    <div class="tab-selector">
+      <button class="tab-btn active-pre" id="tabPre" onclick="changeMode('pre')">
+        <span>📝</span> 사전 진단 (학생)
+      </button>
+      <button class="tab-btn" id="tabPost" onclick="changeMode('post')">
+        <span>🏆</span> 사후 진단 (학생)
+      </button>
+      <button class="tab-btn" id="tabTeacher" onclick="changeMode('teacher')">
+        <span>👨‍🏫</span> 앱 만족도 (교사)
+      </button>
+    </div>
+
+    <!-- 설문 문항 동적 빌드 영역 -->
+    <form id="surveyForm">
+      <div id="surveyQuestionsContainer">
+        <!-- 자바스크립트로 동적 로드됨 -->
+      </div>
+
+      <!-- 제출하기 단추 -->
+      <button type="button" class="action-btn btn-pre" id="btnSubmit" onclick="submitSurvey()">
+        🚀 사전 자가진단 제출하기
+      </button>
+    </form>
+  </div>
+
+  <a href="index.html" class="back-to-hub">🏠 자율주행 학습관 홈으로 이동</a>
+
+  <script>
+    // 구글 Apps Script 연동 웹앱 주소 (설문조사 시트 분기 버전)
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqByrOwTpZ_S2zXEl8-flEBjBqirZXbrY-Bx5TOFIu3AHpSbm4U7gBinN0eb1j5dA/exec";
+    
+    // 현재 모드: 'pre' (학생 사전), 'post' (학생 사후), 'teacher' (교사 만족도)
+    let currentMode = 'pre';
+
+    // 5점 리커트 척도 문구 세트
+    const scaleLabels = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"];
+
+    // 1) 학생용 5대 역량 검증 질문 리스트 (교사 다듬은 초간단 친숙 버전)
+    const studentQuestions = [
+      "인공지능이 사진을 보고 운전하는 원리는 아나요?",
+      "인공지능 학습의 어노테이션이 왜 중요한지 아나요?",
+      "커브길을 돌 때 왜 바깥쪽 선을 보고 핸들을 틀어야 하는지 아나요?",
+      "도로 사진을 보고 핸들 방향을 정확히 조절할 수 있나요?",
+      "자율주행과 인공지능 수업이 재미있고 흥미로웠나요?"
+    ];
+
+    // 2) 교사용 4대 앱만족도 검증 질문 리스트
+    const teacherQuestions = [
+      "「AI 드라이빙 멘토」 앱은 자율주행 차선 인식 및 데이터 어노테이션 원리를 이해하고 관련 수업을 설계하는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱을 활용한 수업은 학생들이 자기주도적으로 학습하고 수업 참여율과 주의 집중도를 높이는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱의 실시간 피드백 및 전광판 기능은 학생들의 학습 동기와 협력적 의사소통을 유도하는 데 도움이 되었다.",
+      "「AI 드라이빙 멘토」 앱을 향후 다른 정보 교육 과정이나 인공지능 수업에서 재사용할 의향이 있다."
+    ];
+
+    // 현재 모드에 따라 질문 문항과 5점 척도 라디오 버튼 동적 렌더링
+    function renderQuestions() {
+      const container = document.getElementById('surveyQuestionsContainer');
+      if (!container) return;
+
+      const questionsList = currentMode === 'teacher' ? teacherQuestions : studentQuestions;
+      const modeClass = currentMode === 'pre' ? 'pre-mode' : (currentMode === 'post' ? 'post-mode' : 'teacher-mode');
+      
+      let html = "";
+      questionsList.forEach((qText, index) => {
+        const qNum = index + 1;
+        
+        let scaleHtml = "";
+        for (let score = 1; score <= 5; score++) {
+          scaleHtml += `
+            <div class="scale-item ${modeClass}">
+              <input type="radio" name="q${qNum}" value="${score}" required>
+              <div class="scale-circle"></div>
+              <span class="scale-label">${scaleLabels[score-1]}</span>
+            </div>
+          `;
+        }
+
+        html += `
+          <div class="question-card">
+            <div class="question-title">
+              <span class="question-number">Q${qNum}.</span>
+              <span>${qText}</span>
+            </div>
+            <div class="scale-row" id="q${qNum}-row">
+              ${scaleHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 모드(사전/사후/교사) 탭 전환
+    function changeMode(mode) {
+      currentMode = mode;
+
+      const tabPre = document.getElementById('tabPre');
+      const tabPost = document.getElementById('tabPost');
+      const tabTeacher = document.getElementById('tabTeacher');
+      const btnSubmit = document.getElementById('btnSubmit');
+
+      // 탭 디자인 리셋 및 상태 매핑
+      tabPre.className = "tab-btn";
+      tabPost.className = "tab-btn";
+      tabTeacher.className = "tab-btn";
+
+      if (mode === 'pre') {
+        tabPre.classList.add('active-pre');
+        btnSubmit.className = "action-btn btn-pre";
+        btnSubmit.innerText = "🚀 사전 자가진단 제출하기";
+      } else if (mode === 'post') {
+        tabPost.classList.add('active-post');
+        btnSubmit.className = "action-btn btn-post";
+        btnSubmit.innerText = "🚀 사후 자가진단 제출하기";
+      } else {
+        tabTeacher.classList.add('active-teacher');
+        btnSubmit.className = "action-btn btn-teacher";
+        btnSubmit.innerText = "🚀 앱 만족도 평가 제출하기";
+      }
+
+      // 문항 다시 빌드
+      renderQuestions();
+    }
+
+    // 설문 결과 전송 처리
+    function submitSurvey() {
+      const questionsList = currentMode === 'teacher' ? teacherQuestions : studentQuestions;
+      const len = questionsList.length;
+
+      // 문항 누락 검사
+      let answers = [];
+      for (let q = 1; q <= len; q++) {
+        const selected = document.querySelector(`input[name="q${q}"]:checked`);
+        if (!selected) {
+          alert(`Q${q} 문항의 응답이 선택되지 않았습니다!`);
+          return;
+        }
+        answers.push(selected.value);
+      }
+
+      // 결과 전송 포맷 조합
+      const answersText = answers.join('_');
+      // [설문-사전], [설문-사후], [설문-교사] 형식으로 분기 태깅
+      let tag = "사전";
+      if (currentMode === 'post') tag = "사후";
+      else if (currentMode === 'teacher') tag = "교사";
+
+      const carNum = `[설문-${tag}] 익명_${answersText}`;
+      
+      // 정확한 5점 척도 순수 표준 평균 점수 연산 (3,3,3,3,3 -> 정확히 3.0)
+      const totalScore = answers.reduce((acc, curr) => acc + parseInt(curr), 0);
+      const avgScore = parseFloat((totalScore / len).toFixed(1));
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = "전송 중... ⏳";
+
+      const url = `${GAS_WEBAPP_URL}?action=save&carNumber=${encodeURIComponent(carNum)}&result=${encodeURIComponent(tag + ' 설문 응답')}&accuracy=${encodeURIComponent(avgScore)}`;
+
+      // 구글 API 리다이렉션 시 발생하는 브라우저 CORS 에러를 원천 예방하기 위해 mode: 'no-cors' 방식을 적용합니다.
+      fetch(url, { method: 'GET', mode: 'no-cors' })
+        .then(() => {
+          alert(`🎉 제출이 완료되었습니다!\n결과가 분석판에 즉시 실시간 반영되었습니다.`);
+          btn.innerText = "제출 완료 🟢";
+          btn.style.background = "var(--success-green)";
+        })
+        .catch(err => {
+          console.error("설문 데이터 전송 에러:", err);
+          alert("네트워크 통신 에러가 발생했습니다. 다시 시도해 주세요.");
+          btn.disabled = false;
+          changeMode(currentMode); // 상태 원복
+        });
+    }
+
+    // 초기 화면 생성
+    window.onload = () => {
+      // URL 파라미터 강제 모드 파싱 (?mode=pre, ?mode=post, ?mode=teacher)
+      const urlParams = new URLSearchParams(window.location.search);
+      const forcedMode = urlParams.get('mode');
+      
+      if (forcedMode === 'pre' || forcedMode === 'post' || forcedMode === 'teacher') {
+        // 탭 전환 선택기 비주얼 영구 감춤 처리
+        const selector = document.querySelector('.tab-selector');
+        if (selector) selector.style.display = 'none';
+        
+        // 해당 강제 모드로 고정 초기화
+        changeMode(forcedMode);
+      } else {
+        // 기본값: pre 모드로 빌드
+        changeMode('pre');
+      }
+    };
+  </script>
+</body>
+</html>
