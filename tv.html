@@ -566,7 +566,7 @@
         return !isNaN(acc) && acc > 0;
       });
 
-      // 2. 선택된 특정 학교 필터링 적용 (덕암정보고, 전주공고 등)
+      // 2. 선택된 특정 학교 필터링 적용 (A고등학교, B고등학교 등)
       const selectedSchool = document.getElementById('schoolFilterSelect')?.value || localStorage.getItem('selectedTvSchool') || 'ALL';
       if (selectedSchool !== 'ALL') {
         filteredData = filteredData.filter(item => {
