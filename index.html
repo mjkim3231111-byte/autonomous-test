@@ -165,29 +165,16 @@
       }
     });
 
-    // 지능형 스마트 네비게이터 (index.html 단독 복사 시에는 온라인 https://aidriving.co.kr 로, 폴더 전체 시에는 로컬 파일로 자동 이동)
+    // 지능형 스마트 네비게이터 (index.html 1개만 단독 복사 시에도 온라인 https://aidriving.co.kr 로 100% 즉시 연결)
     function smartGo(event, targetPage) {
       if (event) event.preventDefault();
       
-      // 온라인 웹사이트 상에서 실행된 경우는 상대 경로 이동
-      if (window.location.protocol !== 'file:') {
+      if (window.location.protocol === 'file:') {
+        // 로컬 환경에서 index.html 1개만 가져왔을 때도 무조건 100% 다 열리도록 온라인 사이트로 이동
+        window.location.href = 'https://aidriving.co.kr/' + targetPage;
+      } else {
         window.location.href = targetPage;
-        return;
       }
-
-      // 내 컴퓨터 file:// 환경에서 로컬 파일 존재 여부 지능형 검사
-      fetch(targetPage, { method: 'HEAD' })
-        .then(res => {
-          if (res.ok || res.status === 0) {
-            window.location.href = targetPage;
-          } else {
-            window.location.href = 'https://aidriving.co.kr/' + targetPage;
-          }
-        })
-        .catch(() => {
-          // index.html 파일 1개만 단독으로 가져왔을 때도 100% 무조건 온라인 주소로 자동 연결!
-          window.location.href = 'https://aidriving.co.kr/' + targetPage;
-        });
     }
 
     function startApp() {
