@@ -479,9 +479,14 @@
 
   <!-- 헤더 영역 -->
   <div class="dashboard-header">
-    <div class="header-logo">
-      <div class="logo-text">AI Driving Survey Hub</div>
-      <p class="subtitle-text">실시간 사전-사후 학생 자가진단 분석 전광판</p>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <a href="index.html?start=true" style="color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; background: rgba(255, 255, 255, 0.12); padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.2); display: inline-flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255, 255, 255, 0.25)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.12)'">
+        ⬅️ 메인 화면
+      </a>
+      <div class="header-logo">
+        <div class="logo-text">AI Driving Survey Hub</div>
+        <p class="subtitle-text">실시간 사전-사후 학생 자가진단 분석 전광판</p>
+      </div>
     </div>
     <div class="header-actions">
       <button class="control-btn" onclick="openQrModal()">
