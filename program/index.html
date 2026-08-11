@@ -104,34 +104,30 @@
     </div>
 
     <div class="container">
-      <a href="guide.html" class="card card-teacher">
+      <a href="guide.html" onclick="smartGo(event, 'guide.html')" class="card card-teacher">
         <div class="icon">👨‍🏫</div>
         <h2>교사용 가이드</h2>
         <p>수업 운영 매뉴얼, 구글 시트 연동 방식, TV 전광판 세팅, 평가 기준표를 확인하고 학생들의 전체 실습 데이터를 엑셀로 다운로드할 수 있습니다.</p>
         <div class="enter-text">수업 준비하기 ➡️</div>
       </a>
 
-      <a href="study_teacher.html" class="card card-learn">
+      <a href="study_teacher.html" onclick="smartGo(event, 'study_teacher.html')" class="card card-learn">
         <div class="icon">📖</div>
         <h2>학습 데이터 만들기</h2>
         <p>어노테이션(Annotation)의 개념과 올바른 작업 방법을 배우고, 실제 주행 동영상을 통해 AI 학습용 데이터를 구축하는 과정을 알아봅니다.</p>
         <div class="enter-text">데이터 학습 시작 ➡️</div>
       </a>
 
-      <a href="evaluation.html" class="card card-practice">
+      <a href="evaluation.html" onclick="smartGo(event, 'evaluation.html')" class="card card-practice">
         <div class="icon">🚀</div>
         <h2>실시간 자동 채점 및 코칭</h2>
         <p>교사가 스마트 패드로 주행 궤적을 촬영하면 AI가 즉시 분석해 차량별 성장 그래프와 1:1 맞춤형 피드백을 제공합니다.</p>
         <div class="enter-text">채점 및 결과 확인 ➡️</div>
       </a>
 
-      <a href="tv.html" class="card card-tv">
+      <a href="tv.html" onclick="smartGo(event, 'tv.html')" class="card card-tv">
         <div class="icon">📺</div>
         <h2>교실 TV 실시간 전광판</h2>
-        <p>교실 스마트 TV나 프로젝터 대화면에 띄워놓고 학생들의 실시간 자율주행 궤적 순위 및 점수를 모니터링할 수 있는 실시간 명예의 전당 보드입니다.</p>
-        <div class="enter-text">전광판 실행하기 (F11 전체화면) ➡️</div>
-      </a>
-
       <a href="dashboard.html" class="card card-excel">
         <div class="icon">📊</div>
         <h2>자율주행 평가 대시보드</h2>
@@ -164,6 +160,31 @@
         main.style.opacity = '1';
       }
     });
+
+    // 지능형 스마트 네비게이터 (index.html 단독 복사 시에는 온라인 https://aidriving.co.kr 로, 폴더 전체 시에는 로컬 파일로 자동 이동)
+    function smartGo(event, targetPage) {
+      if (event) event.preventDefault();
+      
+      // 온라인 웹사이트 상에서 실행된 경우는 상대 경로 이동
+      if (window.location.protocol !== 'file:') {
+        window.location.href = targetPage;
+        return;
+      }
+
+      // 내 컴퓨터 file:// 환경에서 로컬 파일 존재 여부 지능형 검사
+      fetch(targetPage, { method: 'HEAD' })
+        .then(res => {
+          if (res.ok || res.status === 0) {
+            window.location.href = targetPage;
+          } else {
+            window.location.href = 'https://aidriving.co.kr/' + targetPage;
+          }
+        })
+        .catch(() => {
+          // index.html 파일 1개만 단독으로 가져왔을 때도 100% 무조건 온라인 주소로 자동 연결!
+          window.location.href = 'https://aidriving.co.kr/' + targetPage;
+        });
+    }
 
     function startApp() {
       const cover = document.getElementById('coverPage');
