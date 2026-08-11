@@ -34,6 +34,61 @@
       --border: #e2e8f0;
     }
 
+    /* 동영상 플레이어 및 오류 fallback 스타일 */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .video-wrapper video {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      display: block;
+    }
+    .video-error-fallback {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      border-radius: 12px;
+      text-align: center;
+      padding: 20px;
+    }
+    .video-error-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      max-width: 480px;
+      color: #f8fafc;
+    }
+    .video-error-icon { font-size: 40px; }
+    .video-error-title { font-size: 1.1rem; font-weight: 700; color: #f87171; margin: 0; }
+    .video-error-desc { font-size: 0.9rem; color: #94a3b8; margin: 0; line-height: 1.5; }
+    .btn-select-video {
+      margin-top: 6px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-block;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    .btn-select-video:hover {
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      transform: translateY(-2px);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -940,15 +995,29 @@
         <p class="card-subtitle">아래 동영상을 감상하고 주행 트랙과 학습 목표를 이해해 봅시다.</p>
       </div>
 
-      <div class="video-wrapper">
-        <!-- 일반트랙.mp4 비디오 렌더링 -->
-        <video src="일반트랙.mp4" controls loop autoplay muted></video>
+      <div class="video-wrapper" style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 12px;">
+        <!-- track.mp4 동영상 비디오 렌더링 (로컬 track.mp4 + 표준 H.264 다중 소스) -->
+        <video id="mainTrackVideo" controls loop autoplay muted playsinline preload="auto" style="width: 100%; border-radius: 12px; display: block; cursor: pointer;" onclick="togglePlayVideo()">
+          <source src="track.mp4" type="video/mp4">
+          <source src="일반트랙.mp4" type="video/mp4">
+          <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+        </video>
         
-        <!-- 동영상 자막 설명 및 캐릭터 아바타 오버레이 -->
-        <div class="video-avatar-container" id="videoCaptionOverlay">
-          <div class="mentor-avatar" id="mentorAvatar">🤖</div>
-          <div class="video-caption-overlay" id="captionText">로딩 중...</div>
+        <!-- 동영상 자막 설명 및 캐릭터 아바타 오버레이 (하단 중앙 완벽 정렬) -->
+        <div class="video-avatar-container" id="videoCaptionOverlay" style="pointer-events: none; position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; justify-content: center; gap: 10px; width: 90%; max-width: 650px;">
+          <div class="mentor-avatar" id="mentorAvatar" style="font-size: 24px; flex-shrink: 0; background: #ffffff; padding: 6px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">🤖</div>
+          <div class="video-caption-overlay" id="captionText" style="background: rgba(254, 240, 138, 0.95); color: #0f172a; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; line-height: 1.4; border: 1.5px solid #fde047; box-shadow: 0 4px 15px rgba(0,0,0,0.25); text-align: center; word-break: keep-all; flex-grow: 1;">동영상을 시청하며 주행 트랙의 곡선과 직선 형태를 확인하세요!</div>
         </div>
+      </div>
+
+      <!-- 동영상 수동 조작 보조 컨트롤 바 -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button type="button" onclick="togglePlayVideo()" style="background: #2563eb; color: #ffffff; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
+          ▶️ 동영상 재생 / ⏸️ 일시정지
+        </button>
+        <button type="button" onclick="reloadVideo()" style="background: #475569; color: #ffffff; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px;">
+          🔄 동영상 다시 로드
+        </button>
       </div>
 
       <div class="goal-box">
@@ -1795,6 +1864,27 @@
       speechSynthesis.onvoiceschanged = () => {
         // 음성 캐시 로딩 대응
       };
+    }
+
+    // 동영상 수동 재생/일시정지 토글 함수
+    function togglePlayVideo() {
+      const video = document.getElementById('mainTrackVideo');
+      if (video) {
+        if (video.paused) {
+          video.play().catch(err => console.log('재생시도 차단 방지:', err));
+        } else {
+          video.pause();
+        }
+      }
+    }
+
+    // 동영상 다시 로드 함수
+    function reloadVideo() {
+      const video = document.getElementById('mainTrackVideo');
+      if (video) {
+        video.load();
+        video.play().catch(err => console.log('재생시도 차단 방지:', err));
+      }
     }
 
     // 5초 간격으로 모바일 퀴즈 결과 동적 갱신 폴링 및 최초 1회 실행
