@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>AI 드라이빙 멘토</title>
   <style>
     /* 기본 배경 및 폰트 설정 */
@@ -13,7 +16,7 @@
       background-color: #f1f5f9; 
       margin: 0; 
       padding: 0; 
-      color: #333;
+      color: #333; 
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
@@ -127,7 +130,7 @@
     }
     .header h1 { 
       margin: 0; 
-      font-size: 50px; 
+      font-size: 52px; 
       font-weight: 900; 
       letter-spacing: -1.2px; 
       text-shadow: 0 2px 8px rgba(0,0,0,0.3); 
@@ -135,26 +138,26 @@
     .header p { 
       margin-top: 8px; 
       margin-bottom: 0; 
-      font-size: 21px; 
+      font-size: 23px; 
       color: #93c5fd; 
       font-weight: 600; 
       letter-spacing: -0.3px; 
     }
     .container { 
-      max-width: 1600px; 
+      max-width: 1650px; 
       width: 100%;
       margin: -24px auto 0 auto; 
-      padding: 0 30px 24px 30px; 
+      padding: 0 32px 24px 32px; 
       display: grid; 
       grid-template-columns: repeat(3, 1fr); 
       grid-template-rows: repeat(2, 1fr); 
-      gap: 26px; 
+      gap: 28px; 
       box-sizing: border-box; 
       flex-grow: 1; 
     }
     .card { 
       background: white; 
-      border-radius: 24px; 
+      border-radius: 26px; 
       padding: 42px 34px 34px 34px; 
       text-align: center; 
       box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
@@ -164,13 +167,13 @@
       display: flex; 
       flex-direction: column; 
       justify-content: space-between;
-      border-top: 6px solid transparent; 
+      border-top: 7px solid transparent; 
       box-sizing: border-box; 
-      min-height: 240px;
+      min-height: 250px;
     }
     .card:hover { 
       transform: translateY(-8px); 
-      box-shadow: 0 18px 34px rgba(0,0,0,0.14); 
+      box-shadow: 0 20px 38px rgba(0,0,0,0.14); 
     }
     .card-teacher:hover { border-top-color: #64748b; }
     .card-learn:hover { border-top-color: #38bdf8; }
@@ -178,12 +181,12 @@
     .card-tv:hover { border-top-color: #fbbf24; }
     .card-excel:hover { border-top-color: #8b5cf6; }
     .card-survey:hover { border-top-color: #f472b6; }
-    .icon { font-size: 66px; margin-bottom: 14px; line-height: 1; }
-    .card h2 { margin: 0 0 12px 0; font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.8px; }
+    .icon { font-size: 96px; margin-bottom: 18px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+    .card h2 { margin: 0 0 16px 0; font-size: 36px; font-weight: 900; color: #0f172a; letter-spacing: -1.2px; }
     .card p { 
-      font-size: 17.5px; 
-      color: #334155; 
-      line-height: 1.7; 
+      font-size: 22px; 
+      color: #1e293b; 
+      line-height: 1.75; 
       flex-grow: 1; 
       word-break: keep-all; 
       margin: 0; 
@@ -191,22 +194,29 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: -0.4px;
     }
-    .enter-text { margin-top: 20px; font-weight: 800; font-size: 17.5px; padding: 14px 24px; border-radius: 13px; transition: background 0.3s; }
-    .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
-    .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
-    .card-practice .enter-text { color: #059669; background: #d1fae5; }
-    .card-tv .enter-text { color: #d97706; background: #fef3c7; }
-    .card-excel .enter-text { color: #7c3aed; background: #f3e8ff; }
-    .card-survey .enter-text { color: #db2777; background: #fdf2f8; }
-    .footer { text-align: center; padding: 8px; color: #94a3b8; font-size: 13px; margin-top: 5px; }
-    .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
-    .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
-    .card-practice .enter-text { color: #059669; background: #d1fae5; }
-    .card-tv .enter-text { color: #d97706; background: #fef3c7; }
-    .card-excel .enter-text { color: #7c3aed; background: #f3e8ff; }
-    .card-survey .enter-text { color: #db2777; background: #fdf2f8; }
+    .enter-text { 
+      margin-top: 24px; 
+      font-weight: 800; 
+      font-size: 22px; 
+      padding: 18px 36px; 
+      border-radius: 18px; 
+      transition: all 0.25s; 
+      letter-spacing: -0.4px;
+      display: inline-block;
+    }
+    .card-teacher .enter-text { color: #334155; background: #e2e8f0; }
+    .card-learn .enter-text { color: #0369a1; background: #e0f2fe; }
+    .card-practice .enter-text { color: #047857; background: #d1fae5; }
+    .card-tv .enter-text { color: #b45309; background: #fef3c7; }
+    .card-excel .enter-text { color: #6d28d9; background: #ede9fe; }
+    .card-survey .enter-text { color: #be185d; background: #fce7f3; }
+    .card:hover .enter-text {
+      transform: scale(1.03);
+      filter: brightness(0.96);
+    }
     .footer { text-align: center; padding: 8px; color: #94a3b8; font-size: 13px; margin-top: 5px; }
 
     @media (max-width: 1100px) {
