@@ -19,26 +19,32 @@
       line-height: 1.8; 
     }
     
-    /* 상단 헤더 */
+    /* 상단 헤더: 슬림화 및 상단 고정(Sticky) */
     .header { 
       background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); 
       color: white; 
       text-align: center; 
-      padding: 60px 20px; 
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); 
-      position: relative; 
+      padding: 16px 24px; 
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); 
+      position: sticky; 
+      top: 0; 
+      z-index: 1000; 
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     .header h1 { 
       margin: 0; 
-      font-size: 2.3rem; 
+      font-size: 1.7rem; 
       font-weight: 900;
-      letter-spacing: -1.5px; 
+      letter-spacing: -1px; 
+      line-height: 1.2;
     }
     
     .header p { 
-      margin-top: 14px; 
-      font-size: 1.15rem; 
+      margin-top: 5px; 
+      margin-bottom: 0;
+      font-size: 0.95rem; 
       color: #93c5fd; 
       font-weight: 500;
     }
@@ -51,15 +57,15 @@
       transform: translateY(-50%);
       color: #cbd5e1;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
       background: rgba(255, 255, 255, 0.08);
-      padding: 10px 20px;
-      border-radius: 30px;
+      padding: 8px 18px;
+      border-radius: 25px;
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
     
@@ -71,13 +77,21 @@
 
     @media (max-width: 768px) {
       .header {
-        padding: 40px 20px;
+        padding: 12px 16px;
+      }
+      .header h1 {
+        font-size: 1.3rem;
+      }
+      .header p {
+        font-size: 0.85rem;
       }
       .back-link {
         position: static;
         transform: none;
         display: inline-flex;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        padding: 6px 14px;
+        font-size: 0.8rem;
       }
       .back-link:hover {
         transform: scale(1.03);
@@ -87,7 +101,7 @@
     /* 본문 컨테이너 */
     .container { 
       max-width: 900px; 
-      margin: -30px auto 80px auto; 
+      margin: 35px auto 80px auto; 
       background: white; 
       padding: 50px; 
       border-radius: 24px; 
@@ -158,6 +172,26 @@
       font-weight: 600;
     }
     
+    /* 가이드 이미지 스타일 */
+    .guide-img-box {
+      margin: 18px 0 10px 0;
+      text-align: center;
+    }
+    .guide-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      box-sizing: border-box;
+    }
+    .img-caption {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
     /* 돌아가기 버튼 */
     .back-btn { 
       display: inline-flex; 
@@ -184,77 +218,134 @@
 
   <div class="header">
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
-    <h1>👨‍🏫 처음 만나는 AI 드라이빙 멘토</h1>
-    <p>선생님을 위한 자율주행 모바일 수업 준비 및 단계별 작동 가이드</p>
+    <h1>👨‍🏫 교사용 수업 가이드</h1>
+    <p>수업 준비부터 평가 및 데이터 수합까지 지원하는 4단계 통합 운영 매뉴얼</p>
   </div>
 
   <div class="container">
     
     <div class="highlight-tip" style="margin-top: 0;">
-      💡 이 가이드는 "AI 드라이빙 멘토" 어플리케이션을 처음 실행하고 수업에 적용하려는 선생님을 위해 쓰인 왕초보용 안내서입니다. 순서대로만 따라 하시면 5분 만에 수업 준비가 끝납니다!
+      💡 본 가이드는 고등학교 [인공지능 모델학습] 교과에서 교사가 자율주행 교육을 원활하게 운영할 수 있도록 돕는 단계별 안내서입니다. 별도의 프로그램 설치 없이 웹 브라우저만으로 <strong>수업 준비 ➔ 학생 접속 ➔ AI 채점 ➔ 결과 다운로드</strong>의 4단계 과정을 직관적으로 운영할 수 있습니다.
     </div>
 
-    <h2>🛠️ 1단계: 수업 시작 전 5분 세팅 (선생님 화면 준비)</h2>
-    <p>교실 스마트 TV(또는 스크린 프로젝터)와 교사 태블릿(또는 노트북)에 화면을 미리 띄워둡니다.</p>
+    <!-- 1단계 -->
+    <h2>🛠️ 1단계: 수업 준비 (교실 화면 및 교사용 기기 세팅)</h2>
+    <p>수업 시작 전 교실 스마트 TV(또는 스크린 프로젝터)와 교사용 스마트 기기(태블릿 또는 노트북)에 화면을 미리 준비합니다.</p>
     
     <div class="step-box">
-      <div class="step-title">🖥️ 1. 교실 큰 화면(스마트 TV)에 전광판 켜두기</div>
+      <div class="step-title">🖥️ 1. 교실 TV 실시간 전광판 켜두기</div>
       <ul>
-        <li>메인 화면에서 <b>[실시간 분석 전광판]</b> 버튼을 누르거나, <a href="tv.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">tv.html</a> 링크를 열어 교실 큰 화면에 띄워 둡니다.</li>
-        <li>키보드의 <b>F11</b>을 누르면 화면에 꽉 차는 풀스크린으로 멋지게 연출할 수 있습니다.</li>
+        <li>메인 화면에서 <b>[교실 TV 실시간 전광판]</b>을 선택하거나, <a href="tv.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">tv.html</a> 링크를 교실 대형 화면에 송출합니다.</li>
+        <li>키보드의 <b>F11</b>을 누르면 화면 전체를 가득 채우는 풀스크린 모드로 몰입도 높은 교실 환경을 조성할 수 있습니다.</li>
       </ul>
-    </div>
-
-    <div class="step-box">
-      <div class="step-title">📱 2. 교사 손 안의 평가용 카메라 켜두기</div>
-      <ul>
-        <li>선생님의 스마트폰이나 태블릿에서 메인 화면의 <b>[주행 궤적 자동 채점]</b> 버튼을 누르거나, <a href="evaluation.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">evaluation.html</a> 링크를 켜둡니다.</li>
-        <li>이 화면은 나중에 아이들이 실습실에서 가동시킨 모형차의 주행 궤적 사진을 촬영하여 AI로 자동 채점할 때 쓰입니다.</li>
-      </ul>
-    </div>
-
-    <h2>🏎️ 2단계: 학생들이 실습 사이트에 접속하게 하기</h2>
-    <p>학생들의 스마트 기기(태블릿/스마트폰)를 켜고 실습 사이트에 참가시킵니다.</p>
-    
-    <div class="step-box">
-      <div class="step-title">🔗 학생들이 스캔할 QR 코드 띄워주기</div>
-      <ul>
-        <li>교실 TV에 띄워둔 전광판 상단을 보면 학생 접속용 QR 코드가 3종류 비치되어 있습니다.</li>
-        <li><b>[사전 설문 QR]</b>을 클릭하면 교실 맨 뒤의 학생들도 스캔하기 편하게 화면 중앙에 QR 코드가 대형 돋보기 모달로 확대됩니다.</li>
-        <li>학생들에게 태블릿으로 스캔하여 <b>[사전 진단 설문조사]</b>를 제출하게 유도한 후, 순서대로 <b>[연습실 접속 QR]</b>을 찍고 실습에 접속하도록 안내합니다.</li>
-      </ul>
-    </div>
-
-    <h2>📸 3단계: AI로 주행 궤적 촬영 및 실시간 채점하기</h2>
-    <p>수업 중에 학생들이 실습실에서 조향 코드를 튜닝해 만든 모형차의 궤적을 AI 비전 센서로 평가해 봅니다.</p>
-
-    <div class="step-box">
-      <div class="step-title">🔍 AI 자동 채점기(evaluation.html) 작동법</div>
-      <ul>
-        <li><b>1단계 (소속 기수 입력):</b> 왼쪽 입력창에 소속 기수(예: 1기수)를 적습니다.</li>
-        <li><b>2단계 (차량번호 선택):</b> 현재 평가하려는 조의 모형차 번호(1~20번)를 드롭다운 목록에서 선택합니다.</li>
-        <li><b>3단계 (채점 및 전송):</b> 
-          <ul>
-            <li><b>사진 직접 촬영:</b> [실시간 사진 찍어 채점하기] 파란 점선 박스를 눌러 스마트패드 카메라로 학생의 주행 코스를 직접 찰칵 촬영합니다.</li>
-            <li><b>시연 및 예시 구동:</b> 하단 회색 박스 안의 <b>[1~15번차]</b> 즉석 시연 단추를 누르면 미리 적재된 학생용 주행 궤적 이미지를 활용해 시연 채점을 실행해 보실 수 있습니다.</li>
-          </ul>
-        </li>
-      </ul>
-      <div class="highlight-tip" style="margin-bottom: 0;">
-        💡 채점 버튼을 누르면 AI가 차선을 매칭하여 정확도를 판단한 뒤 점수를 화면 우측에 시각화해 줍니다. 동시에 인공지능이 채점 보고서와 합격/불합격 판정 멘트를 한국어 TTS 음성으로 생생하게 소리 내어 읽어줍니다!
+      <div class="guide-img-box">
+        <img src="picture/guide_step1.png" alt="1단계 교실 TV 실시간 전광판 화면설계" class="guide-img">
+        <div class="img-caption">▲ [1단계 화면설계] 교실 대형 화면(스마트 TV)에 송출하는 실시간 전광판 (tv.html)</div>
       </div>
     </div>
 
-    <h2>🏆 4단계: 리더보드 순위 시상 및 데이터 다운로드</h2>
-    <p>모든 채점 기록과 설문 데이터는 구글 스프레드시트에 완전히 분리 보관되어 안전하게 보존됩니다.</p>
+    <div class="step-box">
+      <div class="step-title">📱 2. 교사용 실시간 AI 자동 채점기 실행</div>
+      <ul>
+        <li>교사의 태블릿 또는 스마트폰에서 메인 화면의 <b>[실시간 자동 채점 및 코칭]</b> 버튼을 누르거나, <a href="evaluation.html" target="_blank" style="color: #2563eb; font-weight: bold; text-decoration: underline;">evaluation.html</a> 화면을 실행합니다.</li>
+        <li>학생들이 실습 트랙에서 주행시킨 모형차의 주행 궤적을 즉시 촬영하여 AI 컴퓨터 비전으로 자동 채점할 준비를 마칩니다.</li>
+      </ul>
+    </div>
+
+    <!-- 2단계 -->
+    <h2>🏎️ 2단계: 학생 접속 (QR 코드 실습실 입장 및 사전 설문)</h2>
+    <p>학생들의 스마트 기기(태블릿/스마트폰)를 활용하여 실습 플랫폼에 접속하고 사전 역량 진단을 실시합니다.</p>
     
     <div class="step-box">
-      <div class="step-title">📊 결과 피드백 및 수행평가 수합</div>
+      <div class="step-title">🔗 QR 코드를 활용한 간편 접속 안내</div>
       <ul>
-        <li>교실 TV에 띄워둔 전광판(tv.html)에는 학생들의 퀴즈 제출 성취도와 함께, 주행 점수가 가장 높고 우수한 차량 1~3위가 실시간 **내림차순 정렬**되어 실시간으로 명예의 전당에 연출됩니다. *(설문 데이터는 자동으로 필터링 제외되어 안심하셔도 됩니다)*</li>
-        <li>수업이 모두 종료되면 우측 상단의 <b>[구글 시트 기록판 열기]</b>를 클릭하여 저장된 엑셀 데이터를 확인합니다.</li>
-        <li>구글 시트 상단의 <code>[파일] ➡️ [다운로드] ➡️ [CSV(쉼표로 구분된 값)]</code>을 클릭하여 엑셀 파일로 소장하면, 나이스(NEIS) 수행평가 성적 처리에 곧바로 편안하게 활용하실 수 있습니다!</li>
+        <li>교실 TV 전광판 상단에 비치된 <b>학생 접속용 QR 코드</b>를 학생들에게 안내합니다.</li>
+        <li><b>[사전 설문 QR]:</b> 대형 돋보기 모달로 확대 띄워 학생 전원이 <b>사전 자율주행 5대 역량 자가진단 평가</b>를 제출하도록 지도합니다.</li>
+        <li><b>[학습실 접속 QR]:</b> 사전 설문 완료 후 학생들이 개별 기기로 <b>가상 실습실</b>에 접속하여 트랙 영상 시청 및 데이터 어노테이션 실습을 진행하도록 합니다.</li>
       </ul>
+      <div class="guide-img-box">
+        <img src="picture/guide_step2.png" alt="2단계 스마트 기기 가상 실습실 화면설계" class="guide-img">
+        <div class="img-caption">▲ [2단계 화면설계] 학생들이 스마트 기기로 접속하는 조향 제어 가상 실습실 (study_student.html)</div>
+      </div>
+    </div>
+
+    <!-- 3단계 -->
+    <h2>📸 3단계: AI 채점 (컴퓨터 비전 궤적 분석 및 실시간 음성 코칭)</h2>
+    <p>학생들이 어노테이션(데이터 가공)을 거쳐 이식한 모형차의 실제 주행 궤적을 AI 비전 기술로 정량 분석합니다.</p>
+
+    <div class="step-box">
+      <div class="step-title">🔍 AI 자동 채점기(evaluation.html) 평가 절차</div>
+      <ul>
+        <li><b>1. 소속 정보 입력:</b> 평가 대상 학급 및 기수 정보를 확인합니다.</li>
+        <li><b>2. 차량 번호 선택:</b> 채점할 학생 조의 모형차 번호(1~20번)를 드롭다운 목록에서 선택합니다.</li>
+        <li><b>3. 주행 사진 촬영:</b> <b>[실시간 사진 찍어 채점하기]</b> 버튼을 눌러 모형차의 주행 트랙 코스를 카메라로 촬영합니다. (시연 수업 시에는 번호별 예시 이미지 버튼 활용 가능)</li>
+      </ul>
+      <div class="highlight-tip" style="margin-bottom: 14px;">
+        💡 <b>AI 정밀 분석 및 음성 코칭:</b> 인공지능이 기준 주행선과 차량 위치 사이의 물리적 거리를 픽셀 단위로 정밀 측정하여 정확도를 산출하며, 맞춤형 음성 피드백(TTS)으로 학생에게 개선점을 즉시 안내합니다.
+      </div>
+      <div class="guide-img-box">
+        <img src="picture/guide_step3.png" alt="3단계 AI 주행 궤적 정밀 분석 및 음성 코칭 화면설계" class="guide-img">
+        <div class="img-caption">▲ [3단계 화면설계] AI 컴퓨터 비전 주행 궤적 정밀 분석 및 실시간 음성 코칭 채점 (evaluation.html)</div>
+      </div>
+    </div>
+
+    <!-- 4단계 -->
+    <h2>🏆 4단계: 결과 다운로드 (실시간 순위표 확인 및 구글 시트 데이터 수합)</h2>
+    <p>모든 주행 평가 기록과 설문 데이터는 구글 스프레드시트에 실시간 자동 누적되어 수업-평가 일체화를 실현합니다.</p>
+    
+    <div class="step-box">
+      <div class="step-title">📊 실시간 명예의 전당 전광판 및 데이터 관리</div>
+      <ul>
+        <li><b>실시간 명예의 전당 송출:</b> 교실 TV 전광판에 차량별 완주 최고 정확도 순위표가 실시간 집계되어 학생들의 성취 동기를 고취합니다.</li>
+        <li><b>구글 스프레드시트 자동 누적:</b> 교사는 전광판 상단의 <b>[구글 시트 기록판 열기]</b>를 클릭하여 전체 누적 데이터를 실시간 확인합니다.</li>
+        <li><b>평가 데이터 다운로드:</b> 구글 시트의 <code>[파일] ➡️ [다운로드] ➡️ [Microsoft Excel(.xlsx)]</code>을 통해 학생들의 과정 중심 수행평가 및 생활기록부 작성 근거 자료로 즉시 활용할 수 있습니다.</li>
+        <li><b>사후 설문 및 성장 분석:</b> 수업 종료 전 <b>[사후 설문 QR]</b>을 통해 학생들의 역량 성장 곡선과 수업 만족도를 종합 분석합니다.</li>
+      </ul>
+      <div class="guide-img-box">
+        <img src="picture/guide_step4.png" alt="4단계 자율주행 AI 평가 대시보드 화면설계" class="guide-img">
+        <div class="img-caption">▲ [4단계 화면설계] 차량별 최고 정확도 꺾은선 그래프 및 종합 평가 대시보드 (dashboard.html)</div>
+      </div>
+    </div>
+
+    <!-- 교수학습 과정안 요약 -->
+    <h2>📋 [참고] 표준 교수·학습 과정안 (1차시 50분 기준)</h2>
+    <div style="overflow-x: auto; margin-top: 15px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left;">
+        <thead>
+          <tr style="background-color: #1e3a8a; color: white;">
+            <th style="padding: 12px 14px; border: 1px solid #cbd5e1; width: 15%;">단계(시간)</th>
+            <th style="padding: 12px 14px; border: 1px solid #cbd5e1; width: 55%;">교수·학습 활동 내용</th>
+            <th style="padding: 12px 14px; border: 1px solid #cbd5e1; width: 30%;">활용 소프트웨어/기능</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; font-weight: bold; color: #1e40af;">도입 (10분)</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0;">비전 센서 인식 오류 영상 시청, 자율주행 제어 사전 역량 설문조사, 학습 목표 제시 및 플랫폼 안내</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; color: #475569;">전광판 사전 설문 QR</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; font-weight: bold; color: #1e40af;">전개 1 (15분)</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0;">어노테이션 개념 학습, 가상 주행 도로(직진·곡선)에 따른 조향각 조절 방법 학습 및 데이터 가공 실습</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; color: #475569;">학습 데이터 만들기<br>(study_teacher.html)</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; font-weight: bold; color: #1e40af;">전개 2 (10분)</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0;">가공한 어노테이션 데이터를 자율주행 모형차에 이식하고 실제 트랙 위에 올려 주행 시험</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; color: #475569;">실제 실습 트랙 및 모형차</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; font-weight: bold; color: #1e40af;">전개 3 (10분)</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0;">교사 스마트 기기로 주행 궤적 촬영, 실시간 AI 비전 정밀 채점 및 음성 코칭 확인</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; color: #475569;">실시간 자동 채점기<br>(evaluation.html)</td>
+          </tr>
+          <tr style="background-color: #f8fafc;">
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; font-weight: bold; color: #1e40af;">정리 (5분)</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0;">구글 시트에 누적된 기록을 교실 TV 전광판으로 확인, 사후 설문조사를 통한 학습 성장도 분석</td>
+            <td style="padding: 12px 14px; border: 1px solid #e2e8f0; color: #475569;">교실 TV 실시간 전광판<br>평가 대시보드 및 설문조사</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <a href="index.html?start=true" class="back-btn">⬅️ 메인으로 돌아가기</a>
