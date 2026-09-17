@@ -115,16 +115,19 @@
       letter-spacing: -0.4px;
     }
     
-    /* 상단 네비게이션 헤더 */
+    /* 상단 네비게이션 헤더 (스크롤 시 상단 고정) */
     .app-header {
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       color: white;
-      padding: 22px 28px;
+      padding: 20px 28px;
       text-align: center;
-      position: relative;
-      z-index: 100;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
 
     .app-header h1 {
@@ -169,6 +172,33 @@
       color: white;
       background: rgba(255, 255, 255, 0.22);
       transform: translateY(-50%) scale(1.03);
+    }
+
+    /* 다음 단계 버튼 (오른쪽 상단) */
+    .next-link {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .next-link:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transform: translateY(-50%) scale(1.03);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
     
     /* 메인 컨테이너 */
@@ -387,44 +417,26 @@
 
     .goal-box {
       background: rgba(37, 99, 235, 0.12);
-          /* 2단계: 개념 카드 UI 및 클릭 인터랙션 */
-    .concept-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
+      border-left: 6px solid var(--primary);
+      padding: 24px 28px;
+      border-radius: 16px;
+      margin-top: 14px;
     }
 
-    .concept-card {
-      background: rgba(15, 23, 42, 0.45);
-      border: 1.5px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 28px 26px 44px 26px;
-      transition: all 0.3s;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .concept-card:hover {
-      border-color: rgba(96, 165, 250, 0.5);
-      transform: translateY(-3px);
-      background: rgba(15, 23, 42, 0.65);
-    }
-
-    .concept-card h3 {
-      font-size: 1.45rem;
+    .goal-box h3 {
       color: #60a5fa;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
     }
 
-    .concept-card p {
-      font-size: 1.18rem;
+    .goal-box p {
       color: #e2e8f0;
+      font-size: 1.18rem;
       line-height: 1.85;
       word-break: keep-all;
+      letter-spacing: -0.4px;
     }
 
     .concept-highlight {
@@ -975,6 +987,7 @@
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>🚗 자율주행 어노테이션 학습관</h1>
     <p>주행 트랙을 확인하고 어노테이션 실습과 퀴즈를 거치며 데이터 라벨러로 거듭나 보세요. (고등학교 2학년 대상)</p>
+    <a href="evaluation.html" class="next-link">다음 단계: 실시간 AI 채점 및 코칭 ➡️</a>
   </header>
 
   <main class="main-container">
@@ -1405,11 +1418,14 @@
       const qrLinkText = document.getElementById('qrLinkText');
       if (!qrModal || !qrCodeImg || !qrLinkText) return;
 
-      // 현재 파일명이 들어있는 경로를 추출하여 study_student.html 경로를 동적으로 합성
+      // 현재 환경에 맞춰 대상 URL을 동적으로 결정 (로컬 실행 시에도 온라인 접속 가능하도록 폴백)
       const currentUrl = window.location.href;
-      let targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/study_student.html';
+      let targetUrl = "https://aidriving.co.kr/study_student.html";
+      if (window.location.protocol.startsWith('http')) {
+        targetUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/study_student.html';
+      }
       
-      // 모바일 실습 전용 URL 정보 업데이트 및 구글 QR API 매핑
+      // 모바일 실습 전용 URL 정보 업데이트 및 구글/QR API 매핑
       qrLinkText.innerText = targetUrl;
       qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(targetUrl)}`;
       
