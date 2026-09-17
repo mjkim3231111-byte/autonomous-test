@@ -109,32 +109,92 @@
     }
 
     /* 2. 메인 카드 스타일 */
-    #mainContent { display: none; opacity: 0; transition: opacity 0.8s ease-in; }
-    .header { background-color: #002D62; color: white; text-align: center; padding: 50px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .header h1 { margin: 0; font-size: 36px; letter-spacing: -1px; }
-    .header p { margin-top: 15px; font-size: 18px; color: #94a3b8; }
-    .container { max-width: 1100px; margin: -30px auto 50px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-    .card { background: white; border-radius: 15px; padding: 40px 30px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; text-decoration: none; color: inherit; display: flex; flex-direction: column; border-top: 5px solid transparent; }
-    .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    #mainContent { display: none; opacity: 0; transition: opacity 0.8s ease-in; min-height: 100vh; box-sizing: border-box; }
+    .header { 
+      background: linear-gradient(180deg, #00224d 0%, #002D62 100%); 
+      color: white; 
+      text-align: center; 
+      padding: 28px 20px 48px 20px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    }
+    .header h1 { 
+      margin: 0; 
+      font-size: 48px; 
+      font-weight: 900; 
+      letter-spacing: -1.2px; 
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3); 
+    }
+    .header p { 
+      margin-top: 8px; 
+      margin-bottom: 0; 
+      font-size: 20px; 
+      color: #93c5fd; 
+      font-weight: 600; 
+      letter-spacing: -0.3px; 
+    }
+    .container { 
+      max-width: 1560px; 
+      margin: -20px auto 30px auto; 
+      padding: 0 30px; 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 26px; 
+      box-sizing: border-box; 
+    }
+    .card { 
+      background: white; 
+      border-radius: 22px; 
+      padding: 44px 32px 38px 32px; 
+      text-align: center; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+      text-decoration: none; 
+      color: inherit; 
+      display: flex; 
+      flex-direction: column; 
+      border-top: 5px solid transparent; 
+      box-sizing: border-box; 
+    }
+    .card:hover { 
+      transform: translateY(-8px); 
+      box-shadow: 0 18px 34px rgba(0,0,0,0.14); 
+    }
     .card-teacher:hover { border-top-color: #64748b; }
     .card-learn:hover { border-top-color: #38bdf8; }
     .card-practice:hover { border-top-color: #10b981; }
     .card-tv:hover { border-top-color: #fbbf24; }
     .card-excel:hover { border-top-color: #8b5cf6; }
     .card-survey:hover { border-top-color: #f472b6; }
-    .icon { font-size: 60px; margin-bottom: 20px; }
-    .card h2 { margin: 0 0 15px 0; font-size: 24px; color: #0f172a; }
-    .card p { font-size: 15px; color: #64748b; line-height: 1.6; flex-grow: 1; word-break: keep-all; }
-    .enter-text { margin-top: 25px; font-weight: bold; font-size: 16px; padding: 10px; border-radius: 8px; transition: background 0.3s; }
+    .icon { font-size: 58px; margin-bottom: 15px; line-height: 1; }
+    .card h2 { margin: 0 0 12px 0; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+    .card p { 
+      font-size: 16px; 
+      color: #475569; 
+      line-height: 1.68; 
+      flex-grow: 1; 
+      word-break: keep-all; 
+      margin: 0; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .enter-text { margin-top: 22px; font-weight: 700; font-size: 16px; padding: 12px 20px; border-radius: 11px; transition: background 0.3s; }
     .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
     .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
     .card-practice .enter-text { color: #059669; background: #d1fae5; }
     .card-tv .enter-text { color: #d97706; background: #fef3c7; }
     .card-excel .enter-text { color: #7c3aed; background: #f3e8ff; }
     .card-survey .enter-text { color: #db2777; background: #fdf2f8; }
-    .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 14px; margin-top: 40px; }
+    .footer { text-align: center; padding: 8px; color: #94a3b8; font-size: 13px; margin-top: 5px; }
 
+    @media (max-width: 1100px) {
+      .container { grid-template-columns: repeat(2, 1fr); margin-top: -16px; }
+    }
     @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; margin-top: -10px; padding: 0 16px; }
+      .header { padding: 20px 16px 30px 16px; }
+      .header h1 { font-size: 32px; }
       .cover-content { padding: 35px 25px; border-radius: 20px; }
       .cover-content h1 { font-size: 38px; }
       .cover-content .subtitle { font-size: 18px; }
@@ -164,59 +224,52 @@
 
   <div id="mainContent">
     <div class="header">
-      <h1>🏎️ AI 드라이빙 멘토</h1>
+      <h1><span style="display: inline-block;">🏎️</span> AI 드라이빙 멘토 <span style="display: inline-block; transform: scaleX(-1);">🏎️</span></h1>
       <p>자율 주행 자동차의 차선인식 배워보기</p>
-      <div style="display: inline-block; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #cbd5e1; padding: 4px 14px; border-radius: 20px; font-size: 13.5px; font-weight: 600; margin-top: 10px;">
-        🚗 대상 학년: 고등학교 2학년
-      </div>
     </div>
 
     <div class="container">
       <a href="guide.html" onclick="smartGo(event, 'guide.html')" class="card card-teacher">
         <div class="icon">👨‍🏫</div>
         <h2>교사용 가이드</h2>
-        <p>수업 운영 매뉴얼, 구글 시트 연동 방식, TV 전광판 세팅, 평가 기준표를 확인하고 학생들의 전체 실습 데이터를 엑셀로 다운로드할 수 있습니다.</p>
+        <p>수업 준비부터 AI 채점, 결과 다운로드까지 수업-평가 4단계 안내서로 교사의 수업 운영을 지원합니다.</p>
         <div class="enter-text">수업 준비하기 ➡️</div>
       </a>
 
       <a href="study_teacher.html" onclick="smartGo(event, 'study_teacher.html')" class="card card-learn">
         <div class="icon">📖</div>
         <h2>학습 데이터 만들기</h2>
-        <p>어노테이션(Annotation)의 개념과 올바른 작업 방법을 배우고, 실제 주행 동영상을 통해 AI 학습용 데이터를 구축하는 과정을 알아봅니다.</p>
+        <p>데이터 가공(어노테이션)의 개념을 배우고, 주행 영상과 가상 실습실을 통해 코스별 조향각 조절 및 이해도 퀴즈를 진행합니다.</p>
         <div class="enter-text">데이터 학습 시작 ➡️</div>
       </a>
 
       <a href="evaluation.html" onclick="smartGo(event, 'evaluation.html')" class="card card-practice">
         <div class="icon">🚀</div>
         <h2>실시간 자동 채점 및 코칭</h2>
-        <p>교사가 스마트 패드로 주행 궤적을 촬영하면 AI가 즉시 분석해 차량별 성장 그래프와 1:1 맞춤형 피드백을 제공합니다.</p>
+        <p>스마트 기기로 주행 사진을 촬영하면 AI 컴퓨터 비전이 주행 궤적을 실시간 정밀 분석하여 맞춤형 음성 피드백을 제공합니다.</p>
         <div class="enter-text">채점 및 결과 확인 ➡️</div>
       </a>
 
       <a href="tv.html" onclick="smartGo(event, 'tv.html')" class="card card-tv">
         <div class="icon">📺</div>
         <h2>교실 TV 실시간 전광판</h2>
-        <p>대형 모니터나 TV 화면에 송출하는 5대 핵심 역량 실시간 통계 및 실습 랭킹 명예의 전당 전광판입니다.</p>
+        <p>교실 대형 화면이나 TV에 실시간 명예의 전당 순위표를 송출하여 학생들의 성취 동기를 높이고 역동적인 참여 환경을 조성합니다.</p>
         <div class="enter-text">전광판 열기 ➡️</div>
       </a>
 
       <a href="dashboard.html" onclick="smartGo(event, 'dashboard.html')" class="card card-excel">
         <div class="icon">📊</div>
         <h2>자율주행 평가 대시보드</h2>
-        <p>주행 결과 엑셀 데이터 파일(.xlsx)을 업로드하여 차량별 완주 최고 정확도 랭킹과 회차별 성장 곡선 차트 등 분석 지표를 입체적으로 모니터링합니다.</p>
+        <p>차량별 최고 주행 정확도 꺾은선 그래프와 원본 데이터를 시각화하여 학생들의 성장 곡선과 성취도를 분석합니다.</p>
         <div class="enter-text">대시보드 보기 ➡️</div>
       </a>
 
       <a href="survey_teacher.html" onclick="smartGo(event, 'survey_teacher.html')" class="card card-survey">
         <div class="icon">📋</div>
         <h2>설문조사 및 역량 진단</h2>
-        <p>학생들의 실습 전/후 자율주행 사전-사후 역량 자가진단 평가와 교사용 교육 프로그램 수업 만족도 조사를 실시간 통합 수합하고 시각화합니다.</p>
+        <p>자율주행 사전·사후 5대 역량 자가진단 평가와 교사용 수업 만족도 조사를 구글 시트와 연동하여 실시간으로 수합·분석합니다.</p>
         <div class="enter-text">설문 참여하기 ➡️</div>
       </a>
-    </div>
-
-    <div class="footer">
-      © 2026 AI 드라이빙 멘토 프로젝트
     </div>
   </div>
 
