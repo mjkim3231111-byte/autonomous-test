@@ -109,42 +109,53 @@
     }
 
     /* 2. 메인 카드 스타일 */
-    #mainContent { display: none; opacity: 0; transition: opacity 0.8s ease-in; min-height: 100vh; box-sizing: border-box; }
+    #mainContent { 
+      display: none; 
+      opacity: 0; 
+      transition: opacity 0.8s ease-in; 
+      min-height: 100vh; 
+      box-sizing: border-box; 
+      flex-direction: column;
+    }
     .header { 
       background: linear-gradient(180deg, #00224d 0%, #002D62 100%); 
       color: white; 
       text-align: center; 
-      padding: 28px 20px 48px 20px; 
+      padding: 24px 20px 42px 20px; 
       box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+      flex-shrink: 0;
     }
     .header h1 { 
       margin: 0; 
-      font-size: 48px; 
+      font-size: 46px; 
       font-weight: 900; 
       letter-spacing: -1.2px; 
       text-shadow: 0 2px 8px rgba(0,0,0,0.3); 
     }
     .header p { 
-      margin-top: 8px; 
+      margin-top: 6px; 
       margin-bottom: 0; 
-      font-size: 20px; 
+      font-size: 19px; 
       color: #93c5fd; 
       font-weight: 600; 
       letter-spacing: -0.3px; 
     }
     .container { 
       max-width: 1560px; 
-      margin: -20px auto 30px auto; 
-      padding: 0 30px; 
+      width: 100%;
+      margin: -24px auto 0 auto; 
+      padding: 0 30px 24px 30px; 
       display: grid; 
       grid-template-columns: repeat(3, 1fr); 
-      gap: 26px; 
+      grid-template-rows: repeat(2, 1fr); 
+      gap: 24px; 
       box-sizing: border-box; 
+      flex-grow: 1; 
     }
     .card { 
       background: white; 
       border-radius: 22px; 
-      padding: 44px 32px 38px 32px; 
+      padding: 36px 30px 30px 30px; 
       text-align: center; 
       box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -152,8 +163,10 @@
       color: inherit; 
       display: flex; 
       flex-direction: column; 
+      justify-content: space-between;
       border-top: 5px solid transparent; 
       box-sizing: border-box; 
+      min-height: 240px;
     }
     .card:hover { 
       transform: translateY(-8px); 
@@ -165,8 +178,8 @@
     .card-tv:hover { border-top-color: #fbbf24; }
     .card-excel:hover { border-top-color: #8b5cf6; }
     .card-survey:hover { border-top-color: #f472b6; }
-    .icon { font-size: 58px; margin-bottom: 15px; line-height: 1; }
-    .card h2 { margin: 0 0 12px 0; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+    .icon { font-size: 54px; margin-bottom: 12px; line-height: 1; }
+    .card h2 { margin: 0 0 10px 0; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
     .card p { 
       font-size: 16px; 
       color: #475569; 
@@ -179,7 +192,7 @@
       justify-content: center;
       text-align: center;
     }
-    .enter-text { margin-top: 22px; font-weight: 700; font-size: 16px; padding: 12px 20px; border-radius: 11px; transition: background 0.3s; }
+    .enter-text { margin-top: 18px; font-weight: 700; font-size: 16px; padding: 12px 20px; border-radius: 11px; transition: background 0.3s; }
     .card-teacher .enter-text { color: #475569; background: #f1f5f9; }
     .card-learn .enter-text { color: #0284c7; background: #e0f2fe; }
     .card-practice .enter-text { color: #059669; background: #d1fae5; }
@@ -281,7 +294,7 @@
         const cover = document.getElementById('coverPage');
         const main = document.getElementById('mainContent');
         cover.style.display = 'none';
-        main.style.display = 'block';
+        main.style.display = 'flex';
         main.style.opacity = '1';
       }
     });
@@ -304,7 +317,7 @@
       cover.style.opacity = '0';
       setTimeout(() => {
         cover.style.display = 'none';
-        main.style.display = 'block';
+        main.style.display = 'flex';
         setTimeout(() => { main.style.opacity = '1'; }, 50);
       }, 600);
     }
