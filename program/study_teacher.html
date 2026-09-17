@@ -440,43 +440,160 @@
       letter-spacing: -0.4px;
     }
 
+    /* 2단계: 개념 학습 그리드 및 시각화 인포그래픽 박스 */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .concept-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px 26px;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .concept-card:hover {
+      border-color: rgba(96, 165, 250, 0.4);
+      background: rgba(15, 23, 42, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .concept-card h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #60a5fa;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .concept-card p, .concept-card ul {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .concept-card strong {
+      color: #fef08a;
+      font-weight: 800;
+    }
+
+    /* 시각 이미지와 설명이 어우러진 코너 회전 인포그래픽 박스 */
+    .concept-visual-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 2px solid rgba(245, 158, 11, 0.45);
+      border-radius: 22px;
+      padding: 24px 26px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .concept-visual-img-wrap {
+      flex: 0 0 280px;
+      max-width: 280px;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid rgba(254, 240, 138, 0.4);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .concept-visual-img-wrap img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .concept-visual-img-wrap:hover img {
+      transform: scale(1.04);
+    }
+
+    .concept-visual-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      color: #fef08a;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(254, 240, 138, 0.4);
+    }
+
+    .concept-visual-desc {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .concept-visual-desc h3 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #fef08a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .concept-visual-desc ul {
+      margin: 0;
+      padding-left: 22px;
+      color: #f1f5f9;
+      font-size: 1.15rem;
+      line-height: 1.8;
+      word-break: keep-all;
+    }
+
+    .concept-visual-desc li {
+      margin-bottom: 6px;
+    }
+
+    .concept-visual-desc strong {
+      color: #fde047;
+      font-weight: 800;
+    }
+
     .concept-highlight {
       background: rgba(245, 158, 11, 0.12);
       border: 1.5px dashed rgba(245, 158, 11, 0.4);
       border-radius: 18px;
-      padding: 24px 26px 40px 26px;
+      padding: 24px 26px;
       color: #fef08a;
       font-size: 1.18rem;
       line-height: 1.85;
-      cursor: pointer;
-      position: relative;
       transition: all 0.2s;
     }
 
-    .concept-highlight:hover {
-      background: rgba(245, 158, 11, 0.18);
-      border-color: rgba(245, 158, 11, 0.7);
-    }
-
-    /* 카드 클릭 유도 텍스트 */
-    .concept-card::after, .concept-highlight::after {
-      content: "🔊 클릭해서 크게 읽어보기";
-      position: absolute;
-      bottom: 12px;
-      right: 18px;
-      font-size: 0.95rem;
-      color: #60a5fa;
-      opacity: 0.75;
-      font-weight: 600;
-      transition: opacity 0.2s;
-    }
-
-    .concept-highlight::after {
-      color: var(--warning);
-    }
-
-    .concept-card:hover::after, .concept-highlight:hover::after {
-      opacity: 1;
+    @media (max-width: 860px) {
+      .concept-grid {
+        grid-template-columns: 1fr;
+      }
+      .concept-visual-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .concept-visual-img-wrap {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      .concept-visual-img-wrap img {
+        height: 200px;
+      }
     }
 
     /* 개념 카드 확대(Zoom-in) 모달 오버레이 */
@@ -1064,27 +1181,39 @@
     <div class="learn-card" id="step-card-2">
       <div class="card-title-area">
         <h2 class="card-title">💡 Step 2. 데이터 어노테이션(Annotation)의 이해</h2>
-        <p class="card-subtitle">카드를 클릭하면 크게 열어 성우 음성 가이드를 함께 들어볼 수 있습니다.</p>
+        <p class="card-subtitle">인공지능 자율주행의 핵심 원리인 데이터 어노테이션 규칙을 확인해 보세요.</p>
       </div>
 
+      <!-- 핵심 개념 2열 요약 카드 -->
       <div class="concept-grid">
-        <div class="concept-card" onclick="openConceptModal(this)">
+        <div class="concept-card">
           <h3>📌 어노테이션(Annotation)이란?</h3>
           <p>
-            인공지능 자율주행 차량은 아기처럼 처음에는 스스로 운전할 줄 모릅니다. 우리가 도로 사진마다 <strong>"이때는 핸들을 이만큼 돌리는 게 정답이야!"</strong> 하고 정답 가이드라인(정답지)을 그려서 AI에게 미리 길을 알려주는 아주 기초적이고 중요한 학습 데이터 훈련 과정입니다.
+            AI 자율주행차에게 <strong>"이 도로 사진에서는 핸들을 이 각도로 돌려야 해!"</strong>라고 정답 기준선(조향각)을 그려주는 지도학습 데이터 훈련 과정입니다.
           </p>
         </div>
-        <div class="concept-card" onclick="openConceptModal(this)">
-          <h3>🛠️ 정답지의 정밀도가 성능을 결정해요</h3>
+        <div class="concept-card">
+          <h3>🎯 정밀도가 성능을 결정해요</h3>
           <p>
-            사람이 조향 핸들 정답을 삐뚤빼뚤 엉망으로 작성해서 주면(예: 반듯한 직진 구간인데 핸들을 억지로 꺾어서 정답을 주는 경우), AI 차량은 그것이 정답인 줄 알고 잘못 학습해서 트랙 밖으로 이탈하게 됩니다. 그렇기 때문에 엄격한 만점 기준에 맞추어 섬세하게 오답노트를 만들 듯 작성해야 합니다.
+            사람이 조향선을 삐뚤빼뚤하게 주면 AI가 잘못 배워 <strong>트랙 밖으로 탈선</strong>합니다. 도로 곡률과 차선 중앙에 맞추어 <strong>정확한 정답지</strong>를 만들어야 합니다.
           </p>
         </div>
       </div>
 
-      <div class="concept-highlight" onclick="openConceptModal(this)">
-        💡 <strong>📐 회전할 때 왜 바깥쪽 실선을 맞춰야 할까요? (중요!)</strong><br>
-        자율주행차가 커브 길을 돌 때 안쪽 차선에 너무 가깝게 붙어서 회전하면, 원심력 때문에 차선 바깥으로 이탈하거나 코너 안쪽의 장애물·연석과 충돌하기 십상입니다! 안전거리를 넉넉히 확보하기 위해 코너 구간에서는 반드시 <strong>바깥쪽 노란색 실선</strong>을 기준선 삼아 평행하게 조향각 데이터를 만들어 주어야 사고 없이 달릴 수 있습니다.
+      <!-- 실제 트랙 사진과 함께 보는 코너 주행 핵심 인포그래픽 -->
+      <div class="concept-visual-box">
+        <div class="concept-visual-img-wrap">
+          <span class="concept-visual-badge">📷 실제 주행 트랙 환경</span>
+          <img src="picture/1.jpg" alt="실제 자율주행 차량 및 트랙 기준선">
+        </div>
+        <div class="concept-visual-desc">
+          <h3>💡 📐 회전할 때 왜 바깥쪽 실선을 맞춰야 할까요? (핵심 공식)</h3>
+          <ul>
+            <li><strong>원심력 이탈 방지:</strong> 커브에서 안쪽 차선에 너무 붙으면 원심력 때문에 차가 밖으로 튕겨 나갑니다.</li>
+            <li><strong>충돌 위험 예방:</strong> 코너 안쪽의 장애물이나 연석에 부딪히지 않도록 충분한 안전거리를 확보합니다.</li>
+            <li><strong>모범 주행 기준:</strong> 회전 구간에서는 반드시 <strong>바깥쪽 노란색 실선</strong>과 평행하게 조향선을 맞춥니다.</li>
+          </ul>
+        </div>
       </div>
 
       <div class="btn-row">
