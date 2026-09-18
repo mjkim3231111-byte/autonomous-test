@@ -1550,6 +1550,10 @@
     const feedbackText = document.getElementById('feedbackText');
     const btnNextCourse = document.getElementById('btnNextCourse');
 
+    const tabStraight = document.getElementById('tabStraight');
+    const tabLeft = document.getElementById('tabLeft');
+    const tabRight = document.getElementById('tabRight');
+
     let currentMode = 'straight';
     let targetXOffset = 0; 
     let isDragging = false;
@@ -1930,7 +1934,7 @@
         if (video) video.pause();
         
         setTimeout(() => {
-          applyLevelSettings();
+          setMode(currentMode);
         }, 100);
       }
     }
@@ -1948,6 +1952,18 @@
     function setMode(mode) {
       currentMode = mode;
       
+      // 코스 선택 탭 활성화(파란색 불) 상태 업데이트
+      if (tabStraight && tabLeft && tabRight) {
+        [tabStraight, tabLeft, tabRight].forEach(btn => btn.classList.remove('active'));
+        if (mode === 'straight') {
+          tabStraight.classList.add('active');
+        } else if (mode === 'left') {
+          tabLeft.classList.add('active');
+        } else if (mode === 'right') {
+          tabRight.classList.add('active');
+        }
+      }
+
       if (mode === 'straight') {
         btnNextCourse.innerHTML = "다음: 좌회전 코스 ➡️";
         btnNextCourse.className = "action-btn btn-primary";
