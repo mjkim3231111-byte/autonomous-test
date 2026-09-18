@@ -197,6 +197,54 @@
       100% { opacity: 0.4; }
     }
 
+    /* 상단 서브 툴바 (중앙 학교/기수 선택기 & 우측 유틸리티) */
+    .tv-subtoolbar {
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      box-sizing: border-box;
+      min-height: 68px;
+    }
+
+    .tv-filter-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 2px solid #38bdf8;
+      padding: 8px 24px;
+      border-radius: 40px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+    }
+
+    .tv-util-group {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .tv-subtoolbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 16px;
+      }
+      .tv-util-group {
+        position: static;
+        transform: none;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
     /* 메인 컨테이너 */
     .tv-container {
       max-width: 1200px;
@@ -424,30 +472,7 @@
       transform: translateY(-1px);
     }
 
-    /* 뒤로가기 버튼 스타일 통일화 (왼쪽 상단) */
-    .back-link {
-      position: absolute;
-      left: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 16px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
 
-    .back-link:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-    }
 
     /* 교실 TV 반응형 미디어 쿼리 */
     @media (max-width: 768px) {
@@ -488,10 +513,10 @@
     </div>
   </header>
 
-  <!-- 상단 서브 툴바 (학교 필터 및 구글 시트 연결 상태) -->
-  <div style="background: rgba(15, 23, 42, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-sizing: border-box;">
-    <!-- 학교 선택 컨트롤러 -->
-    <div style="display: flex; align-items: center; gap: 12px; background: rgba(30, 41, 59, 0.9); border: 2px solid #38bdf8; padding: 8px 24px; border-radius: 40px; box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);">
+  <!-- 상단 서브 툴바 (학교/기수 필터 중앙 정렬 및 구글 시트 연결 상태) -->
+  <div class="tv-subtoolbar">
+    <!-- 학교/기수 선택 컨트롤러: 화면 정중앙 배치 -->
+    <div class="tv-filter-box">
       <span style="font-size: 1.15rem; color: #38bdf8; font-weight: 900; letter-spacing: -0.5px;">🏫 현재 전광판:</span>
       <select id="schoolFilterSelect" onchange="onSchoolFilterChange()" style="background: #0f172a; color: #ffffff; border: 1.5px solid #38bdf8; padding: 6px 16px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1.05rem; outline: none;">
         <option value="ALL">전체 학교</option>
@@ -499,7 +524,7 @@
     </div>
 
     <!-- 우측 유틸리티 버튼 및 연결 상태 -->
-    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <div class="tv-util-group">
       <a href="https://docs.google.com/spreadsheets/d/1F6vQQr5CtK8YKEQ4sJRVUlzMTSB_mbe6ySwI39Lj6rA/edit?gid=0#gid=0" target="_blank" style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: #ffffff; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); transition: all 0.2s;">
         📊 구글 시트 기록판 ➡️
       </a>
