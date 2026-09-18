@@ -38,38 +38,97 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 24px;
+      margin: 0;
+      padding: 0;
     }
 
-    /* 상단 네비게이션 헤더 */
+    /* 상단 헤더: 표준 통일 규격 (슬림화 및 Sticky 고정) */
     .dashboard-header {
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      color: white;
+      padding: 20px 28px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      margin-bottom: 20px;
+    }
+
+    .dashboard-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -1.2px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding-bottom: 16px;
+      justify-content: center;
+      gap: 10px;
+      color: #ffffff;
     }
 
-    .header-logo {
-      display: flex;
-      flex-direction: column;
+    .dashboard-header p {
+      margin: 0;
+      font-size: 1.18rem;
+      color: #93c5fd;
+      font-weight: 600;
+      letter-spacing: -0.3px;
     }
 
-    .logo-text {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.6rem;
+    /* 뒤로가기 버튼 */
+    .back-link {
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 1.05rem;
       font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--accent-cyan), #818cf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .subtitle-text {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .back-link:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-50%) scale(1.03);
+    }
+
+    /* 다음 단계 버튼 (오른쪽 상단) */
+    .next-link {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .next-link:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transform: translateY(-50%) scale(1.03);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
 
     .header-actions {
@@ -126,6 +185,7 @@
       grid-template-columns: 1.1fr 1.9fr;
       gap: 24px;
       flex: 1;
+      padding: 0 28px 28px 28px;
     }
 
     @media (max-width: 1024px) {
@@ -477,25 +537,22 @@
 </head>
 <body>
 
-  <!-- 헤더 영역 -->
-  <div class="dashboard-header">
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <a href="index.html?start=true" style="color: #ffffff; text-decoration: none; font-weight: bold; font-size: 14px; background: rgba(255, 255, 255, 0.12); padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.2); display: inline-flex; align-items: center; gap: 6px;" onmouseover="this.style.background='rgba(255, 255, 255, 0.25)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.12)'">
-        ⬅️ 메인 화면
-      </a>
-      <div class="header-logo">
-        <div class="logo-text">AI Driving Survey Hub</div>
-        <p class="subtitle-text">실시간 사전-사후 학생 자가진단 분석 전광판</p>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="control-btn" onclick="openQrModal()">
-        <span>📱</span> 모바일 설문 QR 코드
-      </button>
-      <div class="sync-indicator">
-        <div class="sync-dot"></div>
-        <span id="syncText">실시간 5s 동기화 중</span>
-      </div>
+  <!-- 상단 네비게이션 헤더: 표준 통일 규격 -->
+  <header class="dashboard-header">
+    <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
+    <h1>📋 설문조사 및 역량 진단</h1>
+    <p>자율주행 5대 역량 사전·사후 자가진단 분석 및 수업 만족도 통계</p>
+    <a href="guide.html" class="next-link">다음 단계: 교사용 가이드 ➡️</a>
+  </header>
+
+  <!-- 상단 보조 도구 바 -->
+  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0 28px;">
+    <button class="control-btn" onclick="openQrModal()">
+      <span>📱</span> 모바일 설문 QR 코드
+    </button>
+    <div class="sync-indicator">
+      <div class="sync-dot"></div>
+      <span id="syncText">실시간 5s 동기화 중</span>
     </div>
   </div>
 

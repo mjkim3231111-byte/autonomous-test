@@ -52,80 +52,91 @@
       padding: 0;
     }
 
-    /* 상단 네비게이션 헤더 */
+    /* 상단 네비게이션 헤더: 표준 통일 규격 */
     .app-header {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       color: white;
-      padding: 24px 20px;
+      padding: 20px 28px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
 
     .app-header h1 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      margin: 0 0 8px 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .app-header p {
-      font-size: 0.95rem;
-      color: #94a3b8;
+      margin: 0;
+      font-size: 1.18rem;
+      color: #93c5fd;
+      font-weight: 600;
+      letter-spacing: -0.3px;
     }
 
     /* 뒤로가기 버튼 */
     .back-link {
       position: absolute;
-      left: 24px;
+      left: 28px;
       top: 50%;
       transform: translateY(-50%);
-      color: #94a3b8;
+      color: #cbd5e1;
       text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
+      font-size: 1.05rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 16px;
+      gap: 8px;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 22px;
       border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .back-link:hover {
       color: white;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-50%) scale(1.03);
     }
 
-    /* 실시간 전광판 바로가기 버튼 */
-    .tv-link {
+    /* 다음 단계 버튼 (오른쪽 상단) */
+    .next-link, .tv-link {
       position: absolute;
-      right: 24px;
+      right: 28px;
       top: 50%;
       transform: translateY(-50%);
-      color: #f59e0b;
+      color: #ffffff;
       text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s;
-      background: rgba(245, 158, 11, 0.15);
-      padding: 8px 16px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      padding: 10px 22px;
       border-radius: 30px;
-      border: 1.5px solid rgba(245, 158, 11, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
     }
 
-    .tv-link:hover {
-      color: white;
-      background: var(--warning);
-      border-color: var(--warning);
+    .next-link:hover, .tv-link:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      transform: translateY(-50%) scale(1.03);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
 
     .main-container {
@@ -856,8 +867,7 @@
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>🚀 실시간 자동 채점 및 코칭</h1>
     <p>주행 궤적 사진을 촬영하면 컴퓨터 비전 엔진이 차량과 코너 기준선 좌표를 실시간 매칭합니다.</p>
-    <!-- 실시간 전광판 바로가기 추가 -->
-    <a href="tv.html" class="tv-link">📺 실시간 전광판 ➡️</a>
+    <a href="tv.html" class="next-link">다음 단계: 교실 TV 실시간 전광판 ➡️</a>
   </header>
 
   <main class="main-container">

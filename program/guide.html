@@ -25,32 +25,35 @@
       font-size: 18px;
     }
     
-    /* 상단 헤더: 슬림화 및 상단 고정(Sticky) */
+    /* 상단 헤더: 표준 통일 규격 (슬림화 및 Sticky 고정) */
     .header { 
-      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); 
+      background: rgba(15, 23, 42, 0.92); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
       color: white; 
       text-align: center; 
       padding: 20px 28px; 
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); 
       position: sticky; 
       top: 0; 
       z-index: 1000; 
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     
     .header h1 { 
-      margin: 0; 
-      font-size: 2.3rem; 
+      margin: 0 0 8px 0; 
+      font-size: 2.25rem; 
       font-weight: 900;
       letter-spacing: -1.2px; 
-      line-height: 1.25;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
     
     .header p { 
-      margin-top: 8px; 
-      margin-bottom: 0;
-      font-size: 1.2rem; 
+      margin: 0;
+      font-size: 1.18rem; 
       color: #93c5fd; 
       font-weight: 600;
       letter-spacing: -0.3px;
@@ -377,7 +380,7 @@
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>👨‍🏫 교사용 수업 가이드</h1>
     <p>수업 준비부터 평가 및 데이터 수합까지 지원하는 4단계 통합 운영 매뉴얼</p>
-    <a href="study_teacher.html" class="next-link">다음 단계: 데이터 가공 학습하기 ➡️</a>
+    <a href="study_teacher.html" class="next-link">다음 단계: 학습 데이터 만들기 ➡️</a>
   </div>
 
   <div class="container">
