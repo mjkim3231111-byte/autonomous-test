@@ -1207,11 +1207,11 @@
           <img src="picture/1.jpg" alt="실제 자율주행 차량 및 트랙 기준선">
         </div>
         <div class="concept-visual-desc">
-          <h3>💡 📐 회전할 때 왜 바깥쪽 실선을 맞춰야 할까요? (핵심 공식)</h3>
+          <h3>💡 📐 회전할 때 왜 바깥쪽 실선이나 점선을 맞춰야 할까요? (핵심 공식)</h3>
           <ul>
             <li><strong>원심력 이탈 방지:</strong> 커브에서 안쪽 차선에 너무 붙으면 원심력 때문에 차가 밖으로 튕겨 나갑니다.</li>
             <li><strong>충돌 위험 예방:</strong> 코너 안쪽의 장애물이나 연석에 부딪히지 않도록 충분한 안전거리를 확보합니다.</li>
-            <li><strong>모범 주행 기준:</strong> 회전 구간에서는 반드시 <strong>바깥쪽 노란색 실선</strong>과 평행하게 조향선을 맞춥니다.</li>
+            <li><strong>모범 주행 기준:</strong> 회전 구간에서는 반드시 <strong>바깥쪽 하얀색 실선이나 점선</strong>과 평행하게 조향선을 맞춥니다.</li>
           </ul>
         </div>
       </div>
@@ -1796,12 +1796,12 @@
       } 
       else if (currentMode === 'left') {
         rightLine.className.baseVal = "road-line reference-line"; 
-        evalCriteria.innerHTML = "<h2>📌 평가 기준: 좌회전 코스</h2><p>안쪽(왼쪽) 차선을 쳐다보면 오답입니다. 오직 <span class='highlight'>바깥쪽(오른쪽 노란색) 실선</span>의 곡률만 확인하고, 파란 선이 이와 완벽하게 평행을 이루어야 만점입니다.</p>";
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 좌회전 코스</h2><p>안쪽(왼쪽) 차선을 쳐다보면 오답입니다. 오직 <span class='highlight'>바깥쪽(오른쪽 하얀색) 실선이나 점선</span>의 곡률만 확인하고, 파란 선이 이와 완벽하게 평행을 이루어야 만점입니다.</p>";
         curveOffset = -220; 
       } 
       else if (currentMode === 'right') {
         leftLine.className.baseVal = "road-line reference-line"; 
-        evalCriteria.innerHTML = "<h2>📌 평가 기준: 우회전 코스</h2><p>방향이 바뀌어도 원리는 같습니다. 우회전 시에는 반드시 <span class='highlight'>바깥쪽(왼쪽 노란색) 실선</span>을 기준으로 평행을 맞추어야 만점입니다.</p>";
+        evalCriteria.innerHTML = "<h2>📌 평가 기준: 우회전 코스</h2><p>방향이 바뀌어도 원리는 같습니다. 우회전 시에는 반드시 <span class='highlight'>바깥쪽(왼쪽 하얀색) 실선이나 점선</span>을 기준으로 평행을 맞추어야 만점입니다.</p>";
         curveOffset = 220;
       }
 
