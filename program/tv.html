@@ -102,22 +102,49 @@
       transform: translateY(-50%) scale(1.03);
     }
 
-    /* 다음 단계 버튼 (오른쪽 상단) */
-    .next-link {
+    /* 헤더 우측 네비게이션 버튼 그룹 (이전 단계 / 다음 단계) */
+    .header-nav-group {
       position: absolute;
       right: 28px;
       top: 50%;
       transform: translateY(-50%);
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 1.05rem;
-      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      gap: 10px;
+    }
+
+    .prev-link {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 9px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .prev-link:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.02);
+    }
+
+    .next-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      padding: 10px 22px;
+      padding: 9px 18px;
       border-radius: 30px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
@@ -125,7 +152,7 @@
 
     .next-link:hover {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
-      transform: translateY(-50%) scale(1.03);
+      transform: scale(1.02);
       box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
 
@@ -436,12 +463,15 @@
 </head>
 <body>
 
-  <!-- 상단 네비게이션 헤더: 표준 통일 규격 -->
+  <!-- 상단 네비게이션 헤더: 표준 통일 규격 (이전/다음 단계 완비) -->
   <header class="tv-header">
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>📺 교실 TV 실시간 전광판</h1>
     <p>전체 학교 및 기수별 실시간 순위와 자율주행 궤적 일치율 명예의 전당</p>
-    <a href="dashboard.html" class="next-link">다음 단계: 평가 대시보드 ➡️</a>
+    <div class="header-nav-group">
+      <a href="evaluation.html" class="prev-link">⬅️ 이전: AI 채점 및 코칭</a>
+      <a href="dashboard.html" class="next-link">다음: 평가 대시보드 ➡️</a>
+    </div>
   </header>
 
   <!-- 상단 서브 툴바 (학교 필터 및 구글 시트 연결 상태) -->

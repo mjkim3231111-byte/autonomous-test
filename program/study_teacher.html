@@ -115,33 +115,35 @@
       letter-spacing: -0.4px;
     }
     
-    /* 상단 네비게이션 헤더 (스크롤 시 상단 고정) */
+    /* 상단 네비게이션 헤더 (표준 통일 규격 & 스크롤 상단 고정) */
     .app-header {
-      background: rgba(15, 23, 42, 0.92);
+      background: #0f172a;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
       color: white;
       padding: 20px 28px;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
     }
 
     .app-header h1 {
+      margin: 0 0 8px 0;
       font-size: 2.25rem;
       font-weight: 900;
       letter-spacing: -1.2px;
-      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
+      color: #ffffff;
     }
 
     .app-header p {
+      margin: 0;
       font-size: 1.18rem;
       color: #93c5fd;
       font-weight: 600;
@@ -174,22 +176,49 @@
       transform: translateY(-50%) scale(1.03);
     }
 
-    /* 다음 단계 버튼 (오른쪽 상단) */
-    .next-link {
+    /* 헤더 우측 네비게이션 버튼 그룹 (이전 단계 / 다음 단계) */
+    .header-nav-group {
       position: absolute;
       right: 28px;
       top: 50%;
       transform: translateY(-50%);
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 1.05rem;
-      font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      gap: 10px;
+    }
+
+    .prev-link {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 9px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .prev-link:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.22);
+      transform: scale(1.02);
+    }
+
+    .next-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      padding: 10px 22px;
+      padding: 9px 18px;
       border-radius: 30px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
@@ -197,7 +226,7 @@
 
     .next-link:hover {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
-      transform: translateY(-50%) scale(1.03);
+      transform: scale(1.02);
       box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
     
@@ -1085,18 +1114,29 @@
     }
 
     /* 반응형 스타일 조정 */
-    @media (max-width: 768px) {
-      .app-header h1 {
-        font-size: 1.3rem;
-      }
-      .back-link {
-        position: static;
-        transform: none;
-        display: inline-flex;
-        margin-top: 10px;
-      }
+    @media (max-width: 960px) {
       .app-header {
         padding: 16px 20px;
+      }
+      .app-header h1 {
+        font-size: 1.6rem;
+      }
+      .app-header p {
+        font-size: 1rem;
+      }
+      .back-link, .prev-link, .next-link {
+        position: static;
+        transform: none !important;
+        margin: 4px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+      .header-nav-group {
+        position: static;
+        transform: none !important;
+        margin-top: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
       }
       .stepper {
         padding: 12px;
@@ -1139,12 +1179,15 @@
 </head>
 <body>
 
-  <!-- 상단 네비게이션 헤더 -->
+  <!-- 상단 네비게이션 헤더: 표준 통일 규격 (이전/다음 단계 완비) -->
   <header class="app-header">
     <a href="index.html?start=true" class="back-link">⬅️ 메인 화면</a>
     <h1>🚗 자율주행 어노테이션 학습관</h1>
     <p>주행 트랙을 확인하고 어노테이션 실습과 퀴즈를 거치며 데이터 라벨러로 거듭나 보세요.</p>
-    <a href="evaluation.html" class="next-link">다음 단계: 실시간 AI 채점 및 코칭 ➡️</a>
+    <div class="header-nav-group">
+      <a href="guide.html" class="prev-link">⬅️ 이전: 교사용 가이드</a>
+      <a href="evaluation.html" class="next-link">다음: AI 채점 및 코칭 ➡️</a>
+    </div>
   </header>
 
   <main class="main-container">
