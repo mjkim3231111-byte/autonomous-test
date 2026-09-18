@@ -190,13 +190,13 @@
 
     /* 상단 모니터링 컨트롤 단추 */
     .control-btn {
-      background: rgba(30, 41, 59, 0.6);
+      background: rgba(30, 41, 59, 0.75);
       border: 1px solid var(--card-border);
       color: var(--text-main);
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -205,62 +205,71 @@
     }
 
     .control-btn:hover {
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(30, 41, 59, 0.95);
       border-color: var(--accent-cyan);
     }
 
     .sync-indicator {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
+      gap: 8px;
+      font-size: 0.92rem;
       color: var(--success-green);
       font-weight: 700;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 8px 16px;
       border-radius: 20px;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.25);
     }
 
     .sync-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: var(--success-green);
       animation: pulse 1.5s infinite;
     }
 
-    /* 메인 2분할 대시보드 레이아웃 */
+    /* 메인 2분할 대시보드 레이아웃 (우측 상자 폭 균형 개선 및 중앙 정렬) */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1.1fr 1.9fr;
-      gap: 24px;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 28px;
       flex: 1;
-      padding: 0 28px 28px 28px;
+      padding: 0 32px 36px 32px;
+      max-width: 1720px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1150px) {
       .dashboard-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    /* 카드 박스 */
+    /* 카드 박스 공통 */
     .board-card {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 22px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
 
+    /* 하단 만족도 조사 카드는 가로 전체 확장 */
+    .teacher-card {
+      grid-column: 1 / -1;
+    }
+
     .card-headline {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 20px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 22px;
       color: var(--text-main);
       display: flex;
       align-items: center;
@@ -274,7 +283,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 350px;
+      min-height: 380px;
     }
 
     canvas {
@@ -286,32 +295,32 @@
     .summary-bar {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 18px;
+      margin-bottom: 22px;
     }
 
     .summary-item {
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 16px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 18px;
       text-align: center;
     }
 
     .summary-label {
-      font-size: 0.8rem;
+      font-size: 0.98rem;
       color: var(--text-muted);
-      margin-bottom: 6px;
-      font-weight: 500;
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
     .summary-value {
-      font-size: 1.6rem;
-      font-weight: 800;
+      font-size: 2.1rem;
+      font-weight: 900;
       font-family: 'Outfit', sans-serif;
     }
 
-    /* 통계 분석 표 디자인 */
+    /* 통계 분석 표 디자인 (글씨 크기 및 여백 대폭 확대) */
     .analysis-table-wrapper {
       overflow-x: auto;
       flex: 1;
@@ -320,62 +329,67 @@
     .analysis-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
+      font-size: 1.05rem;
       text-align: left;
     }
 
     .analysis-table th {
-      border-bottom: 2px solid rgba(255,255,255,0.08);
-      padding: 12px 10px;
-      color: var(--text-muted);
-      font-weight: 600;
+      border-bottom: 2px solid rgba(255,255,255,0.12);
+      padding: 14px 12px;
+      color: #94a3b8;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
     }
 
     .analysis-table td {
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      padding: 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 12px;
       vertical-align: middle;
     }
 
     .metric-name {
-      font-weight: 600;
+      font-size: 1.1rem;
+      font-weight: 700;
       color: var(--text-main);
+      display: block;
     }
 
     .metric-desc {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 0.92rem;
+      color: #94a3b8;
       display: block;
-      margin-top: 2px;
+      margin-top: 4px;
       font-weight: 400;
+      line-height: 1.45;
     }
 
     .score-badge {
       display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: 800;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
+      font-size: 1.08rem;
     }
 
     .pre-badge {
-      background: rgba(236, 72, 153, 0.15);
-      color: var(--accent-pink);
-      border: 1px solid rgba(236, 72, 153, 0.2);
+      background: rgba(236, 72, 153, 0.18);
+      color: #f472b6;
+      border: 1px solid rgba(236, 72, 153, 0.3);
     }
 
     .post-badge {
-      background: rgba(168, 85, 247, 0.15);
-      color: var(--accent-purple);
-      border: 1px solid rgba(168, 85, 247, 0.2);
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
     }
 
     /* 증감 기호 */
     .delta-value {
-      font-weight: 700;
+      font-weight: 800;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
+      font-size: 1.08rem;
     }
 
     .delta-plus {
@@ -383,7 +397,7 @@
     }
 
     .delta-minus {
-      color: #3b82f6;
+      color: #38bdf8;
     }
 
     .delta-zero {
@@ -393,10 +407,10 @@
     /* 분포 미니바 */
     .dist-container {
       display: flex;
-      height: 8px;
-      width: 110px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 4px;
+      height: 10px;
+      width: 130px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 5px;
       overflow: hidden;
     }
 
@@ -600,7 +614,7 @@
   </header>
 
   <!-- 상단 보조 도구 바 -->
-  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0 28px;">
+  <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 20px; padding: 0 32px; max-width: 1720px; margin-left: auto; margin-right: auto; width: 100%; box-sizing: border-box;">
     <button class="control-btn" onclick="openQrModal()">
       <span>📱</span> 모바일 설문 QR 코드
     </button>
@@ -642,11 +656,11 @@
         <table class="analysis-table">
           <thead>
             <tr>
-              <th style="width: 35%;">평가 항목 (5점 만점)</th>
-              <th style="width: 15%; text-align: center;">사전 평균</th>
-              <th style="width: 15%; text-align: center;">사후 평균</th>
-              <th style="width: 15%; text-align: center;">학업 성취 증감</th>
-              <th style="width: 20%; text-align: center;">사후 점수 분포 (1-5)</th>
+              <th style="width: 38%;">평가 항목 (5점 만점)</th>
+              <th style="width: 14%; text-align: center;">사전 평균</th>
+              <th style="width: 14%; text-align: center;">사후 평균</th>
+              <th style="width: 16%; text-align: center;">학업 성취 증감</th>
+              <th style="width: 18%; text-align: center;">사후 점수 분포 (1-5)</th>
             </tr>
           </thead>
           <tbody id="analysisTableBody">
@@ -656,35 +670,35 @@
       </div>
     </div>
 
-    <!-- 3. 우측 하단: 교사용 앱 만족도 조사 요약 판넬 -->
-    <div class="board-card" style="margin-top: 24px;">
-      <div class="card-headline" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; margin-bottom: 16px;">
-        <span style="display: flex; align-items: center; gap: 8px;">👨‍🏫 교육용 앱 만족도 조사 결과 (실시간)</span>
-        <span id="teacherTotalCount" style="font-size: 0.8rem; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); padding: 4px 10px; border-radius: 20px; font-weight: 700;">응시 교사: 0명</span>
+    <!-- 3. 하단: 교사용 앱 만족도 조사 요약 판넬 (가로 전체 채움) -->
+    <div class="board-card teacher-card">
+      <div class="card-headline" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 20px;">
+        <span style="display: flex; align-items: center; gap: 10px; font-size: 1.35rem;">👨‍🏫 교육용 앱 만족도 조사 결과 (실시간)</span>
+        <span id="teacherTotalCount" style="font-size: 0.95rem; background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); padding: 6px 14px; border-radius: 20px; font-weight: 700;">응시 교사: 0명</span>
       </div>
       
-      <div style="display: grid; grid-template-columns: 1fr 2.5fr; gap: 20px; align-items: center;">
+      <div style="display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: stretch;">
         <!-- 종합 평점 별점 표시판 -->
-        <div style="background: rgba(15, 23, 42, 0.4); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: block; margin-bottom: 6px;">종합 만족도 평점</span>
-          <span id="teacherAvgScore" style="font-size: 2.3rem; color: var(--success-green); font-weight: 800; font-family: 'Outfit', sans-serif; line-height: 1.1;">0.00</span>
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">5.00 만점</span>
-          <div style="margin-top: 10px; font-size: 1.2rem; color: #f59e0b;" id="teacherStars">☆☆☆☆☆</div>
+        <div style="background: rgba(15, 23, 42, 0.5); border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); padding: 28px 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <span style="font-size: 1.05rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 8px;">종합 만족도 평점</span>
+          <span id="teacherAvgScore" style="font-size: 3.2rem; color: var(--success-green); font-weight: 900; font-family: 'Outfit', sans-serif; line-height: 1.1;">0.00</span>
+          <span style="font-size: 0.95rem; color: var(--text-muted); margin-top: 6px; font-weight: 500;">5.00 만점</span>
+          <div style="margin-top: 14px; font-size: 1.6rem; color: #f59e0b; letter-spacing: 2px;" id="teacherStars">☆☆☆☆☆</div>
         </div>
 
         <!-- 교사용 4문항 상세 통계표 -->
         <div class="analysis-table-wrapper">
-          <table class="analysis-table" style="font-size: 0.82rem;">
+          <table class="analysis-table">
             <thead>
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted);">
-                <th style="width: 75%; padding: 8px 6px;">교사 만족도 평가 항목 (5점 만점)</th>
-                <th style="width: 25%; padding: 8px 6px; text-align: center;">실시간 평점</th>
+              <tr style="border-bottom: 2px solid rgba(255,255,255,0.12); color: #94a3b8;">
+                <th style="width: 75%; padding: 12px 14px; font-size: 1rem;">교사 만족도 평가 항목 (5점 만점)</th>
+                <th style="width: 25%; padding: 12px 14px; text-align: center; font-size: 1rem;">실시간 평점</th>
               </tr>
             </thead>
             <tbody id="teacherTableBody">
               <!-- 교사 4대 문항 평점 동적 바인딩 -->
               <tr>
-                <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                <td colspan="2" style="text-align: center; color: var(--text-muted); padding: 24px; font-size: 1.05rem;">
                   아직 제출된 교사용 만족도 설문 데이터가 없습니다.
                 </td>
               </tr>
@@ -813,13 +827,14 @@
               angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
               pointLabels: {
-                color: 'rgba(255, 255, 255, 0.7)',
-                font: { size: 11, weight: 'bold', family: 'Noto Sans KR' }
+                color: 'rgba(255, 255, 255, 0.85)',
+                font: { size: 13, weight: 'bold', family: 'Noto Sans KR' }
               },
               ticks: {
-                color: 'rgba(255, 255, 255, 0.4)',
+                color: 'rgba(255, 255, 255, 0.5)',
                 backdropColor: 'transparent',
                 stepSize: 1,
+                font: { size: 11, family: 'Outfit' },
                 min: 0,
                 max: 5
               },
@@ -831,7 +846,7 @@
             legend: {
               labels: {
                 color: '#f8fafc',
-                font: { size: 12, weight: '600', family: 'Noto Sans KR' }
+                font: { size: 13, weight: '700', family: 'Noto Sans KR' }
               }
             }
           }
@@ -958,11 +973,11 @@
               for (let i = 0; i < 4; i++) {
                 tHtml += `
                   <tr>
-                    <td style="padding: 10px 6px;">
-                      <span class="metric-name" style="font-size: 0.82rem; font-weight: 500;">${teacherMetricLabels[i]}</span>
+                    <td style="padding: 16px 14px;">
+                      <span class="metric-name" style="font-size: 1.08rem; font-weight: 600;">${teacherMetricLabels[i]}</span>
                     </td>
-                    <td style="padding: 10px 6px; text-align: center;">
-                      <span class="score-badge post-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success-green); border-color: rgba(16, 185, 129, 0.2); font-family: 'Outfit', sans-serif;">${teacherAverages[i].toFixed(2)}</span>
+                    <td style="padding: 16px 14px; text-align: center;">
+                      <span class="score-badge post-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success-green); border-color: rgba(16, 185, 129, 0.25); font-family: 'Outfit', sans-serif; font-size: 1.1rem; padding: 6px 14px;">${teacherAverages[i].toFixed(2)}</span>
                     </td>
                   </tr>
                 `;
@@ -1024,10 +1039,10 @@
             <td style="text-align: center;">
               ${deltaHtml}
             </td>
-            <td style="text-align: center; display: flex; justify-content: center; align-items: center; height: 50px;">
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+            <td style="text-align: center; display: flex; justify-content: center; align-items: center; min-height: 56px;">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
                 <div class="dist-container">${segmentHtml}</div>
-                <span style="font-size: 0.65rem; color: var(--text-muted);">1점 ◀ ▶ 5점</span>
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">1점 ◀ ▶ 5점</span>
               </div>
             </td>
           </tr>
