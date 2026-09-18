@@ -65,22 +65,31 @@
       top: 0;
       z-index: 1000;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+      min-height: 98px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     .app-header h1 {
+      margin: 0 0 4px 0;
       font-size: 1.95rem;
+      line-height: 1.25;
       font-weight: 900;
       letter-spacing: -1px;
-      margin: 0 0 4px 0;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
+      color: #ffffff;
     }
 
     .app-header p {
       margin: 0;
       font-size: 1.05rem;
+      line-height: 1.25;
       color: #93c5fd;
       font-weight: 600;
       letter-spacing: -0.3px;
@@ -100,15 +109,17 @@
       align-items: center;
       gap: 8px;
       transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px 22px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 11px 22px;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .back-link:hover {
       color: white;
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.25);
       transform: translateY(-50%) scale(1.03);
     }
 
@@ -120,49 +131,53 @@
       transform: translateY(-50%);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .prev-link {
       color: #cbd5e1;
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s ease;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 9px 18px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 11px 22px;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .prev-link:hover {
       color: white;
-      background: rgba(255, 255, 255, 0.22);
-      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.03);
     }
 
     .next-link, .tv-link {
       color: #ffffff;
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s ease;
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      padding: 9px 18px;
+      padding: 11px 22px;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .next-link:hover, .tv-link:hover {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
-      transform: scale(1.02);
+      transform: scale(1.03);
       box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
     }
 
