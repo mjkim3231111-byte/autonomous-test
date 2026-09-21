@@ -1111,13 +1111,10 @@
     body.qr-mode #panelVirtual,
     body.qr-mode .tv-banner-btn,
     body.qr-mode .next-link,
+    body.qr-mode .prev-link,
+    body.qr-mode .back-link,
+    body.qr-mode .header-nav-group,
     body.qr-mode #qrModalOpenBtn {
-      display: none !important;
-    }
-
-    /* 스마트폰 현장 채점 모드에서는 헤더의 잡다한 이동 버튼을 숨겨 제목 겹침 100% 방지 */
-    body.qr-mode .app-header .back-link,
-    body.qr-mode .app-header .header-nav-group {
       display: none !important;
     }
 
@@ -1831,6 +1828,23 @@
         document.body.classList.add('qr-mode');
         switchEvalMode('real');
         
+        // 이전 단계, 다음 단계, 메인화면 뒤로가기 버튼을 DOM에서 직접 완벽 제거(숨김)
+        const selectorsToHide = [
+          '.back-link',
+          '.prev-link',
+          '.next-link',
+          '.header-nav-group',
+          '.tv-banner-btn',
+          '#qrModalOpenBtn',
+          '.eval-mode-tabs',
+          '#panelVirtual'
+        ];
+        selectorsToHide.forEach(sel => {
+          document.querySelectorAll(sel).forEach(el => {
+            if (el) el.style.setProperty('display', 'none', 'important');
+          });
+        });
+
         // 안내 문구를 모바일/현장 채점 맞춤형으로 갱신
         const noticeEl = document.getElementById('realNoticeText');
         if (noticeEl) {
