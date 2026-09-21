@@ -1039,19 +1039,7 @@
       margin: 0 auto;
     }
 
-    .car-gif-left-frame .live-tag {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(4px);
-      color: #38bdf8;
-      font-size: 0.85rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-    }
+
 
     /* 우측 상단 15종 자동차 선택 패널 */
     .virtual-cars-top-box {
@@ -1067,6 +1055,43 @@
       .eval-mode-tabs {
         grid-template-columns: 1fr;
       }
+    }
+
+    /* QR 코드로 접속했을 때 (태블릿/모바일 현장 실시간 채점 전용 모드) */
+    body.qr-mode .eval-mode-tabs,
+    body.qr-mode #panelVirtual,
+    body.qr-mode .tv-banner-btn,
+    body.qr-mode .next-link,
+    body.qr-mode #qrModalOpenBtn {
+      display: none !important;
+    }
+
+    body.qr-mode .eval-banner-grid {
+      grid-template-columns: 1fr !important;
+      max-width: 480px;
+      margin: 0 auto 14px auto !important;
+    }
+
+    body.qr-mode .app-header {
+      padding: 14px 20px;
+      min-height: auto;
+    }
+
+    body.qr-mode .app-header h1 {
+      font-size: 1.65rem;
+    }
+
+    body.qr-mode .app-header p {
+      font-size: 0.95rem;
+    }
+
+    body.qr-mode .main-container {
+      margin: 12px auto;
+      padding: 0 12px;
+    }
+
+    body.qr-mode .card-body {
+      padding: 18px 16px;
     }
   </style>
 </head>
@@ -1098,7 +1123,7 @@
         </h2>
 
         <!-- 스프레드시트, 전광판, QR코드 접속 바로가기 버튼 그룹 (상단 배치하여 시선 분산 방지) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;">
+        <div class="eval-banner-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;">
           <a href="tv.html" class="tv-banner-btn" style="margin: 0; padding: 10px 12px; justify-content: center;">
             <span>📺 실시간 전광판 바로가기</span>
             <span class="arrow" style="margin-left: 6px;">➡️</span>
@@ -1140,7 +1165,7 @@
             <!-- [패널 1] 실시간 현장 채점 패널 (기본 활성화) -->
             <div class="eval-panel" id="panelReal">
               <!-- 사용 방법 유도 블록 -->
-              <div style="background: var(--primary-light); border-left: 5px solid var(--primary); padding: 14px 20px; border-radius: 14px; font-size: 1rem; color: #1e40af; font-weight: 600; line-height: 1.5; word-break: keep-all; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);">
+              <div id="realNoticeText" style="background: var(--primary-light); border-left: 5px solid var(--primary); padding: 14px 20px; border-radius: 14px; font-size: 1rem; color: #1e40af; font-weight: 600; line-height: 1.5; word-break: keep-all; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);">
                 📢 <strong>현장 실시간 채점:</strong> 소속(기수)과 차량 번호를 선택한 후, [실시간 사진 찍어 채점하기]를 눌러 트랙 주행 사진을 촬영하세요!
               </div>
 
@@ -1213,7 +1238,6 @@
 
               <!-- car gif.gif 좌측 전면 뷰파인더 -->
               <div class="car-gif-left-frame">
-                <span class="live-tag">LIVE HUD DEMO</span>
                 <img src="car gif.gif?t=20260921_1112" alt="자율주행 주행 시연 GIF">
               </div>
 
@@ -1726,36 +1750,59 @@
       window.speechSynthesis.cancel(); // 에러 모달 닫을 때도 정지
     }
 
-    // DOM 로드 즉시 구글 스프레드시트 원본 링크 동적 할당
+    // DOM 로드 즉시 구글 스프레드시트 링크 및 QR 접속 모드 검사
     window.addEventListener('DOMContentLoaded', () => {
       const sheetLink = document.getElementById('googleSheetLink');
       if (sheetLink) {
         sheetLink.href = GOOGLE_SHEET_URL;
       }
+      initQrModeCheck();
     });
+
+    // QR 코드로 접속했을 때 (mode=qr) 가상 채점 및 전광판을 숨기고 현장 실시간 채점 전용 뷰로 전환
+    function initQrModeCheck() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('mode') === 'qr') {
+        document.body.classList.add('qr-mode');
+        switchEvalMode('real');
+        
+        // 안내 문구를 모바일/현장 채점 맞춤형으로 갱신
+        const noticeEl = document.getElementById('realNoticeText');
+        if (noticeEl) {
+          noticeEl.innerHTML = '📱 <strong>현장 전용 실시간 채점:</strong> 소속(기수)과 차량 번호를 선택한 후, [실시간 사진 찍어 채점하기]를 눌러 트랙 주행 사진을 즉시 촬영하세요!';
+        }
+      }
+    }
 
     // 태블릿/모바일 QR 코드 모달 제어 기능
     let qrCodeInstance = null;
+
+    // 접속 주소 설정 (실제 GitHub Pages 배포 주소 기반)
+    const GITHUB_PAGES_EVAL_URL = "https://mjkim3231111-byte.github.io/autonomous-test/evaluation.html";
+
+    function getBaseEvaluationUrl() {
+      if (window.location.protocol.startsWith('http')) {
+        return window.location.href.split('?')[0].split('#')[0];
+      }
+      return GITHUB_PAGES_EVAL_URL;
+    }
 
     function openQrModal() {
       const modal = document.getElementById('qrModal');
       const qrcodeContainer = document.getElementById('qrcode');
       const urlDisplay = document.getElementById('qrUrlDisplay');
       
-      // 접속 주소 설정 (기본 도메인 aidriving.co.kr 혹은 현재 URL)
-      let currentUrl = window.location.href;
-      if (window.location.protocol === 'file:') {
-        currentUrl = 'https://aidriving.co.kr/evaluation.html';
-      }
+      const base = getBaseEvaluationUrl();
+      const qrTargetUrl = base + '?mode=qr';
       
       if (urlDisplay) {
-        urlDisplay.textContent = currentUrl;
+        urlDisplay.textContent = qrTargetUrl;
       }
 
       if (qrcodeContainer) {
         qrcodeContainer.innerHTML = ''; // 기존 QR 생성물 초기화
         qrCodeInstance = new QRCode(qrcodeContainer, {
-          text: currentUrl,
+          text: qrTargetUrl,
           width: 170,
           height: 170,
           colorDark: "#0f172a",
@@ -1783,19 +1830,19 @@
     }
   </script>
 
-  <!-- 태블릿 접속 QR 코드 모달 -->
+  <!-- 태블릿 접속 QR 코드 모달 (심플 단일 뷰) -->
   <div id="qrModal" class="qr-modal-overlay" onclick="handleQrModalBgClick(event)">
     <div class="qr-modal-card">
-      <div class="qr-modal-title">📱 태블릿 / 모바일 바로 접속</div>
+      <div class="qr-modal-title">📱 태블릿 / 스마트폰 바로 접속</div>
       <div class="qr-modal-desc">
-        태블릿이나 핸드폰 카메라로 아래 QR 코드를 스캔하면<br>
-        실시간 자동 채점 화면으로 즉시 연결됩니다!
+        스마트폰 카메라로 아래 QR 코드를 스캔하면<br>
+        가상 시연과 전광판 메뉴 없이 <strong>현장 실시간 채점 전용 화면</strong>으로 즉시 연결됩니다!
       </div>
       <div class="qr-code-box">
         <div id="qrcode"></div>
       </div>
       <div>
-        <span id="qrUrlDisplay" class="qr-url-badge">https://aidriving.co.kr/evaluation.html</span>
+        <span id="qrUrlDisplay" class="qr-url-badge">https://mjkim3231111-byte.github.io/autonomous-test/evaluation.html?mode=qr</span>
       </div>
       <button type="button" class="qr-close-btn" onclick="closeQrModal()">닫기</button>
     </div>
